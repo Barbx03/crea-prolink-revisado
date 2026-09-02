@@ -1,0 +1,26 @@
+# Ambiente e credenciais: nunca versionados
+.env
+.env.docker
+.env.local
+
+# Dependências instaladas pelo Composer
+/vendor/
+
+# Conteúdo gerado em execução
+/storage/logs/*
+!/storage/logs/.gitkeep
+/storage/cache/*
+!/storage/cache/.gitkeep
+/storage/uploads/*
+!/storage/uploads/.gitkeep
+/public/uploads/*
+!/public/uploads/.gitkeep
+!/public/uploads/.htaccess
+
+# Sistema operacional e editores
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*~

@@ -1,0 +1,28 @@
+{
+    "name": "crea-am/crea-prolink",
+    "description": "CREA Pro-Link - plataforma de aproximacao entre profissionais e demandas tecnicas (Desafio CREA-AM)",
+    "type": "project",
+    "license": "MIT",
+    "require": {
+        "php": ">=8.2",
+        "ext-pdo": "*",
+        "ext-json": "*",
+        "ext-mbstring": "*",
+        "ext-curl": "*",
+        "twig/twig": "^3.14",
+        "vlucas/phpdotenv": "^5.6",
+        "phpmailer/phpmailer": "^6.9"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/"
+        }
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "sort-packages": true
+    },
+    "scripts": {
+        "lint": "find app public -name '*.php' -print0 | xargs -0 -n1 php -l"
+    }
+}

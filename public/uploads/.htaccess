@@ -1,0 +1,6 @@
+# Diretório de imagens enviadas por usuários: conteúdo estático apenas.
+# Nenhum interpretador deve executar arquivos daqui.
+php_flag engine off
+Options -ExecCGI -Indexes
+RemoveHandler .php .phtml .phar .cgi .pl .py
+AddType text/plain .php .phtml .phar
