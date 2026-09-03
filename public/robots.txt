@@ -1,0 +1,9 @@
+User-agent: *
+Disallow: /admin
+Disallow: /painel
+Disallow: /meu-perfil
+Disallow: /privacidade
+Disallow: /mensagens
+Disallow: /notificacoes
+Disallow: /api
+Allow: /

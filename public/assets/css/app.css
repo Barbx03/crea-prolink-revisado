@@ -1,0 +1,346 @@
+/* =============================================================================
+   CREA Pro-Link | Estilos da aplicação
+   Complementa o Bootstrap 5 sem substituí-lo: apenas variáveis de tema,
+   componentes próprios e ajustes de acessibilidade.
+   ========================================================================== */
+
+:root {
+    --pl-azul: #0b3d6b;
+    --pl-azul-escuro: #072a4b;
+    --pl-azul-claro: #e8f0f7;
+    --pl-verde: #1a7f4b;
+    --pl-verde-claro: #e6f4ec;
+    --pl-ambar: #a86a00;
+    --pl-ambar-claro: #fdf3e2;
+    --pl-vermelho: #b02a37;
+    --pl-cinza: #5b6875;
+    --pl-borda: #dee3e9;
+    --pl-fundo: #f6f8fa;
+
+    --bs-primary: var(--pl-azul);
+    --bs-primary-rgb: 11, 61, 107;
+    --bs-link-color: var(--pl-azul);
+    --bs-link-hover-color: var(--pl-azul-escuro);
+    --bs-body-color: #21272e;
+    --bs-body-bg: var(--pl-fundo);
+    --bs-border-color: var(--pl-borda);
+}
+
+body {
+    background-color: var(--pl-fundo);
+    font-size: 0.975rem;
+}
+
+/* --- Acessibilidade: foco sempre visível (WCAG 2.4.7) -------------------- */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+    outline: 3px solid var(--pl-ambar);
+    outline-offset: 2px;
+    border-radius: 3px;
+}
+
+.pular-para-conteudo {
+    position: absolute;
+    left: -9999px;
+    top: 0;
+    z-index: 2000;
+    padding: 0.75rem 1.25rem;
+    background: var(--pl-azul);
+    color: #fff;
+    font-weight: 600;
+}
+
+.pular-para-conteudo:focus {
+    left: 0;
+}
+
+/* --- Botões e links de marca -------------------------------------------- */
+.btn-primary {
+    --bs-btn-bg: var(--pl-azul);
+    --bs-btn-border-color: var(--pl-azul);
+    --bs-btn-hover-bg: var(--pl-azul-escuro);
+    --bs-btn-hover-border-color: var(--pl-azul-escuro);
+    --bs-btn-active-bg: var(--pl-azul-escuro);
+    --bs-btn-disabled-bg: var(--pl-azul);
+    --bs-btn-disabled-border-color: var(--pl-azul);
+}
+
+.btn-outline-primary {
+    --bs-btn-color: var(--pl-azul);
+    --bs-btn-border-color: var(--pl-azul);
+    --bs-btn-hover-bg: var(--pl-azul);
+    --bs-btn-hover-border-color: var(--pl-azul);
+    --bs-btn-active-bg: var(--pl-azul-escuro);
+}
+
+.text-marca { color: var(--pl-azul) !important; }
+.bg-marca { background-color: var(--pl-azul) !important; }
+
+/* --- Cabeçalho ----------------------------------------------------------- */
+.faixa-institucional {
+    background: var(--pl-azul-escuro);
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 0.8rem;
+    padding: 0.3rem 0;
+}
+
+.navbar-prolink {
+    background: #fff;
+    border-bottom: 1px solid var(--pl-borda);
+    box-shadow: 0 1px 3px rgba(16, 34, 51, 0.05);
+}
+
+.marca-prolink {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-weight: 700;
+    color: var(--pl-azul);
+    letter-spacing: -0.01em;
+}
+
+.marca-prolink .sigla {
+    display: inline-grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    background: var(--pl-azul);
+    color: #fff;
+    font-size: 0.82rem;
+    font-weight: 700;
+}
+
+.navbar-prolink .nav-link {
+    color: var(--pl-cinza);
+    font-weight: 500;
+    padding-inline: 0.85rem;
+}
+
+.navbar-prolink .nav-link:hover,
+.navbar-prolink .nav-link.ativo {
+    color: var(--pl-azul);
+}
+
+.navbar-prolink .nav-link.ativo {
+    box-shadow: inset 0 -2px 0 var(--pl-azul);
+}
+
+/* --- Cartões ------------------------------------------------------------- */
+.card {
+    border-color: var(--pl-borda);
+    border-radius: 10px;
+}
+
+.card-cabecalho-simples {
+    background: #fff;
+    border-bottom: 1px solid var(--pl-borda);
+    font-weight: 600;
+}
+
+.cartao-clicavel {
+    transition: box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.cartao-clicavel:hover {
+    box-shadow: 0 6px 18px rgba(16, 34, 51, 0.08);
+    transform: translateY(-1px);
+}
+
+/* --- Selo de registro validado ------------------------------------------ */
+.selo-registrado {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    background: var(--pl-verde-claro);
+    color: #0f5c36;
+    border: 1px solid #bfe3ce;
+    border-radius: 999px;
+    padding: 0.1rem 0.6rem;
+    font-size: 0.76rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.selo-nao-registrado {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    background: #f1f3f5;
+    color: var(--pl-cinza);
+    border: 1px solid var(--pl-borda);
+    border-radius: 999px;
+    padding: 0.1rem 0.6rem;
+    font-size: 0.76rem;
+    font-weight: 600;
+}
+
+.etiqueta-competencia {
+    display: inline-block;
+    background: var(--pl-azul-claro);
+    color: var(--pl-azul-escuro);
+    border-radius: 6px;
+    padding: 0.12rem 0.5rem;
+    font-size: 0.78rem;
+    margin: 0.1rem 0.15rem 0.1rem 0;
+}
+
+.etiqueta-competencia.obrigatoria {
+    background: var(--pl-ambar-claro);
+    color: #7a4d00;
+    border: 1px solid #f0d9ac;
+    font-weight: 600;
+}
+
+.etiqueta-competencia.faltante {
+    background: #fdeaec;
+    color: #8c1f2a;
+    border: 1px solid #f3c6cb;
+}
+
+/* --- Aderência (compatibilização) --------------------------------------- */
+.medidor-aderencia {
+    display: inline-grid;
+    place-items: center;
+    width: 62px;
+    height: 62px;
+    border-radius: 50%;
+    font-weight: 700;
+    font-size: 1.02rem;
+    color: #fff;
+    flex: 0 0 auto;
+}
+
+.medidor-aderencia.alta { background: var(--pl-verde); }
+.medidor-aderencia.media { background: #b7791f; }
+.medidor-aderencia.baixa { background: #6c757d; }
+.medidor-aderencia.inelegivel { background: var(--pl-vermelho); }
+
+.criterio-aderencia + .criterio-aderencia {
+    border-top: 1px dashed var(--pl-borda);
+    margin-top: 0.65rem;
+    padding-top: 0.65rem;
+}
+
+.criterio-aderencia .barra {
+    height: 6px;
+    border-radius: 3px;
+    background: #edf0f3;
+    overflow: hidden;
+}
+
+.criterio-aderencia .barra span {
+    display: block;
+    height: 100%;
+    background: var(--pl-azul);
+}
+
+.criterio-aderencia.atendido .barra span { background: var(--pl-verde); }
+.criterio-aderencia.nao-atendido .barra span { background: #c9922a; }
+
+/* --- Indicadores do painel ---------------------------------------------- */
+.indicador {
+    background: #fff;
+    border: 1px solid var(--pl-borda);
+    border-radius: 10px;
+    padding: 0.9rem 1rem;
+    height: 100%;
+}
+
+.indicador .valor {
+    font-size: 1.7rem;
+    font-weight: 700;
+    line-height: 1.1;
+    color: var(--pl-azul);
+}
+
+.indicador .rotulo {
+    font-size: 0.8rem;
+    color: var(--pl-cinza);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+/* --- Mensagens ----------------------------------------------------------- */
+.balao-mensagem {
+    max-width: 78%;
+    border-radius: 12px;
+    padding: 0.6rem 0.85rem;
+    background: #fff;
+    border: 1px solid var(--pl-borda);
+}
+
+.balao-mensagem.minha {
+    margin-left: auto;
+    background: var(--pl-azul-claro);
+    border-color: #cfdff0;
+}
+
+.lista-mensagens {
+    max-height: 60vh;
+    overflow-y: auto;
+    background: var(--pl-fundo);
+    border-radius: 8px;
+    padding: 1rem;
+}
+
+/* --- Auditoria ----------------------------------------------------------- */
+.tabela-auditoria {
+    font-size: 0.85rem;
+}
+
+.tabela-auditoria code {
+    font-size: 0.8rem;
+    color: var(--pl-azul-escuro);
+}
+
+.severidade-CRITICO { color: var(--pl-vermelho); font-weight: 600; }
+.severidade-ALERTA { color: var(--pl-ambar); font-weight: 600; }
+.severidade-INFO { color: var(--pl-cinza); }
+
+/* --- Formulários --------------------------------------------------------- */
+.form-label { font-weight: 600; font-size: 0.9rem; }
+.form-text { font-size: 0.82rem; }
+
+.obrigatorio::after {
+    content: " *";
+    color: var(--pl-vermelho);
+}
+
+.grupo-competencias {
+    max-height: 320px;
+    overflow-y: auto;
+    border: 1px solid var(--pl-borda);
+    border-radius: 8px;
+    padding: 0.75rem;
+    background: #fff;
+}
+
+/* --- Rodapé -------------------------------------------------------------- */
+.rodape {
+    background: #fff;
+    border-top: 1px solid var(--pl-borda);
+    color: var(--pl-cinza);
+    font-size: 0.87rem;
+}
+
+/* --- Faixa de ambiente não produtivo ------------------------------------ */
+.faixa-ambiente {
+    background: var(--pl-ambar-claro);
+    border-bottom: 1px solid #f0d9ac;
+    color: #7a4d00;
+    font-size: 0.8rem;
+    padding: 0.3rem 0;
+    text-align: center;
+}
+
+/* --- Impressão ----------------------------------------------------------- */
+@media print {
+    .navbar-prolink, .rodape, .faixa-institucional, .no-print { display: none !important; }
+    body { background: #fff; }
+    .card { border: 1px solid #ccc; break-inside: avoid; }
+}

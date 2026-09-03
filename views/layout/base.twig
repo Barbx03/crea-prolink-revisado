@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="{% block descricao %}Plataforma de aproximação entre profissionais de engenharia, agronomia e geociências registrados no Sistema Confea/Crea, empresas e contratantes.{% endblock %}">
+    <meta name="app-url" content="{{ app.url }}">
+    <meta name="csrf-token" content="{{ token_csrf() }}">
+    <meta name="robots" content="{% block robots %}index, follow{% endblock %}">
+
+    <title>{% block titulo %}{{ app.nome }} | Aproximando profissionais e demandas técnicas{% endblock %}</title>
+
+    <link rel="icon" href="{{ asset('img/favicon.svg') }}" type="image/svg+xml">
+    <link rel="stylesheet" href="{{ asset('vendor/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('vendor/bootstrap-icons.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+</head>
+<body>
+{% set menuAtual = block('menu_ativo') is defined ? block('menu_ativo') : '' %}
+    <a class="pular-para-conteudo" href="#conteudo">Pular para o conteúdo principal</a>
+
+    {% if app.ambiente != 'producao' %}
+        <div class="faixa-ambiente" role="status">
+            Ambiente de {{ app.ambiente }} — dados e integrações podem não refletir a operação real.
+        </div>
+    {% endif %}
+
+    <div class="faixa-institucional">
+        <div class="container d-flex flex-wrap justify-content-between gap-2">
+            <span>Conselho Regional de Engenharia e Agronomia do Amazonas</span>
+            <span class="d-none d-md-inline">Protótipo do Desafio CREA Pro-Link</span>
+        </div>
+    </div>
+
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-prolink" aria-label="Navegação principal">
+            <div class="container">
+                <a class="navbar-brand marca-prolink" href="{{ url('/') }}">
+                    <span class="sigla" aria-hidden="true">CREA</span>
+                    <span>Pro-Link</span>
+                </a>
+
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#menu-principal" aria-controls="menu-principal"
+                        aria-expanded="false" aria-label="Abrir menu de navegação">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="menu-principal">
+                    <ul class="navbar-nav me-auto">
+                        <li class="nav-item">
+                            <a class="nav-link {{ menuAtual == 'profissionais' ? 'ativo' : '' }}"
+                               href="{{ url('/profissionais') }}">Profissionais</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ menuAtual == 'demandas' ? 'ativo' : '' }}"
+                               href="{{ url('/demandas') }}">Demandas</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ menuAtual == 'sobre' ? 'ativo' : '' }}"
+                               href="{{ url('/sobre') }}">Como funciona</a>
+                        </li>
+                    </ul>
+
+                    <ul class="navbar-nav align-items-lg-center">
+                        {% if autenticado() %}
+                            {% set naoLidas = nao_lidas() %}
+
+                            <li class="nav-item">
+                                <a class="nav-link position-relative" href="{{ url('/notificacoes') }}"
+                                   aria-label="Notificações{{ naoLidas > 0 ? ', ' ~ naoLidas ~ ' não lidas' : '' }}">
+                                    <i class="bi bi-bell" aria-hidden="true"></i>
+                                    <span class="d-lg-none ms-1">Notificações</span>
+                                    {% if naoLidas > 0 %}
+                                        <span class="badge rounded-pill bg-danger">{{ naoLidas }}</span>
+                                    {% endif %}
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url('/mensagens') }}">
+                                    <i class="bi bi-chat-dots" aria-hidden="true"></i>
+                                    <span class="d-lg-none ms-1">Mensagens</span>
+                                </a>
+                            </li>
+
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" role="button"
+                                   data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="bi bi-person-circle" aria-hidden="true"></i>
+                                    {{ usuario().nome|split(' ')|first }}
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li class="px-3 py-2 small text-muted border-bottom">
+                                        {{ usuario().email }}<br>
+                                        <span class="fw-semibold">{{ usuario().perfil|rotulo }}</span>
+                                        {% if usuario().registrado_crea == 'S' %}
+                                            <span class="selo-registrado mt-1">
+                                                <i class="bi bi-patch-check-fill" aria-hidden="true"></i> Registro validado
+                                            </span>
+                                        {% endif %}
+                                    </li>
+                                    <li><a class="dropdown-item" href="{{ url('/painel') }}">Meu painel</a></li>
+                                    {% if tem_perfil('ADMIN') %}
+                                        <li><a class="dropdown-item" href="{{ url('/admin') }}">Painel administrativo</a></li>
+                                    {% endif %}
+                                    <li><a class="dropdown-item" href="{{ url('/meu-perfil') }}">Meu perfil</a></li>
+                                    {% if tem_perfil('PROFISSIONAL', 'EMPRESA') %}
+                                        <li><a class="dropdown-item" href="{{ url('/meu-perfil/registro-crea') }}">Registro e portfólio</a></li>
+                                        <li><a class="dropdown-item" href="{{ url('/meus-interesses') }}">Minhas manifestações</a></li>
+                                    {% endif %}
+                                    {% if tem_perfil('EMPRESA', 'TERCEIRO', 'ADMIN') %}
+                                        <li><a class="dropdown-item" href="{{ url('/minhas-demandas') }}">Minhas demandas</a></li>
+                                    {% endif %}
+                                    <li><a class="dropdown-item" href="{{ url('/privacidade') }}">Privacidade e meus dados</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <form method="post" action="{{ url('/sair') }}" class="px-3 py-1">
+                                            {{ campo_csrf() }}
+                                            <button type="submit" class="btn btn-sm btn-outline-secondary w-100">Sair</button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </li>
+                        {% else %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url('/entrar') }}">Entrar</a>
+                            </li>
+                            <li class="nav-item ms-lg-2">
+                                <a class="btn btn-primary btn-sm px-3" href="{{ url('/cadastrar') }}">Criar cadastro</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main id="conteudo" class="py-4">
+        <div class="container">
+            {% set listaAlertas = alertas() %}
+            {% if listaAlertas is not empty %}
+                <div aria-live="polite">
+                    {% for alerta in listaAlertas %}
+                        <div class="alert alert-{{ alerta.tipo }} alert-dismissible fade show" role="alert">
+                            {{ alerta.mensagem }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar aviso"></button>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            {% block conteudo %}{% endblock %}
+        </div>
+    </main>
+
+    <footer class="rodape py-4 mt-5">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <span class="marca-prolink mb-2">
+                        <span class="sigla" aria-hidden="true">CREA</span>
+                        <span>Pro-Link</span>
+                    </span>
+                    <p class="mb-1">
+                        Aproximação entre profissionais registrados no Sistema Confea/Crea,
+                        empresas e contratantes de serviços técnicos.
+                    </p>
+                    <p class="mb-0 small text-muted">Versão {{ app.versao }}</p>
+                </div>
+                <div class="col-md-4">
+                    <h2 class="h6">Navegação</h2>
+                    <ul class="list-unstyled mb-0">
+                        <li><a href="{{ url('/profissionais') }}">Buscar profissionais</a></li>
+                        <li><a href="{{ url('/demandas') }}">Demandas publicadas</a></li>
+                        <li><a href="{{ url('/sobre') }}">Como funciona</a></li>
+                        <li><a href="{{ url('/acessibilidade') }}">Acessibilidade</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h2 class="h6">Transparência e dados</h2>
+                    <ul class="list-unstyled mb-0">
+                        <li><a href="{{ url('/termos-de-uso') }}">Termos de Uso</a></li>
+                        <li><a href="{{ url('/politica-de-privacidade') }}">Política de Privacidade</a></li>
+                        {% if autenticado() %}
+                            <li><a href="{{ url('/privacidade') }}">Meus dados e consentimentos</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+            <hr>
+            <p class="mb-0 small text-center text-muted">
+                Protótipo desenvolvido para o Desafio CREA Pro-Link — CREA-AM. {{ app.ano }}.
+            </p>
+        </div>
+    </footer>
+
+    <script src="{{ asset('vendor/jquery.min.js') }}"></script>
+    <script src="{{ asset('vendor/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ asset('js/app.js') }}"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>
