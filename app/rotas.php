@@ -24,3 +24,12 @@ $TODOS_AUTENTICADOS = [PERFIL_ADMIN, PERFIL_PROFISSIONAL, PERFIL_EMPRESA, PERFIL
 $PRESTADORES        = [PERFIL_PROFISSIONAL, PERFIL_EMPRESA];
 $CONTRATANTES       = [PERFIL_EMPRESA, PERFIL_TERCEIRO, PERFIL_ADMIN];
 $SOMENTE_ADMIN      = [PERFIL_ADMIN];
+
+// -----------------------------------------------------------------------------
+// Área pública
+// -----------------------------------------------------------------------------
+$roteador->get('/',                        'ControladorInicio', 'inicio');
+$roteador->get('/sobre',                   'ControladorPagina', 'sobre');
+$roteador->get('/termos-de-uso',           'ControladorPagina', 'termosDeUso');
+$roteador->get('/politica-de-privacidade', 'ControladorPagina', 'politicaDePrivacidade');
+$roteador->get('/acessibilidade',          'ControladorPagina', 'acessibilidade');

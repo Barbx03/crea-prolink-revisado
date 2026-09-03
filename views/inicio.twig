@@ -1,0 +1,216 @@
+{% extends 'layout/base.twig' %}
+
+{% block titulo %}{{ app.nome }} | Profissionais e demandas técnicas do Sistema Confea/Crea{% endblock %}
+
+{% block conteudo %}
+    {# --- Chamada principal e busca rápida --------------------------------- #}
+    <section class="row align-items-center g-4 mb-5">
+        <div class="col-lg-7">
+            <h1 class="h2 mb-3">
+                Encontre o profissional certo para a demanda técnica certa
+            </h1>
+            <p class="lead text-muted">
+                O CREA Pro-Link aproxima profissionais registrados no Sistema Confea/Crea,
+                empresas, instituições e contratantes de serviços em engenharia, agronomia
+                e geociências — com experiência verificável em ARTs e CATs da base oficial
+                do CREA-AM.
+            </p>
+
+            <form method="get" action="{{ url('/profissionais') }}" class="card p-3 mt-4" role="search">
+                <div class="row g-2">
+                    <div class="col-md-7">
+                        <label class="form-label" for="busca-termo">O que você procura</label>
+                        <input type="search" class="form-control" id="busca-termo" name="termo"
+                               placeholder="Ex.: projeto estrutural, laudo, irrigação">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label" for="busca-uf">UF</label>
+                        <select class="form-select" id="busca-uf" name="uf">
+                            <option value="">Todas</option>
+                            <option value="AM" selected>AM</option>
+                            {% for uf in ['AC','AL','AP','BA','CE','DF','ES','GO','MA','MT','MS','MG','PA','PB','PR','PE','PI','RJ','RN','RS','RO','RR','SC','SP','SE','TO'] %}
+                                <option value="{{ uf }}">{{ uf }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-2 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary w-100">Buscar</button>
+                    </div>
+                </div>
+                <p class="form-text mb-0 mt-2">
+                    Ou <a href="{{ url('/demandas') }}">veja as demandas publicadas</a> se você presta serviços técnicos.
+                </p>
+            </form>
+        </div>
+
+        <div class="col-lg-5">
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="h6 text-uppercase text-muted mb-3">A plataforma hoje</h2>
+                    <div class="row g-2 text-center">
+                        <div class="col-6">
+                            <div class="indicador">
+                                <div class="valor">{{ numeros.registrados|default(0)|numero }}</div>
+                                <div class="rotulo">Registrados no CREA-AM</div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="indicador">
+                                <div class="valor">{{ numeros.perfis|default(0)|numero }}</div>
+                                <div class="rotulo">Perfis públicos</div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="indicador">
+                                <div class="valor">{{ numeros.demandas|default(0)|numero }}</div>
+                                <div class="rotulo">Demandas abertas</div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="indicador">
+                                <div class="valor">{{ numeros.arts|default(0)|numero }}</div>
+                                <div class="rotulo">ARTs validadas</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {% if not autenticado() %}
+                        <div class="d-grid gap-2 mt-3">
+                            <a class="btn btn-primary" href="{{ url('/cadastrar') }}">Criar meu cadastro</a>
+                            <a class="btn btn-outline-primary" href="{{ url('/entrar') }}">Já tenho cadastro</a>
+                        </div>
+                    {% else %}
+                        <div class="d-grid mt-3">
+                            <a class="btn btn-primary" href="{{ url('/painel') }}">Ir para o meu painel</a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {# --- Como funciona ---------------------------------------------------- #}
+    <section class="mb-5">
+        <h2 class="h4 mb-3">Como funciona</h2>
+        <div class="row g-3">
+            {% set etapas = [
+                {
+                    icone: 'patch-check',
+                    titulo: 'Registro verificado na fonte',
+                    texto: 'O profissional valida CPF e RNP na API oficial do CREA-AM. Registro, ARTs e CATs vêm da base institucional, não de digitação.'
+                },
+                {
+                    icone: 'diagram-3',
+                    titulo: 'Perfil com experiência comprovada',
+                    texto: 'Competências técnicas ligadas a experiências reais. Quando a experiência tem ART ou CAT validada, ela aparece marcada como comprovada.'
+                },
+                {
+                    icone: 'megaphone',
+                    titulo: 'Demanda com critérios claros',
+                    texto: 'Quem contrata descreve escopo, local, competências exigidas, prazo e se exige acervo comprovado.'
+                },
+                {
+                    icone: 'sliders',
+                    titulo: 'Correspondência explicada',
+                    texto: 'A plataforma calcula a aderência por critérios objetivos e mostra o peso de cada um: nada de ordenação sem explicação.'
+                }
+            ] %}
+
+            {% for etapa in etapas %}
+                <div class="col-md-6 col-lg-3">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <p class="h3 text-marca mb-2" aria-hidden="true"><i class="bi bi-{{ etapa.icone }}"></i></p>
+                            <h3 class="h6">{{ etapa.titulo }}</h3>
+                            <p class="small text-muted mb-0">{{ etapa.texto }}</p>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    {# --- Demandas recentes ------------------------------------------------ #}
+    {% if demandas is not empty %}
+        <section class="mb-5">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h2 class="h4 mb-0">Demandas recentes</h2>
+                <a href="{{ url('/demandas') }}" class="btn btn-sm btn-outline-primary">Ver todas</a>
+            </div>
+            <div class="row g-3">
+                {% for demanda in demandas %}
+                    <div class="col-md-6 col-lg-4">
+                        {% include 'partials/cartao-demanda.twig' with { demanda: demanda } only %}
+                    </div>
+                {% endfor %}
+            </div>
+        </section>
+    {% endif %}
+
+    {# --- Profissionais em destaque ---------------------------------------- #}
+    {% if destaques is not empty %}
+        <section class="mb-5">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h2 class="h4 mb-0">Profissionais e empresas na plataforma</h2>
+                <a href="{{ url('/profissionais') }}" class="btn btn-sm btn-outline-primary">Buscar profissionais</a>
+            </div>
+            <div class="row g-3">
+                {% for perfil in destaques %}
+                    <div class="col-md-6 col-lg-4">
+                        {% include 'partials/cartao-perfil.twig' with { perfil: perfil } only %}
+                    </div>
+                {% endfor %}
+            </div>
+        </section>
+    {% endif %}
+
+    {# --- Áreas e competências mais procuradas ----------------------------- #}
+    <section class="row g-4">
+        <div class="col-lg-6">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h2 class="h5">Áreas de atuação</h2>
+                    <p class="small text-muted">
+                        O catálogo de competências segue as áreas abrangidas pelo Sistema Confea/Crea.
+                    </p>
+                    <ul class="list-unstyled mb-0">
+                        {% for area in areas %}
+                            <li class="border-bottom py-2">
+                                <a href="{{ url('/profissionais?area_id=' ~ area.are_id) }}" class="fw-semibold text-decoration-none">
+                                    {{ area.are_nome }}
+                                </a>
+                                {% if area.are_descricao %}
+                                    <span class="d-block small text-muted">{{ area.are_descricao }}</span>
+                                {% endif %}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h2 class="h5">Competências mais pedidas nas demandas</h2>
+                    {% if mais_demandadas is empty %}
+                        <p class="small text-muted mb-0">
+                            Ainda não há demandas publicadas com competências suficientes para este ranque.
+                        </p>
+                    {% else %}
+                        <ol class="mb-0 ps-3">
+                            {% for competencia in mais_demandadas %}
+                                <li class="py-1">
+                                    {{ competencia.cmp_nome }}
+                                    <span class="small text-muted">
+                                        — {{ competencia.are_nome }} · {{ competencia.total }} demanda(s)
+                                    </span>
+                                </li>
+                            {% endfor %}
+                        </ol>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

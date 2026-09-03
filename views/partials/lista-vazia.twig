@@ -1,0 +1,11 @@
+{# Estado vazio de uma listagem, com orientação do que fazer em seguida #}
+<div class="text-center py-5">
+    <p class="display-6 text-muted mb-2" aria-hidden="true">
+        <i class="bi bi-{{ icone|default('inbox') }}"></i>
+    </p>
+    <h2 class="h5">{{ titulo }}</h2>
+    <p class="text-muted mb-3">{{ mensagem }}</p>
+    {% if acao_link is defined and acao_link %}
+        <a class="btn btn-primary" href="{{ url(acao_link) }}">{{ acao_texto }}</a>
+    {% endif %}
+</div>

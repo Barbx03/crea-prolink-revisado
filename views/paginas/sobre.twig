@@ -1,0 +1,176 @@
+{% extends 'layout/base.twig' %}
+
+{% block menu_ativo %}sobre{% endblock %}
+{% block titulo %}Como funciona | {{ app.nome }}{% endblock %}
+
+{% block conteudo %}
+    <div class="row justify-content-center">
+        <div class="col-lg-9">
+            <h1 class="h3 mb-3">Como funciona o CREA Pro-Link</h1>
+
+            <p class="lead text-muted">
+                A plataforma existe para resolver um problema concreto: quem precisa de um serviço
+                técnico tem dificuldade de saber quem está habilitado e tem experiência comprovada
+                para executá-lo; e quem tem essa experiência tem dificuldade de mostrá-la de forma
+                verificável.
+            </p>
+
+            <section class="card mb-4">
+                <div class="card-body">
+                    <h2 class="h5">Para quem presta serviços técnicos</h2>
+                    <ol class="mb-0">
+                        <li class="mb-2">
+                            <strong>Valide seu registro.</strong> Ao se cadastrar como profissional
+                            registrado, seu CPF é consultado na API oficial do CREA-AM. Confirmado o
+                            registro, seu RNP fica vinculado à conta e seu perfil recebe o selo de
+                            registro validado.
+                        </li>
+                        <li class="mb-2">
+                            <strong>Monte o portfólio com o que a base oficial confirma.</strong>
+                            Você informa o número de uma ART e a plataforma a busca na base do
+                            Conselho. Nada de ART digitada à mão: só entra no portfólio o que a API
+                            oficial retorna.
+                        </li>
+                        <li class="mb-2">
+                            <strong>Declare competências e ligue-as a experiências.</strong>
+                            Quando a experiência está vinculada a uma ART ou CAT validada, ela é
+                            exibida como experiência comprovada.
+                        </li>
+                        <li class="mb-2">
+                            <strong>Receba oportunidades compatíveis.</strong> Ao ser publicada, uma
+                            demanda é comparada com os perfis da plataforma, e quem tem aderência
+                            alta é avisado.
+                        </li>
+                        <li>
+                            <strong>Manifeste interesse.</strong> Você envia uma apresentação, pode
+                            propor valor e prazo, e conversa com o contratante pela própria plataforma.
+                        </li>
+                    </ol>
+                </div>
+            </section>
+
+            <section class="card mb-4">
+                <div class="card-body">
+                    <h2 class="h5">Para quem contrata</h2>
+                    <ol class="mb-0">
+                        <li class="mb-2">
+                            <strong>Publique a demanda com critérios objetivos.</strong> Escopo,
+                            local, modalidade, competências exigidas (com peso e obrigatoriedade),
+                            experiência mínima, faixa de orçamento e prazo para manifestações.
+                        </li>
+                        <li class="mb-2">
+                            <strong>Veja as correspondências e o porquê de cada uma.</strong>
+                            A plataforma lista os perfis mais aderentes e abre o cálculo:
+                            quais competências foram atendidas, quais faltaram, como pesaram
+                            localização, acervo, experiência e disponibilidade.
+                        </li>
+                        <li class="mb-2">
+                            <strong>Analise quem manifestou interesse.</strong> Cada manifestação
+                            traz a nota de aderência do momento em que foi enviada, além da
+                            proposta de valor e prazo.
+                        </li>
+                        <li>
+                            <strong>Responda e negocie.</strong> Você marca a manifestação como
+                            em negociação, selecionada ou recusada, e o profissional é notificado.
+                        </li>
+                    </ol>
+                </div>
+            </section>
+
+            <section class="card mb-4">
+                <div class="card-body">
+                    <h2 class="h5">Como a aderência é calculada</h2>
+                    <p class="small text-muted">
+                        A compatibilização usa cinco critérios de peso declarado, aplicados
+                        igualmente a todos os perfis. Os pesos são parametrizáveis pela
+                        administração da plataforma, e a explicação sempre acompanha a nota.
+                    </p>
+
+                    <div class="table-responsive">
+                        <table class="table table-sm align-middle mb-0">
+                            <caption class="small">
+                                Antes da pontuação, requisitos declarados como obrigatórios pela demanda
+                                — registro ativo no CREA-AM e acervo comprovado — são verificados e, se não
+                                atendidos, aparecem explicitamente como impedimento.
+                            </caption>
+                            <thead>
+                                <tr>
+                                    <th scope="col">Critério</th>
+                                    <th scope="col">O que observa</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <th scope="row">Competências técnicas</th>
+                                    <td class="small">
+                                        Quanto do que a demanda exige o perfil declara, com peso dobrado
+                                        para competências marcadas como obrigatórias.
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Localização</th>
+                                    <td class="small">
+                                        Mesmo município, mesma UF, ou atendimento remoto quando a
+                                        demanda o aceita.
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Acervo técnico validado</th>
+                                    <td class="small">
+                                        Quantidade de ARTs e CATs confirmadas na base oficial do CREA-AM.
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Tempo de experiência</th>
+                                    <td class="small">
+                                        Anos declarados, ou apurados a partir das experiências publicadas,
+                                        frente ao mínimo pedido.
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Disponibilidade</th>
+                                    <td class="small">Situação declarada pelo profissional.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <section class="card mb-4">
+                <div class="card-body">
+                    <h2 class="h5">Seus dados</h2>
+                    <ul class="mb-0">
+                        <li class="mb-2">
+                            <strong>Você controla a visibilidade.</strong> Contato, documento e
+                            valor-hora ficam ocultos por padrão. Cada item do portfólio pode ser
+                            exibido ou restringido individualmente, e o perfil pode ser público,
+                            restrito a usuários autenticados ou totalmente oculto.
+                        </li>
+                        <li class="mb-2">
+                            <strong>Consentimento por finalidade.</strong> A consulta ao CREA-AM,
+                            a exibição pública do perfil e o envio de e-mails são autorizações
+                            separadas, revogáveis a qualquer momento e com histórico registrado.
+                        </li>
+                        <li class="mb-2">
+                            <strong>Portabilidade.</strong> No painel de privacidade você baixa
+                            todos os seus dados em arquivo aberto.
+                        </li>
+                        <li>
+                            <strong>Correção e eliminação.</strong> Você pode abrir requisição de
+                            correção, anonimização ou eliminação, com protocolo e resposta registrada.
+                        </li>
+                    </ul>
+                </div>
+            </section>
+
+            <div class="d-flex flex-wrap gap-2">
+                {% if not autenticado() %}
+                    <a class="btn btn-primary" href="{{ url('/cadastrar') }}">Criar meu cadastro</a>
+                {% endif %}
+                <a class="btn btn-outline-primary" href="{{ url('/profissionais') }}">Buscar profissionais</a>
+                <a class="btn btn-outline-primary" href="{{ url('/demandas') }}">Ver demandas</a>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,57 @@
+{% extends 'layout/base.twig' %}
+
+{% block titulo %}Acessibilidade | {{ app.nome }}{% endblock %}
+
+{% block conteudo %}
+    <div class="row justify-content-center">
+        <div class="col-lg-9">
+            <h1 class="h3 mb-3">Acessibilidade digital</h1>
+
+            <p class="text-muted">
+                Esta plataforma foi construída com os requisitos básicos de acessibilidade
+                digital previstos no item 5 do Termo de Referência, tomando como referência
+                as diretrizes WCAG 2.1 nível AA e o eMAG.
+            </p>
+
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h2 class="h5">Recursos implementados</h2>
+                    <ul class="mb-0">
+                        <li>Link de salto direto para o conteúdo principal, primeiro elemento focável de cada página.</li>
+                        <li>Estrutura semântica com um único <code>h1</code> por página e hierarquia de títulos contínua.</li>
+                        <li>Navegação completa por teclado, com indicador de foco visível e de alto contraste.</li>
+                        <li>Todo campo de formulário tem rótulo associado; erros são anunciados junto ao campo.</li>
+                        <li>Avisos e mensagens do sistema em regiões com <code>aria-live</code>, para leitores de tela.</li>
+                        <li>Contraste de texto e componentes acima da relação mínima de 4,5:1.</li>
+                        <li>Imagens decorativas sem texto alternativo; ícones sempre acompanhados de texto.</li>
+                        <li>Layout responsivo, utilizável em telas pequenas e com ampliação de até 200%.</li>
+                        <li>Informação nunca transmitida apenas por cor: notas e situações têm rótulo textual.</li>
+                        <li>Tabelas de dados com cabeçalhos declarados e legenda descritiva.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h2 class="h5">Atalhos de teclado do navegador</h2>
+                    <ul class="mb-0">
+                        <li><kbd>Tab</kbd> avança entre os elementos interativos; <kbd>Shift</kbd> + <kbd>Tab</kbd> retorna.</li>
+                        <li><kbd>Enter</kbd> ativa links e botões; <kbd>Espaço</kbd> marca caixas de seleção.</li>
+                        <li><kbd>Esc</kbd> fecha menus e avisos dispensáveis.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="h5">Encontrou uma barreira?</h2>
+                    <p class="mb-0">
+                        Relate o problema pelo canal de contato da plataforma, descrevendo a página,
+                        o recurso utilizado e o que não funcionou. Barreiras de acessibilidade são
+                        tratadas como defeito, não como sugestão.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

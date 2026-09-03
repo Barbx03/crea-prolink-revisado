@@ -1,0 +1,37 @@
+{% extends 'layout/base.twig' %}
+
+{% block titulo %}{{ tipo }} | {{ app.nome }}{% endblock %}
+
+{% block conteudo %}
+    <div class="row justify-content-center">
+        <div class="col-lg-9">
+            {% if documento %}
+                <article class="card">
+                    <div class="card-body p-4 p-md-5">
+                        <header class="border-bottom pb-3 mb-4">
+                            <h1 class="h3 mb-1">{{ documento.ter_titulo }}</h1>
+                            <p class="small text-muted mb-0">
+                                Versão {{ documento.ter_versao }} · em vigor desde {{ documento.ter_dt_vigencia|data }}
+                            </p>
+                        </header>
+
+                        <div class="conteudo-documento">
+                            {{ documento.ter_conteudo|raw }}
+                        </div>
+                    </div>
+                </article>
+
+                <p class="small text-muted mt-3">
+                    Alterações materiais nestes termos exigem novo aceite, e cada aceite fica
+                    registrado com data, hora e origem na trilha de consentimentos.
+                </p>
+            {% else %}
+                {% include 'partials/lista-vazia.twig' with {
+                    icone: 'file-earmark-text',
+                    titulo: tipo ~ ' não disponível',
+                    mensagem: 'Nenhuma versão vigente deste documento foi encontrada na base.'
+                } only %}
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
