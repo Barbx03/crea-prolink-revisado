@@ -1,0 +1,233 @@
+{% extends 'layout/base.twig' %}
+
+{% block titulo %}Criar cadastro | {{ app.nome }}{% endblock %}
+{% block robots %}noindex, nofollow{% endblock %}
+
+{% block conteudo %}
+    <div class="row justify-content-center">
+        <div class="col-lg-9">
+            <h1 class="h4 mb-1">Criar cadastro</h1>
+            <p class="text-muted small mb-4">
+                A plataforma aceita profissionais e empresas registrados no CREA-AM e também
+                pessoas físicas e jurídicas sem registro, que podem publicar demandas e
+                contratar serviços técnicos.
+            </p>
+
+            <form method="post" action="{{ url('/cadastrar') }}" novalidate>
+                {{ campo_csrf() }}
+
+                {# --- Tipo de cadastro ------------------------------------- #}
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <fieldset>
+                            <legend class="h6">1. Que tipo de cadastro é o seu?</legend>
+
+                            {% set tipos = [
+                                { valor: 'PROFISSIONAL', titulo: 'Profissional registrado no CREA-AM',
+                                  texto: 'Pessoa física com registro no Sistema Confea/Crea. Seu CPF e RNP são validados na base oficial e você pode montar portfólio com ARTs e CATs.' },
+                                { valor: 'EMPRESA', titulo: 'Empresa registrada no CREA-AM',
+                                  texto: 'Pessoa jurídica com registro no Conselho. Pode publicar demandas, buscar profissionais e apresentar acervo próprio.' },
+                                { valor: 'TERCEIRO_PF', titulo: 'Pessoa física sem registro',
+                                  texto: 'Contratante que deseja publicar demandas e encontrar profissionais habilitados.' },
+                                { valor: 'TERCEIRO_PJ', titulo: 'Pessoa jurídica sem registro',
+                                  texto: 'Empresa ou instituição sem registro no CREA-AM que contrata serviços técnicos.' }
+                            ] %}
+
+                            {% set tipoAtual = formulario.tipo_vinculo|default('PROFISSIONAL') %}
+
+                            <div class="row g-2">
+                                {% for tipo in tipos %}
+                                    <div class="col-md-6">
+                                        <div class="form-check border rounded p-3 h-100">
+                                            <input class="form-check-input" type="radio" name="tipo_vinculo"
+                                                   id="tipo-{{ tipo.valor }}" value="{{ tipo.valor }}"
+                                                   {{ tipoAtual == tipo.valor ? 'checked' : '' }} required>
+                                            <label class="form-check-label" for="tipo-{{ tipo.valor }}">
+                                                <span class="fw-semibold d-block">{{ tipo.titulo }}</span>
+                                                <span class="small text-muted">{{ tipo.texto }}</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+
+                            {% include 'partials/campo-erro.twig' with { campo: 'tipo_vinculo', erros: erros } only %}
+                        </fieldset>
+                    </div>
+                </div>
+
+                {# --- Identificação ---------------------------------------- #}
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h2 class="h6">2. Identificação</h2>
+
+                        <div class="row g-3">
+                            <div class="col-md-8">
+                                <label class="form-label obrigatorio" for="nome" id="rotulo-nome">Nome completo</label>
+                                <input type="text" class="form-control {{ erros.nome is defined ? 'is-invalid' : '' }}"
+                                       id="nome" name="nome" value="{{ formulario.nome|default('') }}"
+                                       maxlength="150" autocomplete="name" required>
+                                {% include 'partials/campo-erro.twig' with { campo: 'nome', erros: erros } only %}
+                            </div>
+
+                            <div class="col-md-4" data-campo="cpf">
+                                <label class="form-label obrigatorio" for="cpf">CPF</label>
+                                <input type="text" class="form-control {{ erros.cpf is defined ? 'is-invalid' : '' }}"
+                                       id="cpf" name="cpf" value="{{ formulario.cpf|default('') }}"
+                                       inputmode="numeric" maxlength="14" placeholder="000.000.000-00">
+                                {% include 'partials/campo-erro.twig' with { campo: 'cpf', erros: erros } only %}
+                            </div>
+
+                            <div class="col-md-4" data-campo="cnpj" style="display: none;">
+                                <label class="form-label obrigatorio" for="cnpj">CNPJ</label>
+                                <input type="text" class="form-control {{ erros.cnpj is defined ? 'is-invalid' : '' }}"
+                                       id="cnpj" name="cnpj" value="{{ formulario.cnpj|default('') }}"
+                                       inputmode="numeric" maxlength="18" placeholder="00.000.000/0000-00">
+                                {% include 'partials/campo-erro.twig' with { campo: 'cnpj', erros: erros } only %}
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label obrigatorio" for="email">E-mail</label>
+                                <input type="email" class="form-control {{ erros.email is defined ? 'is-invalid' : '' }}"
+                                       id="email" name="email" value="{{ formulario.email|default('') }}"
+                                       maxlength="190" autocomplete="email" required>
+                                <div class="form-text">Será seu identificador de acesso e o canal das notificações.</div>
+                                {% include 'partials/campo-erro.twig' with { campo: 'email', erros: erros } only %}
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label" for="telefone">Telefone</label>
+                                <input type="tel" class="form-control" id="telefone" name="telefone"
+                                       value="{{ formulario.telefone|default('') }}" maxlength="20"
+                                       autocomplete="tel" placeholder="(92) 90000-0000">
+                                <div class="form-text">Fica oculto por padrão; você decide se quer exibi-lo.</div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <label class="form-label" for="uf">UF</label>
+                                <select class="form-select {{ erros.uf is defined ? 'is-invalid' : '' }}"
+                                        id="uf" name="uf" data-uf-origem>
+                                    <option value="">Selecione</option>
+                                    {% for uf in ufs %}
+                                        <option value="{{ uf }}" {{ formulario.uf|default('AM') == uf ? 'selected' : '' }}>{{ uf }}</option>
+                                    {% endfor %}
+                                </select>
+                                {% include 'partials/campo-erro.twig' with { campo: 'uf', erros: erros } only %}
+                            </div>
+
+                            <div class="col-md-9">
+                                <label class="form-label" for="cidade">Cidade</label>
+                                <input type="text" class="form-control" id="cidade" name="cidade"
+                                       value="{{ formulario.cidade|default('') }}" maxlength="120"
+                                       list="lista-municipios" autocomplete="address-level2">
+                                <datalist id="lista-municipios"></datalist>
+                            </div>
+                        </div>
+
+                        {# --- Consulta prévia na API oficial ---------------- #}
+                        <div class="mt-4 pt-3 border-top" data-bloco-crea>
+                            <h3 class="h6">Conferir registro na base oficial</h3>
+                            {% if integracao_ativa %}
+                                <p class="small text-muted">
+                                    Antes de concluir, você pode consultar a API oficial do CREA-AM para
+                                    conferir o registro localizado. A validação também é feita
+                                    automaticamente ao concluir o cadastro.
+                                </p>
+                                <button type="button" class="btn btn-outline-primary btn-sm" id="verificar-crea">
+                                    <i class="bi bi-search" aria-hidden="true"></i>
+                                    Consultar meu registro no CREA-AM
+                                </button>
+                                <div id="resultado-crea" hidden></div>
+                            {% else %}
+                                <div class="alert alert-warning small mb-0">
+                                    <strong>Integração não configurada nesta instalação.</strong>
+                                    O cadastro será criado normalmente, mas a validação do registro,
+                                    das ARTs e das CATs só ocorre com a URL e o token da API oficial
+                                    do desafio configurados. Você poderá validar depois, no seu perfil.
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                {# --- Senha ------------------------------------------------ #}
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h2 class="h6">3. Senha de acesso</h2>
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label obrigatorio" for="senha">Senha</label>
+                                <input type="password" class="form-control {{ erros.senha is defined ? 'is-invalid' : '' }}"
+                                       id="senha" name="senha" autocomplete="new-password" required>
+                                <div class="form-text">
+                                    Ao menos 8 caracteres, combinando três entre: minúscula, maiúscula,
+                                    número e símbolo.
+                                </div>
+                                {% include 'partials/campo-erro.twig' with { campo: 'senha', erros: erros } only %}
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label obrigatorio" for="senha_confirmacao">Repetir a senha</label>
+                                <input type="password" class="form-control {{ erros.senha_confirmacao is defined ? 'is-invalid' : '' }}"
+                                       id="senha_confirmacao" name="senha_confirmacao" autocomplete="new-password" required>
+                                {% include 'partials/campo-erro.twig' with { campo: 'senha_confirmacao', erros: erros } only %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {# --- Consentimentos (LGPD) -------------------------------- #}
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h2 class="h6">4. Termos e tratamento de dados</h2>
+
+                        <div class="form-check mb-2">
+                            <input class="form-check-input {{ erros.aceite_termos is defined ? 'is-invalid' : '' }}"
+                                   type="checkbox" name="aceite_termos" value="1" id="aceite_termos"
+                                   {{ formulario.aceite_termos|default('') ? 'checked' : '' }} required>
+                            <label class="form-check-label" for="aceite_termos">
+                                Li e aceito os
+                                <a href="{{ url('/termos-de-uso') }}" target="_blank" rel="noopener">Termos de Uso</a>
+                                {% if termos_uso %}(versão {{ termos_uso.ter_versao }}){% endif %}
+                            </label>
+                            {% include 'partials/campo-erro.twig' with { campo: 'aceite_termos', erros: erros } only %}
+                        </div>
+
+                        <div class="form-check mb-2">
+                            <input class="form-check-input {{ erros.aceite_privacidade is defined ? 'is-invalid' : '' }}"
+                                   type="checkbox" name="aceite_privacidade" value="1" id="aceite_privacidade"
+                                   {{ formulario.aceite_privacidade|default('') ? 'checked' : '' }} required>
+                            <label class="form-check-label" for="aceite_privacidade">
+                                Li e aceito a
+                                <a href="{{ url('/politica-de-privacidade') }}" target="_blank" rel="noopener">Política de Privacidade</a>
+                                {% if politica %}(versão {{ politica.ter_versao }}){% endif %}
+                            </label>
+                            {% include 'partials/campo-erro.twig' with { campo: 'aceite_privacidade', erros: erros } only %}
+                        </div>
+
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" name="aceite_comunicacoes"
+                                   value="1" id="aceite_comunicacoes" checked>
+                            <label class="form-check-label" for="aceite_comunicacoes">
+                                Aceito receber por e-mail avisos sobre demandas compatíveis e movimentações
+                                das minhas oportunidades <span class="text-muted">(opcional, revogável a qualquer momento)</span>
+                            </label>
+                        </div>
+
+                        <div class="alert alert-secondary small mb-0" data-bloco-crea>
+                            Ao se cadastrar como registrado no CREA-AM, você autoriza a consulta dos seus
+                            dados de registro, ARTs e CATs na base oficial do Conselho, para compor seu
+                            portfólio. Essa autorização pode ser revogada no painel de privacidade.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex flex-wrap gap-2">
+                    <button type="submit" class="btn btn-primary">Concluir cadastro</button>
+                    <a class="btn btn-outline-secondary" href="{{ url('/entrar') }}">Já tenho cadastro</a>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

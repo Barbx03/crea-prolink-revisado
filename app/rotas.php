@@ -33,3 +33,18 @@ $roteador->get('/sobre',                   'ControladorPagina', 'sobre');
 $roteador->get('/termos-de-uso',           'ControladorPagina', 'termosDeUso');
 $roteador->get('/politica-de-privacidade', 'ControladorPagina', 'politicaDePrivacidade');
 $roteador->get('/acessibilidade',          'ControladorPagina', 'acessibilidade');
+
+// -----------------------------------------------------------------------------
+// Autenticação e recuperação de acesso (RF01)
+// -----------------------------------------------------------------------------
+$roteador->get('/entrar',                     'ControladorAutenticacao', 'formularioEntrar');
+$roteador->post('/entrar',                    'ControladorAutenticacao', 'entrar');
+$roteador->post('/sair',                      'ControladorAutenticacao', 'sair', $TODOS_AUTENTICADOS);
+$roteador->get('/cadastrar',                  'ControladorAutenticacao', 'formularioCadastro');
+$roteador->post('/cadastrar',                 'ControladorAutenticacao', 'cadastrar');
+$roteador->post('/cadastrar/verificar-crea',  'ControladorAutenticacao', 'verificarNaApi');
+$roteador->get('/recuperar-acesso',           'ControladorAutenticacao', 'formularioRecuperacao');
+$roteador->post('/recuperar-acesso',          'ControladorAutenticacao', 'solicitarRecuperacao');
+$roteador->get('/redefinir-senha/{token}',    'ControladorAutenticacao', 'formularioRedefinicao');
+$roteador->post('/redefinir-senha',           'ControladorAutenticacao', 'redefinirSenha');
+$roteador->get('/verificar-email/{token}',    'ControladorAutenticacao', 'verificarEmail');
