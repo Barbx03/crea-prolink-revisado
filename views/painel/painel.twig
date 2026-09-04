@@ -1,0 +1,341 @@
+{% extends 'layout/base.twig' %}
+
+{% block titulo %}Meu painel | {{ app.nome }}{% endblock %}
+{% block robots %}noindex, nofollow{% endblock %}
+
+{% block conteudo %}
+    <div class="d-flex flex-wrap justify-content-between align-items-end gap-2 mb-4">
+        <div>
+            <h1 class="h4 mb-1">Olá, {{ usuario.usu_nome|split(' ')|first }}</h1>
+            <p class="text-muted small mb-0">
+                {{ usuario.usu_perfil|rotulo }}
+                {% if usuario.usu_registrado_crea == 'S' %}
+                    · registro validado no CREA-AM{% if usuario.usu_rnp %} (RNP {{ usuario.usu_rnp }}){% endif %}
+                {% endif %}
+                {% if usuario.usu_dt_ultimo_acesso %}
+                    · último acesso {{ usuario.usu_dt_ultimo_acesso|desde }}
+                {% endif %}
+            </p>
+        </div>
+
+        <div class="d-flex flex-wrap gap-2">
+            {% if tem_perfil('EMPRESA', 'TERCEIRO') %}
+                <a class="btn btn-primary btn-sm" href="{{ url('/demandas/nova') }}">
+                    <i class="bi bi-plus-lg" aria-hidden="true"></i> Publicar demanda
+                </a>
+            {% endif %}
+            {% if tem_perfil('PROFISSIONAL', 'EMPRESA') %}
+                <a class="btn btn-outline-primary btn-sm" href="{{ url('/demandas') }}">Buscar oportunidades</a>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if tem_perfil('PROFISSIONAL', 'EMPRESA') %}
+        {% if usuario.usu_registrado_crea != 'S' %}
+            <div class="alert alert-warning d-flex flex-wrap justify-content-between align-items-center gap-2">
+                <span>
+                    <strong>Seu registro no CREA-AM ainda não foi validado.</strong>
+                    Sem a validação, você não aparece com o selo de registrado e não pode
+                    associar ARTs ao portfólio.
+                </span>
+                <a class="btn btn-sm btn-warning" href="{{ url('/meu-perfil/registro-crea') }}">
+                    Validar meu registro
+                </a>
+            </div>
+        {% endif %}
+
+        {% if completude is defined and completude < 60 %}
+            <div class="alert alert-info d-flex flex-wrap justify-content-between align-items-center gap-2">
+                <span>
+                    <strong>Seu perfil está {{ completude }}% completo.</strong>
+                    Perfis completos aparecem melhor posicionados nas correspondências.
+                </span>
+                <a class="btn btn-sm btn-outline-primary" href="{{ url('/meu-perfil/editar') }}">
+                    Completar perfil
+                </a>
+            </div>
+        {% endif %}
+    {% endif %}
+
+    <div class="row g-4">
+        <div class="col-lg-8">
+            {% if tem_perfil('PROFISSIONAL', 'EMPRESA') %}
+                <section class="card mb-4">
+                    <div class="card-header card-cabecalho-simples d-flex justify-content-between align-items-center">
+                        <span>Oportunidades compatíveis com seu perfil</span>
+                        <a class="small" href="{{ url('/demandas') }}">Ver todas as demandas</a>
+                    </div>
+                    <div class="card-body">
+                        {% if recomendadas is empty %}
+                            <p class="text-muted small mb-0">
+                                Nenhuma demanda aberta atinge a aderência mínima com seu perfil neste momento.
+                                Declarar mais competências e associar ARTs amplia as correspondências.
+                            </p>
+                        {% else %}
+                            {% for demanda in recomendadas %}
+                                <div class="{{ not loop.first ? 'border-top pt-3 mt-3' : '' }}">
+                                    <div class="d-flex flex-wrap justify-content-between gap-2 mb-2">
+                                        <h3 class="h6 mb-0">
+                                            <a href="{{ url('/demandas/' ~ demanda.dem_id) }}">{{ demanda.dem_titulo }}</a>
+                                        </h3>
+                                        <span class="small text-muted">
+                                            {{ demanda.dem_cidade }}{{ demanda.dem_cidade and demanda.dem_uf ? '/' : '' }}{{ demanda.dem_uf }}
+                                            {% if demanda.dem_dt_limite %} · até {{ demanda.dem_dt_limite|data }}{% endif %}
+                                        </span>
+                                    </div>
+
+                                    {% include 'partials/aderencia.twig' with {
+                                        avaliacao: demanda.avaliacao,
+                                        compacto: true
+                                    } only %}
+
+                                    <div class="mt-2">
+                                        <a class="btn btn-sm btn-outline-primary" href="{{ url('/demandas/' ~ demanda.dem_id) }}">
+                                            Ver critérios e manifestar interesse
+                                        </a>
+                                    </div>
+                                </div>
+                            {% endfor %}
+
+                            <p class="small text-muted mt-3 mb-0">
+                                Pesos vigentes no cálculo:
+                                {% for chave, peso in pesos_matching %}
+                                    {{ chave|replace({'_': ' '}) }} {{ peso }}{{ not loop.last ? ' · ' : '' }}
+                                {% endfor %}
+                            </p>
+                        {% endif %}
+                    </div>
+                </section>
+
+                <section class="card mb-4">
+                    <div class="card-header card-cabecalho-simples d-flex justify-content-between align-items-center">
+                        <span>Minhas manifestações de interesse</span>
+                        <a class="small" href="{{ url('/meus-interesses') }}">Ver todas</a>
+                    </div>
+                    <div class="card-body">
+                        {% if meus_interesses is empty %}
+                            <p class="text-muted small mb-0">Você ainda não manifestou interesse em nenhuma demanda.</p>
+                        {% else %}
+                            <div class="table-responsive">
+                                <table class="table table-sm align-middle mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Demanda</th>
+                                            <th scope="col">Aderência</th>
+                                            <th scope="col">Situação</th>
+                                            <th scope="col">Enviada</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for interesse in meus_interesses %}
+                                            <tr>
+                                                <td>
+                                                    <a href="{{ url('/demandas/' ~ interesse.dem_id) }}">
+                                                        {{ interesse.dem_titulo }}
+                                                    </a>
+                                                </td>
+                                                <td>{{ interesse.int_aderencia ? interesse.int_aderencia|number_format(0) ~ '%' : '—' }}</td>
+                                                <td><span class="badge text-bg-light border">{{ interesse.int_situacao|rotulo }}</span></td>
+                                                <td class="small text-muted">{{ interesse.int_dt_registro|desde }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% endif %}
+                    </div>
+                </section>
+            {% endif %}
+
+            {% if tem_perfil('EMPRESA', 'TERCEIRO') %}
+                <section class="card mb-4">
+                    <div class="card-header card-cabecalho-simples d-flex justify-content-between align-items-center">
+                        <span>Minhas demandas</span>
+                        <a class="small" href="{{ url('/minhas-demandas') }}">Ver todas</a>
+                    </div>
+                    <div class="card-body">
+                        {% if minhas_demandas is empty %}
+                            <p class="text-muted small mb-3">
+                                Você ainda não publicou demandas. Ao publicar, a plataforma calcula
+                                automaticamente os perfis mais aderentes e avisa os profissionais compatíveis.
+                            </p>
+                            <a class="btn btn-primary btn-sm" href="{{ url('/demandas/nova') }}">
+                                Publicar minha primeira demanda
+                            </a>
+                        {% else %}
+                            <div class="table-responsive">
+                                <table class="table table-sm align-middle mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Demanda</th>
+                                            <th scope="col">Situação</th>
+                                            <th scope="col">Interessados</th>
+                                            <th scope="col">Prazo</th>
+                                            <th scope="col"><span class="visually-hidden">Ações</span></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for demanda in minhas_demandas %}
+                                            <tr>
+                                                <td>
+                                                    <a href="{{ url('/demandas/' ~ demanda.dem_id) }}">{{ demanda.dem_titulo }}</a>
+                                                </td>
+                                                <td><span class="badge text-bg-light border">{{ demanda.dem_situacao|rotulo }}</span></td>
+                                                <td>{{ demanda.dem_total_interesses }}</td>
+                                                <td class="small text-muted">
+                                                    {{ demanda.dem_dt_limite ? demanda.dem_dt_limite|data : 'sem prazo' }}
+                                                </td>
+                                                <td class="text-end">
+                                                    <a class="btn btn-sm btn-outline-primary"
+                                                       href="{{ url('/demandas/' ~ demanda.dem_id ~ '/correspondencias') }}">
+                                                        Correspondências
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% endif %}
+                    </div>
+                </section>
+            {% endif %}
+        </div>
+
+        <div class="col-lg-4">
+            {% if tem_perfil('PROFISSIONAL', 'EMPRESA') and perfil is defined %}
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h2 class="h6">Meu perfil</h2>
+
+                        <div class="progress mb-2" role="progressbar" aria-valuenow="{{ completude }}"
+                             aria-valuemin="0" aria-valuemax="100" aria-label="Completude do perfil">
+                            <div class="progress-bar bg-marca" style="width: {{ completude }}%">{{ completude }}%</div>
+                        </div>
+
+                        <ul class="list-unstyled small mb-3">
+                            <li class="d-flex justify-content-between border-bottom py-1">
+                                <span>Competências</span><strong>{{ competencias|length }}</strong>
+                            </li>
+                            <li class="d-flex justify-content-between border-bottom py-1">
+                                <span>Experiências</span><strong>{{ total_experiencias }}</strong>
+                            </li>
+                            <li class="d-flex justify-content-between border-bottom py-1">
+                                <span>ARTs validadas</span><strong>{{ total_arts }}</strong>
+                            </li>
+                            <li class="d-flex justify-content-between py-1">
+                                <span>CATs validadas</span><strong>{{ total_cats }}</strong>
+                            </li>
+                        </ul>
+
+                        <div class="d-grid gap-2">
+                            <a class="btn btn-outline-primary btn-sm" href="{{ url('/meu-perfil') }}">Ver meu perfil</a>
+                            <a class="btn btn-outline-primary btn-sm" href="{{ url('/meu-perfil/registro-crea') }}">
+                                Registro e portfólio
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
+            {% if tem_perfil('EMPRESA', 'TERCEIRO') and total_demandas is defined %}
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h2 class="h6">Resumo das demandas</h2>
+                        <div class="row g-2 text-center">
+                            <div class="col-4">
+                                <div class="indicador">
+                                    <div class="valor">{{ total_demandas }}</div>
+                                    <div class="rotulo">Total</div>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="indicador">
+                                    <div class="valor">{{ demandas_publicadas }}</div>
+                                    <div class="rotulo">Abertas</div>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="indicador">
+                                    <div class="valor">{{ total_interesses_recebidos }}</div>
+                                    <div class="rotulo">Interesses</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
+            <div class="card mb-4">
+                <div class="card-header card-cabecalho-simples d-flex justify-content-between align-items-center">
+                    <span>Notificações</span>
+                    <a class="small" href="{{ url('/notificacoes') }}">
+                        Ver todas{{ nao_lidas > 0 ? ' (' ~ nao_lidas ~ ')' : '' }}
+                    </a>
+                </div>
+                <div class="card-body">
+                    {% if notificacoes is empty %}
+                        <p class="small text-muted mb-0">Nenhuma notificação por aqui.</p>
+                    {% else %}
+                        <ul class="list-unstyled mb-0">
+                            {% for notificacao in notificacoes %}
+                                <li class="{{ not loop.first ? 'border-top pt-2 mt-2' : '' }}">
+                                    <span class="small fw-semibold d-block">
+                                        {% if notificacao.not_lida == 'N' %}
+                                            <span class="badge text-bg-primary">nova</span>
+                                        {% endif %}
+                                        {{ notificacao.not_assunto }}
+                                    </span>
+                                    <span class="small text-muted">{{ notificacao.not_dt_registro|desde }}</span>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header card-cabecalho-simples d-flex justify-content-between align-items-center">
+                    <span>Mensagens</span>
+                    <a class="small" href="{{ url('/mensagens') }}">
+                        Abrir{{ mensagens > 0 ? ' (' ~ mensagens ~ ')' : '' }}
+                    </a>
+                </div>
+                <div class="card-body">
+                    {% if conversas is empty %}
+                        <p class="small text-muted mb-0">Nenhuma conversa iniciada.</p>
+                    {% else %}
+                        <ul class="list-unstyled mb-0">
+                            {% for conversa in conversas %}
+                                <li class="{{ not loop.first ? 'border-top pt-2 mt-2' : '' }}">
+                                    <a class="small fw-semibold" href="{{ url('/mensagens/' ~ conversa.cnv_id) }}">
+                                        {{ conversa.interlocutor_nome }}
+                                    </a>
+                                    {% if conversa.nao_lidas > 0 %}
+                                        <span class="badge text-bg-danger">{{ conversa.nao_lidas }}</span>
+                                    {% endif %}
+                                    <span class="small text-muted d-block">
+                                        {{ conversa.ultima_mensagem|default('sem mensagens')|slice(0, 60) }}
+                                    </span>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="h6">Meus dados</h2>
+                    <p class="small text-muted">
+                        Controle a visibilidade do seu perfil, os consentimentos e exerça seus
+                        direitos como titular de dados.
+                    </p>
+                    <a class="btn btn-outline-secondary btn-sm w-100" href="{{ url('/privacidade') }}">
+                        Painel de privacidade
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

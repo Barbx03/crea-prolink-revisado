@@ -48,3 +48,8 @@ $roteador->post('/recuperar-acesso',          'ControladorAutenticacao', 'solici
 $roteador->get('/redefinir-senha/{token}',    'ControladorAutenticacao', 'formularioRedefinicao');
 $roteador->post('/redefinir-senha',           'ControladorAutenticacao', 'redefinirSenha');
 $roteador->get('/verificar-email/{token}',    'ControladorAutenticacao', 'verificarEmail');
+
+// -----------------------------------------------------------------------------
+// Painel do usuário autenticado
+// -----------------------------------------------------------------------------
+$roteador->get('/painel', 'ControladorPainel', 'painel', $TODOS_AUTENTICADOS);
