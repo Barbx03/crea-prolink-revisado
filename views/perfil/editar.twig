@@ -1,0 +1,314 @@
+{% extends 'layout/base.twig' %}
+
+{% block titulo %}Editar perfil | {{ app.nome }}{% endblock %}
+{% block robots %}noindex, nofollow{% endblock %}
+
+{% block conteudo %}
+    <h1 class="h4 mb-1">Editar perfil</h1>
+    <p class="text-muted small mb-4">
+        As informações desta página compõem o que o público vê e o que a plataforma usa
+        para calcular a compatibilidade com as demandas.
+    </p>
+
+    <div class="row g-4">
+        <div class="col-lg-8">
+            {# --- Perfil profissional -------------------------------------- #}
+            <form method="post" action="{{ url('/meu-perfil') }}" class="card mb-4" novalidate>
+                {{ campo_csrf() }}
+                <div class="card-body">
+                    <h2 class="h6">Perfil profissional</h2>
+
+                    <div class="mb-3">
+                        <label class="form-label" for="titulo">Título profissional</label>
+                        <input type="text" class="form-control {{ erros.titulo is defined ? 'is-invalid' : '' }}"
+                               id="titulo" name="titulo" maxlength="150"
+                               value="{{ formulario.titulo|default(perfil.prf_titulo|default('')) }}"
+                               placeholder="Ex.: Engenheira Civil — Estruturas e Fundações">
+                        <div class="form-text">Aparece logo abaixo do seu nome nas buscas.</div>
+                        {% include 'partials/campo-erro.twig' with { campo: 'titulo', erros: erros } only %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label" for="resumo">Resumo profissional</label>
+                        <textarea class="form-control" id="resumo" name="resumo" rows="6" maxlength="4000" data-contador
+                                  placeholder="Descreva sua formação, áreas de especialização e o tipo de trabalho que você conduz.">{{ formulario.resumo|default(perfil.prf_resumo|default('')) }}</textarea>
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label" for="area_id">Área principal</label>
+                            <select class="form-select" id="area_id" name="area_id">
+                                <option value="">Selecione</option>
+                                {% for area in areas %}
+                                    <option value="{{ area.are_id }}"
+                                        {{ (formulario.area_id|default(perfil.prf_are_id|default(''))) == area.are_id ? 'selected' : '' }}>
+                                        {{ area.are_nome }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label" for="disponibilidade">Disponibilidade</label>
+                            <select class="form-select" id="disponibilidade" name="disponibilidade">
+                                {% for valor in ['DISPONIVEL', 'PARCIAL', 'INDISPONIVEL'] %}
+                                    <option value="{{ valor }}"
+                                        {{ (formulario.disponibilidade|default(perfil.prf_disponibilidade|default('DISPONIVEL'))) == valor ? 'selected' : '' }}>
+                                        {{ valor|rotulo }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label" for="uf">UF de atuação</label>
+                            <select class="form-select" id="uf" name="uf" data-uf-origem>
+                                <option value="">Selecione</option>
+                                {% for uf in ufs %}
+                                    <option value="{{ uf }}"
+                                        {{ (formulario.uf|default(perfil.prf_uf|default(''))) == uf ? 'selected' : '' }}>
+                                        {{ uf }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="col-md-5">
+                            <label class="form-label" for="cidade">Município</label>
+                            <input type="text" class="form-control" id="cidade" name="cidade" maxlength="120"
+                                   list="lista-municipios"
+                                   value="{{ formulario.cidade|default(perfil.prf_cidade|default('')) }}">
+                            <datalist id="lista-municipios"></datalist>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label" for="raio_km">Raio de atuação (km)</label>
+                            <input type="number" class="form-control" id="raio_km" name="raio_km" min="0" max="5000"
+                                   value="{{ formulario.raio_km|default(perfil.prf_raio_atuacao_km|default('')) }}">
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label" for="anos_experiencia">Anos de experiência</label>
+                            <input type="number" class="form-control" id="anos_experiencia" name="anos_experiencia"
+                                   min="0" max="70"
+                                   value="{{ formulario.anos_experiencia|default(perfil.prf_anos_experiencia|default('')) }}">
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label" for="valor_hora">Valor-hora de referência</label>
+                            <input type="text" class="form-control" id="valor_hora" name="valor_hora"
+                                   inputmode="decimal" placeholder="0,00"
+                                   value="{{ formulario.valor_hora|default(perfil.prf_valor_hora|default('')) }}">
+                            <div class="form-text">Oculto por padrão; a exibição é opcional.</div>
+                        </div>
+
+                        <div class="col-md-4 d-flex align-items-end">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="atende_remoto" value="1"
+                                       id="atende_remoto"
+                                       {{ (formulario.atende_remoto|default(perfil.prf_atende_remoto|default('N') == 'S')) ? 'checked' : '' }}>
+                                <label class="form-check-label" for="atende_remoto">Atendo remotamente</label>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label" for="site">Site</label>
+                            <input type="url" class="form-control {{ erros.site is defined ? 'is-invalid' : '' }}"
+                                   id="site" name="site" maxlength="190" placeholder="https://"
+                                   value="{{ formulario.site|default(perfil.prf_site|default('')) }}">
+                            {% include 'partials/campo-erro.twig' with { campo: 'site', erros: erros } only %}
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label" for="linkedin">LinkedIn</label>
+                            <input type="url" class="form-control {{ erros.linkedin is defined ? 'is-invalid' : '' }}"
+                                   id="linkedin" name="linkedin" maxlength="190" placeholder="https://"
+                                   value="{{ formulario.linkedin|default(perfil.prf_linkedin|default('')) }}">
+                            {% include 'partials/campo-erro.twig' with { campo: 'linkedin', erros: erros } only %}
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary mt-3">Salvar perfil profissional</button>
+                </div>
+            </form>
+
+            {# --- Competências --------------------------------------------- #}
+            {% if tem_perfil('PROFISSIONAL', 'EMPRESA') %}
+                <form method="post" action="{{ url('/meu-perfil/competencias') }}" class="card mb-4" id="competencias">
+                    {{ campo_csrf() }}
+                    <div class="card-body">
+                        <h2 class="h6">Competências técnicas</h2>
+                        <p class="small text-muted">
+                            Selecione as competências em que você efetivamente atua. É por elas que
+                            seu perfil é comparado às demandas. Máximo de 30 competências.
+                        </p>
+
+                        {% include 'partials/competencias-selecao.twig' with {
+                            competencias: competencias,
+                            selecionadas: minhas_competencias,
+                            niveis: niveis_atuais
+                        } only %}
+
+                        <button type="submit" class="btn btn-primary mt-3">Salvar competências</button>
+                    </div>
+                </form>
+            {% endif %}
+
+            {# --- Dados pessoais ------------------------------------------- #}
+            <form method="post" action="{{ url('/meu-perfil/dados-pessoais') }}" class="card mb-4" novalidate>
+                {{ campo_csrf() }}
+                <div class="card-body">
+                    <h2 class="h6">Dados cadastrais</h2>
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label obrigatorio" for="nome">
+                                {{ usuario.usu_tipo_pessoa == 'PJ' ? 'Razão social' : 'Nome completo' }}
+                            </label>
+                            <input type="text" class="form-control {{ erros.nome is defined ? 'is-invalid' : '' }}"
+                                   id="nome" name="nome" maxlength="150" required
+                                   value="{{ formulario.nome|default(usuario.usu_nome) }}">
+                            {% include 'partials/campo-erro.twig' with { campo: 'nome', erros: erros } only %}
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label" for="email_cadastro">E-mail de acesso</label>
+                            <input type="email" class="form-control {{ erros.email is defined ? 'is-invalid' : '' }}"
+                                   id="email_cadastro" name="email" maxlength="190"
+                                   value="{{ formulario.email|default(usuario.usu_email) }}">
+                            <div class="form-text">Alterar o e-mail exige confirmar a senha atual abaixo.</div>
+                            {% include 'partials/campo-erro.twig' with { campo: 'email', erros: erros } only %}
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label" for="telefone">Telefone</label>
+                            <input type="tel" class="form-control" id="telefone" name="telefone" maxlength="20"
+                                   value="{{ formulario.telefone|default(usuario.usu_telefone|default('')) }}">
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label" for="uf_cadastro">UF</label>
+                            <select class="form-select" id="uf_cadastro" name="uf">
+                                <option value="">Selecione</option>
+                                {% for uf in ufs %}
+                                    <option value="{{ uf }}" {{ usuario.usu_uf == uf ? 'selected' : '' }}>{{ uf }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="col-md-5">
+                            <label class="form-label" for="cidade_cadastro">Cidade</label>
+                            <input type="text" class="form-control" id="cidade_cadastro" name="cidade" maxlength="120"
+                                   value="{{ usuario.usu_cidade|default('') }}">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label" for="senha_atual_email">Senha atual</label>
+                            <input type="password" class="form-control {{ erros.senha_atual is defined ? 'is-invalid' : '' }}"
+                                   id="senha_atual_email" name="senha_atual" autocomplete="current-password">
+                            <div class="form-text">Obrigatória somente se você estiver alterando o e-mail.</div>
+                            {% include 'partials/campo-erro.twig' with { campo: 'senha_atual', erros: erros } only %}
+                        </div>
+                    </div>
+
+                    <div class="alert alert-secondary small mt-3 mb-3">
+                        Documento, RNP e situação de registro vêm da base oficial do CREA-AM e não são
+                        editáveis aqui. Divergências devem ser corrigidas junto ao Conselho.
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Salvar dados cadastrais</button>
+                </div>
+            </form>
+
+            {# --- Senha ---------------------------------------------------- #}
+            <form method="post" action="{{ url('/meu-perfil/senha') }}" class="card mb-4" novalidate>
+                {{ campo_csrf() }}
+                <div class="card-body">
+                    <h2 class="h6">Alterar senha</h2>
+
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label obrigatorio" for="senha_atual">Senha atual</label>
+                            <input type="password" class="form-control" id="senha_atual" name="senha_atual"
+                                   autocomplete="current-password" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label obrigatorio" for="senha">Nova senha</label>
+                            <input type="password" class="form-control" id="senha" name="senha"
+                                   autocomplete="new-password" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label obrigatorio" for="senha_confirmacao">Repetir nova senha</label>
+                            <input type="password" class="form-control" id="senha_confirmacao"
+                                   name="senha_confirmacao" autocomplete="new-password" required>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-outline-primary mt-3">Alterar senha</button>
+                </div>
+            </form>
+        </div>
+
+        {# --- Coluna lateral: foto ------------------------------------- #}
+        <div class="col-lg-4">
+            <div class="card mb-4">
+                <div class="card-body text-center">
+                    <h2 class="h6 text-start">Foto do perfil</h2>
+
+                    <img src="{{ perfil.prf_foto ? url('uploads/' ~ perfil.prf_foto) : asset('img/perfil-sem-foto.svg') }}"
+                         alt="Foto atual do perfil" width="120" height="120"
+                         class="rounded-circle border my-3" style="object-fit: cover;">
+
+                    <form method="post" action="{{ url('/meu-perfil/foto') }}" enctype="multipart/form-data">
+                        {{ campo_csrf() }}
+                        <div class="mb-2 text-start">
+                            <label class="form-label" for="foto">Enviar nova imagem</label>
+                            <input type="file" class="form-control form-control-sm" id="foto" name="foto"
+                                   accept="image/jpeg,image/png,image/webp" required>
+                            <div class="form-text">JPEG, PNG ou WebP, até 2 MB.</div>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-sm w-100">Enviar foto</button>
+                    </form>
+
+                    {% if perfil.prf_foto %}
+                        <form method="post" action="{{ url('/meu-perfil/foto/remover') }}" class="mt-2"
+                              data-confirmar="Remover a foto do seu perfil?">
+                            {{ campo_csrf() }}
+                            <button type="submit" class="btn btn-outline-danger btn-sm w-100">Remover foto</button>
+                        </form>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h2 class="h6">Completude</h2>
+                    <div class="progress mb-2" role="progressbar" aria-valuenow="{{ completude }}"
+                         aria-valuemin="0" aria-valuemax="100" aria-label="Completude do perfil">
+                        <div class="progress-bar bg-marca" style="width: {{ completude }}%">{{ completude }}%</div>
+                    </div>
+                    <p class="small text-muted mb-0">
+                        Perfis completos aparecem melhor posicionados nas correspondências das demandas.
+                    </p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="h6">Outras seções</h2>
+                    <div class="d-grid gap-2">
+                        <a class="btn btn-outline-primary btn-sm" href="{{ url('/meu-perfil/registro-crea') }}">
+                            Registro e portfólio (ARTs e CATs)
+                        </a>
+                        <a class="btn btn-outline-primary btn-sm" href="{{ url('/meu-perfil/experiencias/nova') }}">
+                            Adicionar experiência
+                        </a>
+                        <a class="btn btn-outline-secondary btn-sm" href="{{ url('/privacidade') }}">
+                            Privacidade e visibilidade
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

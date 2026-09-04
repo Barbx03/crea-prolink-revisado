@@ -53,3 +53,14 @@ $roteador->get('/verificar-email/{token}',    'ControladorAutenticacao', 'verifi
 // Painel do usuário autenticado
 // -----------------------------------------------------------------------------
 $roteador->get('/painel', 'ControladorPainel', 'painel', $TODOS_AUTENTICADOS);
+
+// -----------------------------------------------------------------------------
+// Perfil, portfólio e privacidade do titular (RF01 e RF03)
+// -----------------------------------------------------------------------------
+$roteador->get('/meu-perfil',                  'ControladorPerfil', 'ver',                  $TODOS_AUTENTICADOS);
+$roteador->get('/meu-perfil/editar',           'ControladorPerfil', 'formularioEdicao',     $TODOS_AUTENTICADOS);
+$roteador->post('/meu-perfil',                 'ControladorPerfil', 'salvar',               $TODOS_AUTENTICADOS);
+$roteador->post('/meu-perfil/foto',            'ControladorPerfil', 'enviarFoto',           $TODOS_AUTENTICADOS);
+$roteador->post('/meu-perfil/foto/remover',    'ControladorPerfil', 'removerFoto',          $TODOS_AUTENTICADOS);
+$roteador->post('/meu-perfil/dados-pessoais',  'ControladorPerfil', 'salvarDadosPessoais',  $TODOS_AUTENTICADOS);
+$roteador->post('/meu-perfil/senha',           'ControladorPerfil', 'alterarSenha',         $TODOS_AUTENTICADOS);

@@ -1,0 +1,249 @@
+{% extends 'layout/base.twig' %}
+
+{% block titulo %}Meu perfil | {{ app.nome }}{% endblock %}
+{% block robots %}noindex, nofollow{% endblock %}
+
+{% block conteudo %}
+    <div class="d-flex flex-wrap justify-content-between align-items-end gap-2 mb-4">
+        <div>
+            <h1 class="h4 mb-1">Meu perfil</h1>
+            <p class="text-muted small mb-0">
+                {{ usuario.usu_perfil|rotulo }} ·
+                {% if usuario.usu_registrado_crea == 'S' %}
+                    registro validado no CREA-AM
+                {% else %}
+                    cadastro sem registro validado
+                {% endif %}
+            </p>
+        </div>
+
+        <div class="d-flex flex-wrap gap-2">
+            <a class="btn btn-primary btn-sm" href="{{ url('/meu-perfil/editar') }}">Editar perfil</a>
+            {% if perfil %}
+                <a class="btn btn-outline-primary btn-sm" href="{{ url('/profissionais/' ~ perfil.prf_id) }}">
+                    Ver como o público vê
+                </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="d-flex flex-wrap gap-3">
+                        <img src="{{ perfil.prf_foto ? url('uploads/' ~ perfil.prf_foto) : asset('img/perfil-sem-foto.svg') }}"
+                             alt="" width="80" height="80" class="rounded-circle border" style="object-fit: cover;">
+
+                        <div class="flex-grow-1">
+                            <h2 class="h5 mb-1">{{ usuario.usu_nome }}</h2>
+                            {% if perfil.prf_titulo %}
+                                <p class="fw-semibold text-marca mb-1">{{ perfil.prf_titulo }}</p>
+                            {% else %}
+                                <p class="text-muted fst-italic mb-1">Título profissional não informado</p>
+                            {% endif %}
+
+                            <dl class="row small mb-0">
+                                <dt class="col-sm-4">E-mail</dt>
+                                <dd class="col-sm-8">{{ usuario.usu_email }}</dd>
+
+                                {% if usuario.usu_telefone %}
+                                    <dt class="col-sm-4">Telefone</dt>
+                                    <dd class="col-sm-8">{{ usuario.usu_telefone|telefone }}</dd>
+                                {% endif %}
+
+                                {% if usuario.usu_cpf or usuario.usu_cnpj %}
+                                    <dt class="col-sm-4">Documento</dt>
+                                    <dd class="col-sm-8">{{ (usuario.usu_cpf ?: usuario.usu_cnpj)|documento }}</dd>
+                                {% endif %}
+
+                                {% if usuario.usu_rnp %}
+                                    <dt class="col-sm-4">RNP</dt>
+                                    <dd class="col-sm-8">{{ usuario.usu_rnp }}</dd>
+                                {% endif %}
+
+                                <dt class="col-sm-4">Localização</dt>
+                                <dd class="col-sm-8">
+                                    {% if perfil.prf_cidade or perfil.prf_uf %}
+                                        {{ perfil.prf_cidade }}{{ perfil.prf_cidade and perfil.prf_uf ? ' — ' : '' }}{{ perfil.prf_uf }}
+                                    {% else %}
+                                        <span class="text-muted fst-italic">não informada</span>
+                                    {% endif %}
+                                </dd>
+
+                                <dt class="col-sm-4">Disponibilidade</dt>
+                                <dd class="col-sm-8">{{ perfil.prf_disponibilidade|rotulo }}</dd>
+
+                                <dt class="col-sm-4">Visibilidade do perfil</dt>
+                                <dd class="col-sm-8">
+                                    {{ perfil.prf_visibilidade|rotulo }}
+                                    <a class="small ms-1" href="{{ url('/privacidade') }}">alterar</a>
+                                </dd>
+                            </dl>
+                        </div>
+                    </div>
+
+                    {% if perfil.prf_resumo %}
+                        <div class="border-top mt-3 pt-3">
+                            <h3 class="h6">Resumo profissional</h3>
+                            <p class="mb-0 small" style="white-space: pre-line;">{{ perfil.prf_resumo }}</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header card-cabecalho-simples d-flex justify-content-between align-items-center">
+                    <span>Competências declaradas ({{ competencias|length }})</span>
+                    <a class="small" href="{{ url('/meu-perfil/editar') }}#competencias">Gerenciar</a>
+                </div>
+                <div class="card-body">
+                    {% if competencias is empty %}
+                        <p class="small text-muted mb-0">
+                            Nenhuma competência declarada. Sem competências, seu perfil não entra nas
+                            correspondências das demandas.
+                        </p>
+                    {% else %}
+                        {% for competencia in competencias %}
+                            <span class="etiqueta-competencia">
+                                {{ competencia.cmp_nome }}
+                                <span class="text-muted">({{ competencia.pcp_nivel|rotulo|lower }})</span>
+                            </span>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header card-cabecalho-simples d-flex justify-content-between align-items-center">
+                    <span>Experiência profissional ({{ experiencias|length }})</span>
+                    <a class="btn btn-sm btn-outline-primary" href="{{ url('/meu-perfil/experiencias/nova') }}">
+                        Adicionar experiência
+                    </a>
+                </div>
+                <div class="card-body">
+                    {% if experiencias is empty %}
+                        <p class="small text-muted mb-0">
+                            Nenhuma experiência publicada. Experiências vinculadas a ARTs validadas
+                            aparecem marcadas como comprovadas.
+                        </p>
+                    {% else %}
+                        {% for experiencia in experiencias %}
+                            <div class="{{ not loop.first ? 'border-top pt-3 mt-3' : '' }}">
+                                <div class="d-flex flex-wrap justify-content-between gap-2">
+                                    <h3 class="h6 mb-1">{{ experiencia.exp_titulo }}</h3>
+                                    <div class="d-flex flex-wrap gap-1">
+                                        {% if experiencia.exp_comprovada == 'S' %}
+                                            <span class="selo-registrado">
+                                                <i class="bi bi-patch-check-fill" aria-hidden="true"></i> Comprovada
+                                            </span>
+                                        {% else %}
+                                            <span class="selo-nao-registrado">Declarada</span>
+                                        {% endif %}
+                                        {% if experiencia.exp_visivel != 'S' %}
+                                            <span class="badge text-bg-secondary">oculta</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+
+                                <p class="small text-muted mb-2">
+                                    {{ experiencia.exp_organizacao }}
+                                    {% if experiencia.exp_dt_inicio %}
+                                        · {{ experiencia.exp_dt_inicio|data('m/Y') }}
+                                        {% if experiencia.exp_atual == 'S' %}
+                                            até o momento
+                                        {% elseif experiencia.exp_dt_fim %}
+                                            a {{ experiencia.exp_dt_fim|data('m/Y') }}
+                                        {% endif %}
+                                    {% endif %}
+                                </p>
+
+                                {% if experiencia.competencias is not empty %}
+                                    <div class="mb-2">
+                                        {% for competencia in experiencia.competencias %}
+                                            <span class="etiqueta-competencia">{{ competencia.cmp_nome }}</span>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+
+                                <div class="d-flex flex-wrap gap-2">
+                                    <a class="btn btn-sm btn-outline-secondary"
+                                       href="{{ url('/meu-perfil/experiencias/' ~ experiencia.exp_id) }}">
+                                        Editar
+                                    </a>
+                                    <form method="post"
+                                          action="{{ url('/meu-perfil/experiencias/' ~ experiencia.exp_id ~ '/remover') }}"
+                                          data-confirmar="Remover esta experiência do seu perfil?">
+                                        {{ campo_csrf() }}
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">Remover</button>
+                                    </form>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h2 class="h6">Completude do perfil</h2>
+                    <div class="progress mb-2" role="progressbar" aria-valuenow="{{ completude }}"
+                         aria-valuemin="0" aria-valuemax="100" aria-label="Completude do perfil">
+                        <div class="progress-bar bg-marca" style="width: {{ completude }}%">{{ completude }}%</div>
+                    </div>
+                    <ul class="small list-unstyled mb-0">
+                        <li>{{ perfil.prf_titulo ? '✓' : '○' }} Título profissional</li>
+                        <li>{{ perfil.prf_resumo and perfil.prf_resumo|length >= 80 ? '✓' : '○' }} Resumo com ao menos 80 caracteres</li>
+                        <li>{{ perfil.prf_are_id ? '✓' : '○' }} Área principal</li>
+                        <li>{{ perfil.prf_uf and perfil.prf_cidade ? '✓' : '○' }} Localização</li>
+                        <li>{{ competencias is not empty ? '✓' : '○' }} Competências declaradas</li>
+                        <li>{{ experiencias is not empty ? '✓' : '○' }} Experiência publicada</li>
+                        <li>{{ arts is not empty ? '✓' : '○' }} ART associada</li>
+                        <li>{{ perfil.prf_foto ? '✓' : '○' }} Foto do perfil</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header card-cabecalho-simples d-flex justify-content-between align-items-center">
+                    <span>Acervo técnico</span>
+                    <a class="small" href="{{ url('/meu-perfil/registro-crea') }}">Gerenciar</a>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled small mb-3">
+                        <li class="d-flex justify-content-between border-bottom py-1">
+                            <span>ARTs associadas</span><strong>{{ arts|length }}</strong>
+                        </li>
+                        <li class="d-flex justify-content-between py-1">
+                            <span>CATs obtidas</span><strong>{{ cats|length }}</strong>
+                        </li>
+                    </ul>
+
+                    {% if usuario.usu_registrado_crea != 'S' %}
+                        <div class="alert alert-warning small mb-0">
+                            Valide seu registro na API oficial para poder associar ARTs e CATs.
+                            <a class="d-block mt-1" href="{{ url('/meu-perfil/registro-crea') }}">Validar agora</a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="h6">Privacidade</h2>
+                    <ul class="list-unstyled small mb-3">
+                        <li>Contato visível: <strong>{{ perfil.prf_exibe_contato == 'S' ? 'sim' : 'não' }}</strong></li>
+                        <li>Documento visível: <strong>{{ perfil.prf_exibe_documento == 'S' ? 'sim' : 'não' }}</strong></li>
+                        <li>RNP visível: <strong>{{ perfil.prf_exibe_rnp == 'S' ? 'sim' : 'não' }}</strong></li>
+                        <li>Aceita contato: <strong>{{ perfil.prf_aceita_contato == 'S' ? 'sim' : 'não' }}</strong></li>
+                    </ul>
+                    <a class="btn btn-outline-secondary btn-sm w-100" href="{{ url('/privacidade') }}">
+                        Painel de privacidade
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
