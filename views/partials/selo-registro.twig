@@ -1,0 +1,13 @@
+{# Distinção entre registrado no CREA-AM e não registrado.
+   O Termo de Referência exige preservar essa distinção em toda a interface. #}
+{% if registrado == 'S' %}
+    <span class="selo-registrado" title="Registro validado junto à base oficial do CREA-AM">
+        <i class="bi bi-patch-check-fill" aria-hidden="true"></i>
+        Registrado no CREA-AM
+    </span>
+{% else %}
+    <span class="selo-nao-registrado" title="Cadastro próprio da plataforma, sem registro no CREA-AM">
+        <i class="bi bi-person" aria-hidden="true"></i>
+        Não registrado
+    </span>
+{% endif %}

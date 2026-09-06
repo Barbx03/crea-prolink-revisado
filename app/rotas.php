@@ -64,3 +64,7 @@ $roteador->post('/meu-perfil/foto',            'ControladorPerfil', 'enviarFoto'
 $roteador->post('/meu-perfil/foto/remover',    'ControladorPerfil', 'removerFoto',          $TODOS_AUTENTICADOS);
 $roteador->post('/meu-perfil/dados-pessoais',  'ControladorPerfil', 'salvarDadosPessoais',  $TODOS_AUTENTICADOS);
 $roteador->post('/meu-perfil/senha',           'ControladorPerfil', 'alterarSenha',         $TODOS_AUTENTICADOS);
+
+// Validação do registro na API oficial (RF02)
+$roteador->get('/meu-perfil/registro-crea',    'ControladorPortfolio', 'painelIntegracao', $TODOS_AUTENTICADOS);
+$roteador->post('/meu-perfil/registro-crea',   'ControladorPortfolio', 'validarRegistro',  $TODOS_AUTENTICADOS);

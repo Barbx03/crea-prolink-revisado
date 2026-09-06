@@ -1,0 +1,300 @@
+{% extends 'layout/base.twig' %}
+
+{% block titulo %}Registro e portfólio | {{ app.nome }}{% endblock %}
+{% block robots %}noindex, nofollow{% endblock %}
+
+{% block conteudo %}
+    <h1 class="h4 mb-1">Registro no CREA-AM e portfólio técnico</h1>
+    <p class="text-muted small mb-4">
+        Tudo nesta página vem da API oficial do CREA-AM. Registro, ARTs e CATs não podem ser
+        digitados na plataforma: são consultados na base institucional e apenas espelhados aqui.
+    </p>
+
+    {% if not integracao_ativa %}
+        <div class="alert alert-warning">
+            <strong>Integração com a API oficial não configurada nesta instalação.</strong>
+            <p class="mb-0 mt-1 small">
+                Para validar registro, ARTs e CATs, é preciso informar a URL base e o token
+                individual do desafio, obtidos em
+                <a href="https://desafio-prolink.crea-am.org.br" target="_blank" rel="noopener">desafio-prolink.crea-am.org.br</a>,
+                no arquivo <code>.env</code> (<code>CREA_API_URL</code>, <code>CREA_API_TOKEN</code>,
+                <code>CREA_API_DRIVER=http</code>) ou pelo painel administrativo.
+            </p>
+        </div>
+    {% endif %}
+
+    {% if not consentimento_crea %}
+        <div class="alert alert-info d-flex flex-wrap justify-content-between align-items-center gap-2">
+            <span>
+                A consulta aos seus dados no CREA-AM depende da sua autorização expressa
+                para essa finalidade.
+            </span>
+            <a class="btn btn-sm btn-primary" href="{{ url('/privacidade') }}">Autorizar no painel de privacidade</a>
+        </div>
+    {% endif %}
+
+    <div class="row g-4">
+        <div class="col-lg-4">
+            {# --- Situação do registro --------------------------------- #}
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h2 class="h6">Situação do seu registro</h2>
+
+                    {% if usuario.usu_registrado_crea == 'S' %}
+                        <p class="mb-2">
+                            <span class="selo-registrado">
+                                <i class="bi bi-patch-check-fill" aria-hidden="true"></i> Registro validado
+                            </span>
+                        </p>
+                        <dl class="small mb-3">
+                            {% if usuario.usu_rnp %}
+                                <dt>RNP</dt>
+                                <dd>{{ usuario.usu_rnp }}</dd>
+                            {% endif %}
+                            <dt>Documento consultado</dt>
+                            <dd>{{ (usuario.usu_cpf ?: usuario.usu_cnpj)|documento }}</dd>
+                            <dt>Validado em</dt>
+                            <dd>{{ usuario.usu_dt_validacao|data_hora|default('—') }}</dd>
+                        </dl>
+                    {% else %}
+                        <p class="mb-2"><span class="selo-nao-registrado">Registro ainda não validado</span></p>
+                        <p class="small text-muted">
+                            Sem a validação você não recebe o selo de registrado, não pode associar
+                            ARTs e fica fora das demandas que exigem registro ativo.
+                        </p>
+                    {% endif %}
+
+                    <form method="post" action="{{ url('/meu-perfil/registro-crea') }}">
+                        {{ campo_csrf() }}
+
+                        <div class="mb-2">
+                            <label class="form-label small" for="documento">
+                                {{ usuario.usu_tipo_pessoa == 'PJ' ? 'CNPJ' : 'CPF' }} a validar
+                            </label>
+                            <input type="text" class="form-control form-control-sm" id="documento" name="documento"
+                                   value="{{ usuario.usu_cpf ?: usuario.usu_cnpj }}" inputmode="numeric">
+                            <div class="form-text">
+                                Só é possível validar o documento do próprio cadastro.
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-sm w-100"
+                                {{ integracao_ativa and consentimento_crea ? '' : 'disabled' }}>
+                            <i class="bi bi-shield-check" aria-hidden="true"></i>
+                            {{ usuario.usu_registrado_crea == 'S' ? 'Revalidar registro' : 'Validar meu registro' }}
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            {# --- Associar ART ----------------------------------------- #}
+            {% if tem_perfil('PROFISSIONAL', 'EMPRESA') %}
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h2 class="h6">Associar uma ART</h2>
+                        <p class="small text-muted">
+                            Informe o número da ART. A plataforma consulta a base oficial pelo seu RNP
+                            e associa ao portfólio somente o que for confirmado.
+                        </p>
+
+                        <form method="post" action="{{ url('/meu-perfil/arts') }}">
+                            {{ campo_csrf() }}
+                            <div class="mb-2">
+                                <label class="form-label small" for="numero_art">Número da ART</label>
+                                <input type="text" class="form-control form-control-sm" id="numero_art"
+                                       name="numero_art" maxlength="40" required
+                                       placeholder="Conforme consta no CREA-AM">
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-sm w-100"
+                                    {{ usuario.usu_registrado_crea == 'S' and integracao_ativa ? '' : 'disabled' }}>
+                                Consultar e associar
+                            </button>
+                        </form>
+
+                        {% if arts is not empty %}
+                            <form method="post" action="{{ url('/meu-perfil/arts/revalidar') }}" class="mt-2">
+                                {{ campo_csrf() }}
+                                <button type="submit" class="btn btn-outline-secondary btn-sm w-100"
+                                        {{ integracao_ativa ? '' : 'disabled' }}>
+                                    Revalidar todas as ARTs
+                                </button>
+                            </form>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-body">
+                        <h2 class="h6">Buscar minhas CATs</h2>
+                        <p class="small text-muted">
+                            As certidões de acervo técnico são obtidas pelo seu RNP. Informe um número
+                            específico ou deixe em branco para trazer todas.
+                        </p>
+
+                        <form method="post" action="{{ url('/meu-perfil/cats/sincronizar') }}">
+                            {{ campo_csrf() }}
+                            <div class="mb-2">
+                                <label class="form-label small" for="numero_cat">Número da CAT (opcional)</label>
+                                <input type="text" class="form-control form-control-sm" id="numero_cat"
+                                       name="numero_cat" maxlength="40">
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-sm w-100"
+                                    {{ usuario.usu_registrado_crea == 'S' and integracao_ativa ? '' : 'disabled' }}>
+                                Consultar CATs
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+
+        {# --- Portfólio ---------------------------------------------- #}
+        <div class="col-lg-8">
+            <div class="card mb-4">
+                <div class="card-header card-cabecalho-simples">
+                    Anotações de Responsabilidade Técnica
+                    <span class="badge text-bg-light border">{{ arts|length }}</span>
+                </div>
+                <div class="card-body">
+                    {% if arts is empty %}
+                        <p class="small text-muted mb-0">
+                            Nenhuma ART associada. As ARTs são a base do seu acervo comprovado e pesam
+                            no cálculo de compatibilidade com as demandas.
+                        </p>
+                    {% else %}
+                        {% for art in arts %}
+                            <article class="{{ not loop.first ? 'border-top pt-3 mt-3' : '' }}">
+                                <div class="d-flex flex-wrap justify-content-between gap-2">
+                                    <h3 class="h6 mb-1">
+                                        ART nº {{ art.art_numero }}
+                                        {% if art.art_validada == 'S' %}
+                                            <span class="selo-registrado ms-1">
+                                                <i class="bi bi-patch-check-fill" aria-hidden="true"></i> validada
+                                            </span>
+                                        {% endif %}
+                                    </h3>
+                                    <div>
+                                        {% if art.art_destaque == 'S' %}
+                                            <span class="badge text-bg-warning">destaque</span>
+                                        {% endif %}
+                                        {% if art.art_visivel == 'S' %}
+                                            <span class="badge text-bg-success">visível</span>
+                                        {% else %}
+                                            <span class="badge text-bg-secondary">oculta</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+
+                                <dl class="row small mb-2">
+                                    {% if art.art_objeto %}
+                                        <dt class="col-sm-3">Objeto</dt>
+                                        <dd class="col-sm-9">{{ art.art_objeto }}</dd>
+                                    {% endif %}
+                                    {% if art.art_contratante %}
+                                        <dt class="col-sm-3">Contratante</dt>
+                                        <dd class="col-sm-9">{{ art.art_contratante }}</dd>
+                                    {% endif %}
+                                    {% if art.art_municipio or art.art_uf %}
+                                        <dt class="col-sm-3">Local</dt>
+                                        <dd class="col-sm-9">
+                                            {{ art.art_municipio }}{{ art.art_municipio and art.art_uf ? '/' : '' }}{{ art.art_uf }}
+                                        </dd>
+                                    {% endif %}
+                                    {% if art.art_dt_inicio %}
+                                        <dt class="col-sm-3">Período</dt>
+                                        <dd class="col-sm-9">
+                                            {{ art.art_dt_inicio|data }}
+                                            {% if art.art_dt_fim %} a {{ art.art_dt_fim|data }}{% endif %}
+                                        </dd>
+                                    {% endif %}
+                                    {% if art.art_valor_contrato %}
+                                        <dt class="col-sm-3">Valor do contrato</dt>
+                                        <dd class="col-sm-9">{{ art.art_valor_contrato|moeda }}</dd>
+                                    {% endif %}
+                                    {% if art.art_situacao %}
+                                        <dt class="col-sm-3">Situação</dt>
+                                        <dd class="col-sm-9">{{ art.art_situacao }}</dd>
+                                    {% endif %}
+                                    <dt class="col-sm-3">Consultada em</dt>
+                                    <dd class="col-sm-9">{{ art.art_dt_validacao|data_hora }}</dd>
+                                </dl>
+
+                                <div class="d-flex flex-wrap gap-2">
+                                    <form method="post" action="{{ url('/meu-perfil/arts/' ~ art.art_id ~ '/visibilidade') }}">
+                                        {{ campo_csrf() }}
+                                        <button type="submit" class="btn btn-sm btn-outline-secondary">
+                                            {{ art.art_visivel == 'S' ? 'Ocultar do público' : 'Exibir ao público' }}
+                                        </button>
+                                    </form>
+
+                                    <form method="post" action="{{ url('/meu-perfil/arts/' ~ art.art_id ~ '/destaque') }}">
+                                        {{ campo_csrf() }}
+                                        <button type="submit" class="btn btn-sm btn-outline-secondary">
+                                            {{ art.art_destaque == 'S' ? 'Remover destaque' : 'Destacar' }}
+                                        </button>
+                                    </form>
+
+                                    <form method="post" action="{{ url('/meu-perfil/arts/' ~ art.art_id ~ '/remover') }}"
+                                          data-confirmar="Remover esta ART do seu portfólio? O registro fica preservado na base para auditoria.">
+                                        {{ campo_csrf() }}
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">Remover</button>
+                                    </form>
+                                </div>
+                            </article>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header card-cabecalho-simples">
+                    Certidões de Acervo Técnico
+                    <span class="badge text-bg-light border">{{ cats|length }}</span>
+                </div>
+                <div class="card-body">
+                    {% if cats is empty %}
+                        <p class="small text-muted mb-0">
+                            Nenhuma CAT obtida. Use a consulta ao lado para buscá-las pelo seu RNP.
+                        </p>
+                    {% else %}
+                        <div class="table-responsive">
+                            <table class="table table-sm align-middle mb-0">
+                                <caption class="small">
+                                    Dados obtidos da API oficial do CREA-AM.
+                                </caption>
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Número</th>
+                                        <th scope="col">Objeto</th>
+                                        <th scope="col">Emissão</th>
+                                        <th scope="col">Validade</th>
+                                        <th scope="col">Visibilidade</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for cat in cats %}
+                                        <tr>
+                                            <td class="text-nowrap">{{ cat.cat_numero }}</td>
+                                            <td class="small">{{ cat.cat_objeto|default('—') }}</td>
+                                            <td class="small text-nowrap">{{ cat.cat_dt_emissao|data }}</td>
+                                            <td class="small text-nowrap">{{ cat.cat_dt_validade|data|default('—') }}</td>
+                                            <td>
+                                                <form method="post"
+                                                      action="{{ url('/meu-perfil/cats/' ~ cat.cat_id ~ '/visibilidade') }}">
+                                                    {{ campo_csrf() }}
+                                                    <button type="submit" class="btn btn-sm btn-outline-secondary">
+                                                        {{ cat.cat_visivel == 'S' ? 'Visível' : 'Oculta' }}
+                                                    </button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
