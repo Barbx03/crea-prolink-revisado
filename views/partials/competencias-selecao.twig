@@ -1,0 +1,91 @@
+{# =============================================================================
+   Seleção de competências do catálogo controlado, agrupadas por área.
+
+   Recebe:
+     competencias  — mapa área => lista de competências
+     selecionadas  — lista de ids já marcados
+     niveis        — mapa id => nível (opcional, exibe seletor de nível)
+     pesos         — quando verdadeiro, exibe peso e obrigatoriedade (demandas)
+     selecionadas_config — mapa id => {obrigatoria, peso} (demandas)
+   ============================================================================ #}
+
+<div class="mb-2">
+    <label class="form-label" for="filtro-competencias">Filtrar competências</label>
+    <input type="search" class="form-control form-control-sm" id="filtro-competencias"
+           data-filtro-alvo="#grupo-competencias" placeholder="Digite parte do nome da competência"
+           autocomplete="off">
+    <div class="form-text" data-aviso-selecao>
+        <span data-contagem-selecionadas>0</span> competência(s) selecionada(s).
+    </div>
+</div>
+
+<div class="grupo-competencias" id="grupo-competencias">
+    {% for area, lista in competencias %}
+        <fieldset class="mb-3" data-grupo>
+            <legend class="h6 text-marca border-bottom pb-1">{{ area }}</legend>
+
+            {% for competencia in lista %}
+                {% set marcada = competencia.cmp_id in selecionadas or (selecionadas_config is defined and selecionadas_config[competencia.cmp_id] is defined) %}
+                <div class="row g-2 align-items-center py-1" data-rotulo="{{ competencia.cmp_nome }}">
+                    <div class="col-12 {{ pesos|default(false) ? 'col-lg-6' : 'col-lg-8' }}">
+                        <div class="form-check mb-0">
+                            <input class="form-check-input" type="checkbox" name="competencias[]"
+                                   value="{{ competencia.cmp_id }}" id="cmp-{{ competencia.cmp_id }}"
+                                   {{ marcada ? 'checked' : '' }}>
+                            <label class="form-check-label" for="cmp-{{ competencia.cmp_id }}">
+                                {{ competencia.cmp_nome }}
+                                {% if competencia.cmp_descricao %}
+                                    <span class="d-block small text-muted">{{ competencia.cmp_descricao }}</span>
+                                {% endif %}
+                            </label>
+                        </div>
+                    </div>
+
+                    {% if niveis is defined %}
+                        <div class="col-6 col-lg-4">
+                            <label class="visually-hidden" for="nivel-{{ competencia.cmp_id }}">
+                                Nível em {{ competencia.cmp_nome }}
+                            </label>
+                            <select class="form-select form-select-sm" id="nivel-{{ competencia.cmp_id }}"
+                                    name="nivel[{{ competencia.cmp_id }}]">
+                                {% for valor in ['BASICO', 'INTERMEDIARIO', 'AVANCADO', 'ESPECIALISTA'] %}
+                                    <option value="{{ valor }}"
+                                        {{ (niveis[competencia.cmp_id]|default('INTERMEDIARIO')) == valor ? 'selected' : '' }}>
+                                        {{ valor|rotulo }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    {% endif %}
+
+                    {% if pesos|default(false) %}
+                        <div class="col-6 col-lg-3">
+                            <div class="form-check mb-0">
+                                <input class="form-check-input" type="checkbox" name="obrigatorias[]"
+                                       value="{{ competencia.cmp_id }}" id="obr-{{ competencia.cmp_id }}"
+                                       {{ (selecionadas_config[competencia.cmp_id].obrigatoria|default('N')) == 'S' ? 'checked' : '' }}>
+                                <label class="form-check-label small" for="obr-{{ competencia.cmp_id }}">
+                                    Obrigatória
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-6 col-lg-3">
+                            <label class="visually-hidden" for="peso-{{ competencia.cmp_id }}">
+                                Peso de {{ competencia.cmp_nome }}
+                            </label>
+                            <select class="form-select form-select-sm" id="peso-{{ competencia.cmp_id }}"
+                                    name="peso[{{ competencia.cmp_id }}]">
+                                {% for valor in 1..5 %}
+                                    <option value="{{ valor }}"
+                                        {{ (selecionadas_config[competencia.cmp_id].peso|default(1)) == valor ? 'selected' : '' }}>
+                                        peso {{ valor }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </fieldset>
+    {% endfor %}
+</div>
