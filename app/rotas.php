@@ -68,3 +68,12 @@ $roteador->post('/meu-perfil/senha',           'ControladorPerfil', 'alterarSenh
 // Validação do registro na API oficial (RF02)
 $roteador->get('/meu-perfil/registro-crea',    'ControladorPortfolio', 'painelIntegracao', $TODOS_AUTENTICADOS);
 $roteador->post('/meu-perfil/registro-crea',   'ControladorPortfolio', 'validarRegistro',  $TODOS_AUTENTICADOS);
+
+// Portfólio: ARTs e CATs (RF03)
+$roteador->post('/meu-perfil/arts',                    'ControladorPortfolio', 'associarArt',      $PRESTADORES);
+$roteador->post('/meu-perfil/arts/{id}/visibilidade',  'ControladorPortfolio', 'alternarArt',      $PRESTADORES);
+$roteador->post('/meu-perfil/arts/{id}/destaque',      'ControladorPortfolio', 'destacarArt',      $PRESTADORES);
+$roteador->post('/meu-perfil/arts/{id}/remover',       'ControladorPortfolio', 'removerArt',       $PRESTADORES);
+$roteador->post('/meu-perfil/arts/revalidar',          'ControladorPortfolio', 'revalidarArts',    $PRESTADORES);
+$roteador->post('/meu-perfil/cats/sincronizar',        'ControladorPortfolio', 'sincronizarCats',  $PRESTADORES);
+$roteador->post('/meu-perfil/cats/{id}/visibilidade',  'ControladorPortfolio', 'alternarCat',      $PRESTADORES);
