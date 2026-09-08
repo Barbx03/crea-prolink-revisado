@@ -60,6 +60,7 @@ $roteador->get('/painel', 'ControladorPainel', 'painel', $TODOS_AUTENTICADOS);
 $roteador->get('/meu-perfil',                  'ControladorPerfil', 'ver',                  $TODOS_AUTENTICADOS);
 $roteador->get('/meu-perfil/editar',           'ControladorPerfil', 'formularioEdicao',     $TODOS_AUTENTICADOS);
 $roteador->post('/meu-perfil',                 'ControladorPerfil', 'salvar',               $TODOS_AUTENTICADOS);
+$roteador->post('/meu-perfil/competencias',    'ControladorPerfil', 'salvarCompetencias',   $PRESTADORES);
 $roteador->post('/meu-perfil/foto',            'ControladorPerfil', 'enviarFoto',           $TODOS_AUTENTICADOS);
 $roteador->post('/meu-perfil/foto/remover',    'ControladorPerfil', 'removerFoto',          $TODOS_AUTENTICADOS);
 $roteador->post('/meu-perfil/dados-pessoais',  'ControladorPerfil', 'salvarDadosPessoais',  $TODOS_AUTENTICADOS);
@@ -77,3 +78,10 @@ $roteador->post('/meu-perfil/arts/{id}/remover',       'ControladorPortfolio', '
 $roteador->post('/meu-perfil/arts/revalidar',          'ControladorPortfolio', 'revalidarArts',    $PRESTADORES);
 $roteador->post('/meu-perfil/cats/sincronizar',        'ControladorPortfolio', 'sincronizarCats',  $PRESTADORES);
 $roteador->post('/meu-perfil/cats/{id}/visibilidade',  'ControladorPortfolio', 'alternarCat',      $PRESTADORES);
+
+// Experiências profissionais (RF03)
+$roteador->get('/meu-perfil/experiencias/nova',      'ControladorExperiencia', 'formularioNova', $PRESTADORES);
+$roteador->post('/meu-perfil/experiencias',          'ControladorExperiencia', 'criar',          $PRESTADORES);
+$roteador->get('/meu-perfil/experiencias/{id}',      'ControladorExperiencia', 'formularioEdicao', $PRESTADORES);
+$roteador->post('/meu-perfil/experiencias/{id}',     'ControladorExperiencia', 'atualizar',      $PRESTADORES);
+$roteador->post('/meu-perfil/experiencias/{id}/remover', 'ControladorExperiencia', 'remover',    $PRESTADORES);

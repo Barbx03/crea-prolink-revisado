@@ -1,0 +1,193 @@
+{% extends 'layout/base.twig' %}
+
+{% block titulo %}{{ experiencia ? 'Editar experiência' : 'Nova experiência' }} | {{ app.nome }}{% endblock %}
+{% block robots %}noindex, nofollow{% endblock %}
+
+{% block conteudo %}
+    <div class="row justify-content-center">
+        <div class="col-lg-9">
+            <h1 class="h4 mb-1">{{ experiencia ? 'Editar experiência' : 'Publicar experiência' }}</h1>
+            <p class="text-muted small mb-4">
+                Ao vincular a experiência a uma ART ou CAT validada, ela passa a ser exibida como
+                <strong>comprovada</strong>. Sem vínculo, aparece como declarada — o que é legítimo,
+                mas pesa menos na avaliação de quem contrata.
+            </p>
+
+            <form method="post"
+                  action="{{ experiencia ? url('/meu-perfil/experiencias/' ~ experiencia.exp_id) : url('/meu-perfil/experiencias') }}"
+                  novalidate>
+                {{ campo_csrf() }}
+
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h2 class="h6">O que foi realizado</h2>
+
+                        <div class="mb-3">
+                            <label class="form-label obrigatorio" for="titulo">Título da experiência</label>
+                            <input type="text" class="form-control {{ erros.titulo is defined ? 'is-invalid' : '' }}"
+                                   id="titulo" name="titulo" maxlength="190" required
+                                   value="{{ formulario.titulo|default(experiencia.exp_titulo|default('')) }}"
+                                   placeholder="Ex.: Projeto estrutural de edifício residencial de 8 pavimentos">
+                            {% include 'partials/campo-erro.twig' with { campo: 'titulo', erros: erros } only %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label" for="descricao">Descrição</label>
+                            <textarea class="form-control" id="descricao" name="descricao" rows="6"
+                                      maxlength="4000" data-contador
+                                      placeholder="Escopo executado, normas aplicadas, dificuldades técnicas relevantes e resultados.">{{ formulario.descricao|default(experiencia.exp_descricao|default('')) }}</textarea>
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label" for="organizacao">Organização ou contratante</label>
+                                <input type="text" class="form-control" id="organizacao" name="organizacao"
+                                       maxlength="190"
+                                       value="{{ formulario.organizacao|default(experiencia.exp_organizacao|default('')) }}">
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label" for="papel">Papel exercido</label>
+                                <input type="text" class="form-control" id="papel" name="papel" maxlength="120"
+                                       placeholder="Ex.: Responsável técnica"
+                                       value="{{ formulario.papel|default(experiencia.exp_papel|default('')) }}">
+                            </div>
+
+                            <div class="col-md-3">
+                                <label class="form-label" for="uf">UF</label>
+                                <select class="form-select" id="uf" name="uf">
+                                    <option value="">Selecione</option>
+                                    {% for uf in ufs %}
+                                        <option value="{{ uf }}"
+                                            {{ (formulario.uf|default(experiencia.exp_uf|default(''))) == uf ? 'selected' : '' }}>
+                                            {{ uf }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="col-md-5">
+                                <label class="form-label" for="municipio">Município</label>
+                                <input type="text" class="form-control" id="municipio" name="municipio" maxlength="120"
+                                       value="{{ formulario.municipio|default(experiencia.exp_municipio|default('')) }}">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h2 class="h6">Quando</h2>
+
+                        <div class="row g-3 align-items-end">
+                            <div class="col-md-4">
+                                <label class="form-label" for="dt_inicio">Início</label>
+                                <input type="date" class="form-control {{ erros.dt_inicio is defined ? 'is-invalid' : '' }}"
+                                       id="dt_inicio" name="dt_inicio"
+                                       value="{{ formulario.dt_inicio|default(experiencia.exp_dt_inicio|default('')) }}">
+                                {% include 'partials/campo-erro.twig' with { campo: 'dt_inicio', erros: erros } only %}
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label" for="dt_fim">Término</label>
+                                <input type="date" class="form-control {{ erros.dt_fim is defined ? 'is-invalid' : '' }}"
+                                       id="dt_fim" name="dt_fim"
+                                       value="{{ formulario.dt_fim|default(experiencia.exp_dt_fim|default('')) }}">
+                                {% include 'partials/campo-erro.twig' with { campo: 'dt_fim', erros: erros } only %}
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="atual" value="1" id="atual"
+                                           {{ (formulario.atual|default(experiencia.exp_atual|default('N') == 'S')) ? 'checked' : '' }}>
+                                    <label class="form-check-label" for="atual">Em andamento</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h2 class="h6">Comprovação pelo acervo oficial</h2>
+
+                        {% if arts is empty and cats is empty %}
+                            <div class="alert alert-secondary small mb-0">
+                                Você ainda não tem ARTs ou CATs associadas. Sem elas, esta experiência
+                                será publicada como declarada.
+                                <a class="d-block mt-1" href="{{ url('/meu-perfil/registro-crea') }}">
+                                    Associar ARTs do CREA-AM
+                                </a>
+                            </div>
+                        {% else %}
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label" for="art_id">ART que comprova</label>
+                                    <select class="form-select" id="art_id" name="art_id">
+                                        <option value="">Nenhuma</option>
+                                        {% for art in arts %}
+                                            <option value="{{ art.art_id }}"
+                                                {{ (formulario.art_id|default(experiencia.exp_art_id|default(''))) == art.art_id ? 'selected' : '' }}>
+                                                ART {{ art.art_numero }}{{ art.art_objeto ? ' — ' ~ art.art_objeto|slice(0, 60) : '' }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label class="form-label" for="cat_id">CAT que comprova</label>
+                                    <select class="form-select" id="cat_id" name="cat_id">
+                                        <option value="">Nenhuma</option>
+                                        {% for cat in cats %}
+                                            <option value="{{ cat.cat_id }}"
+                                                {{ (formulario.cat_id|default(experiencia.exp_cat_id|default(''))) == cat.cat_id ? 'selected' : '' }}>
+                                                CAT {{ cat.cat_numero }}{{ cat.cat_objeto ? ' — ' ~ cat.cat_objeto|slice(0, 60) : '' }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h2 class="h6">Competências demonstradas nesta experiência</h2>
+                        <p class="small text-muted">
+                            Ligar competências à experiência é o que dá lastro à sua declaração:
+                            o contratante vê onde cada competência foi exercida.
+                        </p>
+
+                        {% include 'partials/competencias-selecao.twig' with {
+                            competencias: competencias,
+                            selecionadas: selecionadas
+                        } only %}
+                    </div>
+                </div>
+
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="visivel" value="1" id="visivel"
+                                   {{ (formulario.visivel|default(experiencia.exp_visivel|default('S') == 'S')) ? 'checked' : '' }}>
+                            <label class="form-check-label" for="visivel">
+                                Exibir esta experiência no meu perfil público
+                                <span class="d-block small text-muted">
+                                    Desmarcada, a experiência continua contando internamente, mas não aparece a terceiros.
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex flex-wrap gap-2">
+                    <button type="submit" class="btn btn-primary">
+                        {{ experiencia ? 'Salvar alterações' : 'Publicar experiência' }}
+                    </button>
+                    <a class="btn btn-outline-secondary" href="{{ url('/meu-perfil') }}">Cancelar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}
