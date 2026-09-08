@@ -1,0 +1,302 @@
+{% extends 'layout/base.twig' %}
+
+{% block menu_ativo %}demandas{% endblock %}
+{% block titulo %}{{ demanda.dem_titulo }} | {{ app.nome }}{% endblock %}
+{% block descricao %}{{ demanda.dem_escopo|slice(0, 160) }}{% endblock %}
+
+{% block conteudo %}
+    {% if eh_autor %}
+        <div class="alert alert-secondary d-flex flex-wrap justify-content-between align-items-center gap-2">
+            <span>
+                <i class="bi bi-person-badge" aria-hidden="true"></i>
+                Esta é a sua demanda. Situação: <strong>{{ demanda.dem_situacao|rotulo }}</strong>.
+                {% if demanda.dem_moderacao != 'APROVADO' %}
+                    Moderação: <strong>{{ demanda.dem_moderacao|rotulo }}</strong>.
+                {% endif %}
+            </span>
+            <span class="d-flex flex-wrap gap-2">
+                <a class="btn btn-sm btn-outline-primary" href="{{ url('/demandas/' ~ demanda.dem_id ~ '/correspondencias') }}">
+                    Ver correspondências
+                </a>
+                <a class="btn btn-sm btn-outline-primary" href="{{ url('/demandas/' ~ demanda.dem_id ~ '/interessados') }}">
+                    Interessados ({{ demanda.dem_total_interesses }})
+                </a>
+                {% if demanda.dem_situacao not in ['ENCERRADA', 'CANCELADA'] %}
+                    <a class="btn btn-sm btn-outline-secondary" href="{{ url('/demandas/' ~ demanda.dem_id ~ '/editar') }}">
+                        Editar
+                    </a>
+                {% endif %}
+            </span>
+        </div>
+    {% endif %}
+
+    {% if demanda.dem_moderacao == 'REPROVADO' and (eh_autor or eh_admin) %}
+        <div class="alert alert-danger">
+            <strong>Demanda reprovada pela moderação.</strong>
+            {% if demanda.dem_moderacao_motivo %}
+                Motivo: {{ demanda.dem_moderacao_motivo }}
+            {% endif %}
+        </div>
+    {% endif %}
+
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <article class="card mb-4">
+                <div class="card-body p-4">
+                    <div class="d-flex flex-wrap gap-2 mb-3">
+                        <span class="badge text-bg-light border">{{ demanda.dem_modalidade|rotulo }}</span>
+                        {% if demanda.are_nome %}
+                            <span class="badge text-bg-light border">{{ demanda.are_nome }}</span>
+                        {% endif %}
+                        {% if demanda.dem_exige_art == 'S' %}
+                            <span class="badge text-bg-warning">Exige acervo comprovado</span>
+                        {% endif %}
+                        {% if demanda.dem_exige_registro == 'S' %}
+                            <span class="badge text-bg-info">Exige registro no CREA-AM</span>
+                        {% endif %}
+                        {% if not aberta %}
+                            <span class="badge text-bg-secondary">{{ demanda.dem_situacao|rotulo }}</span>
+                        {% endif %}
+                    </div>
+
+                    <h1 class="h4 mb-3">{{ demanda.dem_titulo }}</h1>
+
+                    <h2 class="h6 text-uppercase text-muted">Escopo do serviço</h2>
+                    <p style="white-space: pre-line;">{{ demanda.dem_escopo }}</p>
+
+                    {% if demanda.competencias is not empty %}
+                        <h2 class="h6 text-uppercase text-muted mt-4">Competências exigidas</h2>
+                        <div class="table-responsive">
+                            <table class="table table-sm align-middle mb-0">
+                                <caption class="small">
+                                    Competências obrigatórias são requisito para a manifestação de interesse.
+                                    O peso indica a importância relativa no cálculo de aderência.
+                                </caption>
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Competência</th>
+                                        <th scope="col">Área</th>
+                                        <th scope="col">Exigência</th>
+                                        <th scope="col">Peso</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for competencia in demanda.competencias %}
+                                        <tr>
+                                            <td>{{ competencia.cmp_nome }}</td>
+                                            <td class="small text-muted">{{ competencia.are_nome }}</td>
+                                            <td>
+                                                {% if competencia.dmc_obrigatoria == 'S' %}
+                                                    <span class="badge text-bg-warning">Obrigatória</span>
+                                                {% else %}
+                                                    <span class="badge text-bg-light border">Desejável</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>{{ competencia.dmc_peso }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% endif %}
+                </div>
+            </article>
+
+            {% if aderencia %}
+                <section class="card mb-4">
+                    <div class="card-header card-cabecalho-simples">
+                        Sua aderência a esta demanda
+                    </div>
+                    <div class="card-body">
+                        {% include 'partials/aderencia.twig' with { avaliacao: aderencia } only %}
+
+                        <div class="mt-3 pt-3 border-top">
+                            {% if meu_interesse and meu_interesse.int_situacao != 'RETIRADO' %}
+                                <p class="mb-2">
+                                    <i class="bi bi-check-circle text-success" aria-hidden="true"></i>
+                                    Você manifestou interesse nesta demanda em
+                                    {{ meu_interesse.int_dt_registro|data_hora }}.
+                                    Situação: <strong>{{ meu_interesse.int_situacao|rotulo }}</strong>.
+                                </p>
+
+                                {% if meu_interesse.int_resposta %}
+                                    <div class="alert alert-light border small">
+                                        <strong>Resposta do contratante:</strong>
+                                        {{ meu_interesse.int_resposta }}
+                                    </div>
+                                {% endif %}
+
+                                <div class="d-flex flex-wrap gap-2">
+                                    {% if aberta %}
+                                        <a class="btn btn-sm btn-outline-primary"
+                                           href="{{ url('/demandas/' ~ demanda.dem_id ~ '/manifestar') }}">
+                                            Revisar minha manifestação
+                                        </a>
+                                    {% endif %}
+                                    <a class="btn btn-sm btn-outline-secondary" href="{{ url('/meus-interesses') }}">
+                                        Minhas manifestações
+                                    </a>
+                                </div>
+                            {% elseif aberta %}
+                                {% if aderencia.elegivel %}
+                                    <a class="btn btn-primary"
+                                       href="{{ url('/demandas/' ~ demanda.dem_id ~ '/manifestar') }}">
+                                        <i class="bi bi-send" aria-hidden="true"></i>
+                                        Manifestar interesse
+                                    </a>
+                                {% else %}
+                                    <p class="mb-0 small text-danger">
+                                        Você ainda não atende a um requisito obrigatório desta demanda.
+                                        Ajuste seu perfil e retorne.
+                                    </p>
+                                {% endif %}
+                            {% else %}
+                                <p class="mb-0 small text-muted">
+                                    Esta demanda não está aberta para novas manifestações de interesse.
+                                </p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </section>
+            {% endif %}
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h2 class="h6">Informações da demanda</h2>
+
+                    <dl class="small mb-0">
+                        <dt>Local de execução</dt>
+                        <dd>
+                            {% if demanda.dem_cidade or demanda.dem_uf %}
+                                {{ demanda.dem_cidade }}{{ demanda.dem_cidade and demanda.dem_uf ? ' — ' : '' }}{{ demanda.dem_uf }}
+                            {% else %}
+                                Não informado
+                            {% endif %}
+                            {% if demanda.dem_aceita_remoto == 'S' %}
+                                <span class="d-block text-muted">Aceita atendimento remoto</span>
+                            {% endif %}
+                        </dd>
+
+                        {% if demanda.dem_orcamento_min or demanda.dem_orcamento_max %}
+                            <dt>Faixa de orçamento</dt>
+                            <dd>
+                                {% if demanda.dem_orcamento_min and demanda.dem_orcamento_max %}
+                                    {{ demanda.dem_orcamento_min|moeda }} a {{ demanda.dem_orcamento_max|moeda }}
+                                {% else %}
+                                    {{ (demanda.dem_orcamento_max ?: demanda.dem_orcamento_min)|moeda }}
+                                {% endif %}
+                            </dd>
+                        {% endif %}
+
+                        {% if demanda.dem_prazo_execucao %}
+                            <dt>Prazo de execução</dt>
+                            <dd>{{ demanda.dem_prazo_execucao }}</dd>
+                        {% endif %}
+
+                        {% if demanda.dem_experiencia_min %}
+                            <dt>Experiência mínima</dt>
+                            <dd>{{ demanda.dem_experiencia_min }} ano(s)</dd>
+                        {% endif %}
+
+                        <dt>Prazo para manifestação</dt>
+                        <dd>
+                            {% if demanda.dem_dt_limite %}
+                                {{ demanda.dem_dt_limite|data }}
+                                {% if not aberta %}<span class="badge text-bg-secondary">encerrado</span>{% endif %}
+                            {% else %}
+                                Sem prazo definido
+                            {% endif %}
+                        </dd>
+
+                        <dt>Interessados</dt>
+                        <dd>{{ demanda.dem_total_interesses }}</dd>
+
+                        {% if demanda.dem_dt_publicacao %}
+                            <dt>Publicada em</dt>
+                            <dd>{{ demanda.dem_dt_publicacao|data_hora }}</dd>
+                        {% endif %}
+
+                        {% if demanda.dem_dt_encerramento %}
+                            <dt>Encerrada em</dt>
+                            <dd>
+                                {{ demanda.dem_dt_encerramento|data_hora }}
+                                {% if demanda.dem_motivo_encerramento %}
+                                    <span class="d-block text-muted">{{ demanda.dem_motivo_encerramento }}</span>
+                                {% endif %}
+                            </dd>
+                        {% endif %}
+                    </dl>
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h2 class="h6">Quem publicou</h2>
+                    <p class="mb-1 fw-semibold">{{ demanda.autor_nome }}</p>
+                    <div class="mb-2">
+                        {% include 'partials/selo-registro.twig' with { registrado: demanda.autor_registrado } only %}
+                    </div>
+                    <p class="small text-muted mb-0">
+                        {{ demanda.autor_perfil|rotulo }} ·
+                        {{ demanda.autor_tipo == 'PJ' ? 'pessoa jurídica' : 'pessoa física' }}
+                    </p>
+                </div>
+            </div>
+
+            {% if eh_autor and demanda.dem_situacao == 'RASCUNHO' %}
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h2 class="h6">Publicar demanda</h2>
+                        <p class="small text-muted">
+                            Enquanto for rascunho, a demanda não aparece nas buscas nem recebe
+                            manifestações de interesse.
+                        </p>
+                        <form method="post" action="{{ url('/demandas/' ~ demanda.dem_id ~ '/publicar') }}">
+                            {{ campo_csrf() }}
+                            <button type="submit" class="btn btn-primary btn-sm w-100">Publicar agora</button>
+                        </form>
+                    </div>
+                </div>
+            {% endif %}
+
+            {% if eh_autor and demanda.dem_situacao in ['PUBLICADA', 'EM_ANALISE'] %}
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h2 class="h6">Encerrar demanda</h2>
+                        <form method="post" action="{{ url('/demandas/' ~ demanda.dem_id ~ '/encerrar') }}"
+                              data-confirmar="Encerrar esta demanda? Os interessados serão notificados.">
+                            {{ campo_csrf() }}
+
+                            <div class="mb-2">
+                                <label class="form-label small" for="situacao">Situação final</label>
+                                <select class="form-select form-select-sm" id="situacao" name="situacao">
+                                    <option value="ENCERRADA">Encerrada (objetivo atingido)</option>
+                                    <option value="CANCELADA">Cancelada (não será mais contratada)</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-2">
+                                <label class="form-label small" for="motivo">Motivo informado aos interessados</label>
+                                <textarea class="form-control form-control-sm" id="motivo" name="motivo"
+                                          rows="2" maxlength="255"></textarea>
+                            </div>
+
+                            <button type="submit" class="btn btn-outline-danger btn-sm w-100">Encerrar</button>
+                        </form>
+                    </div>
+                </div>
+            {% endif %}
+
+            {% if autenticado() and not eh_autor %}
+                <p class="small text-center">
+                    <a href="{{ url('/denunciar/demanda/' ~ demanda.dem_id) }}" class="text-muted">
+                        <i class="bi bi-flag" aria-hidden="true"></i>
+                        Denunciar esta demanda
+                    </a>
+                </p>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

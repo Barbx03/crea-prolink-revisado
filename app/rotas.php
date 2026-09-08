@@ -34,6 +34,12 @@ $roteador->get('/termos-de-uso',           'ControladorPagina', 'termosDeUso');
 $roteador->get('/politica-de-privacidade', 'ControladorPagina', 'politicaDePrivacidade');
 $roteador->get('/acessibilidade',          'ControladorPagina', 'acessibilidade');
 
+// Demandas públicas
+$roteador->get('/demandas',             'ControladorDemanda', 'listar');
+$roteador->get('/demandas/nova',        'ControladorDemanda', 'formularioNova', $CONTRATANTES);
+$roteador->post('/demandas',            'ControladorDemanda', 'criar',          $CONTRATANTES);
+$roteador->get('/demandas/{id}',        'ControladorDemanda', 'ver');
+
 // -----------------------------------------------------------------------------
 // Autenticação e recuperação de acesso (RF01)
 // -----------------------------------------------------------------------------
@@ -85,3 +91,13 @@ $roteador->post('/meu-perfil/experiencias',          'ControladorExperiencia', '
 $roteador->get('/meu-perfil/experiencias/{id}',      'ControladorExperiencia', 'formularioEdicao', $PRESTADORES);
 $roteador->post('/meu-perfil/experiencias/{id}',     'ControladorExperiencia', 'atualizar',      $PRESTADORES);
 $roteador->post('/meu-perfil/experiencias/{id}/remover', 'ControladorExperiencia', 'remover',    $PRESTADORES);
+
+// -----------------------------------------------------------------------------
+// Demandas do autor e compatibilização (RF04)
+// -----------------------------------------------------------------------------
+$roteador->get('/minhas-demandas',                 'ControladorDemanda', 'minhas',            $CONTRATANTES);
+$roteador->get('/demandas/{id}/editar',            'ControladorDemanda', 'formularioEdicao',  $CONTRATANTES);
+$roteador->post('/demandas/{id}',                  'ControladorDemanda', 'atualizar',         $CONTRATANTES);
+$roteador->post('/demandas/{id}/publicar',         'ControladorDemanda', 'publicar',          $CONTRATANTES);
+$roteador->post('/demandas/{id}/encerrar',         'ControladorDemanda', 'encerrar',          $CONTRATANTES);
+$roteador->post('/demandas/{id}/remover',          'ControladorDemanda', 'remover',           $CONTRATANTES);

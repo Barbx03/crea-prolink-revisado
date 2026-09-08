@@ -1,0 +1,263 @@
+{% extends 'layout/base.twig' %}
+
+{% block menu_ativo %}demandas{% endblock %}
+{% block titulo %}{{ demanda ? 'Editar demanda' : 'Publicar demanda' }} | {{ app.nome }}{% endblock %}
+{% block robots %}noindex, nofollow{% endblock %}
+
+{% block conteudo %}
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <h1 class="h4 mb-1">{{ demanda ? 'Editar demanda' : 'Publicar demanda' }}</h1>
+            <p class="text-muted small mb-4">
+                Quanto mais objetivos os critérios, melhor a correspondência: as competências
+                que você marcar como obrigatórias tornam-se requisito para a manifestação de
+                interesse, e o peso define a importância relativa no cálculo de aderência.
+            </p>
+
+            <form method="post"
+                  action="{{ demanda ? url('/demandas/' ~ demanda.dem_id) : url('/demandas') }}"
+                  novalidate>
+                {{ campo_csrf() }}
+
+                {# --- Identificação da demanda ---------------------------- #}
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h2 class="h6">1. O que você precisa</h2>
+
+                        <div class="mb-3">
+                            <label class="form-label obrigatorio" for="titulo">Título da demanda</label>
+                            <input type="text" class="form-control {{ erros.titulo is defined ? 'is-invalid' : '' }}"
+                                   id="titulo" name="titulo" maxlength="190" required
+                                   value="{{ formulario.titulo|default(demanda.dem_titulo|default('')) }}"
+                                   placeholder="Ex.: Projeto estrutural de galpão industrial de 1.200 m²">
+                            <div class="form-text">Seja específico: é o que aparece nas buscas e nos avisos.</div>
+                            {% include 'partials/campo-erro.twig' with { campo: 'titulo', erros: erros } only %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label obrigatorio" for="escopo">Escopo do serviço</label>
+                            <textarea class="form-control {{ erros.escopo is defined ? 'is-invalid' : '' }}"
+                                      id="escopo" name="escopo" rows="8" maxlength="8000" required
+                                      data-contador
+                                      placeholder="Descreva o objeto, as entregas esperadas, as normas aplicáveis, os dados já disponíveis e as condições de execução.">{{ formulario.escopo|default(demanda.dem_escopo|default('')) }}</textarea>
+                            <div class="form-text">Mínimo de 50 caracteres. Detalhe entregas, normas e condições.</div>
+                            {% include 'partials/campo-erro.twig' with { campo: 'escopo', erros: erros } only %}
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label" for="area_id">Área de atuação</label>
+                                <select class="form-select" id="area_id" name="area_id">
+                                    <option value="">Selecione a área</option>
+                                    {% for area in areas %}
+                                        <option value="{{ area.are_id }}"
+                                            {{ (formulario.area_id|default(demanda.dem_are_id|default(''))) == area.are_id ? 'selected' : '' }}>
+                                            {{ area.are_nome }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label" for="modalidade">Modalidade do serviço</label>
+                                <select class="form-select" id="modalidade" name="modalidade">
+                                    {% for modalidade in modalidades %}
+                                        <option value="{{ modalidade }}"
+                                            {{ (formulario.modalidade|default(demanda.dem_modalidade|default('PROJETO'))) == modalidade ? 'selected' : '' }}>
+                                            {{ modalidade|rotulo }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {# --- Local e prazos ------------------------------------- #}
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h2 class="h6">2. Onde e quando</h2>
+
+                        <div class="row g-3">
+                            <div class="col-md-3">
+                                <label class="form-label" for="uf">UF de execução</label>
+                                <select class="form-select {{ erros.uf is defined ? 'is-invalid' : '' }}"
+                                        id="uf" name="uf" data-uf-origem>
+                                    <option value="">Selecione</option>
+                                    {% for uf in ufs %}
+                                        <option value="{{ uf }}"
+                                            {{ (formulario.uf|default(demanda.dem_uf|default('AM'))) == uf ? 'selected' : '' }}>
+                                            {{ uf }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                                {% include 'partials/campo-erro.twig' with { campo: 'uf', erros: erros } only %}
+                            </div>
+
+                            <div class="col-md-5">
+                                <label class="form-label" for="cidade">Município</label>
+                                <input type="text" class="form-control" id="cidade" name="cidade" maxlength="120"
+                                       list="lista-municipios"
+                                       value="{{ formulario.cidade|default(demanda.dem_cidade|default('')) }}">
+                                <datalist id="lista-municipios"></datalist>
+                            </div>
+
+                            <div class="col-md-4 d-flex align-items-end">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="aceita_remoto" value="1"
+                                           id="aceita_remoto"
+                                           {{ (formulario.aceita_remoto|default(demanda.dem_aceita_remoto|default('N') == 'S')) ? 'checked' : '' }}>
+                                    <label class="form-check-label" for="aceita_remoto">
+                                        Aceita atendimento remoto
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label" for="prazo_execucao">Prazo de execução</label>
+                                <input type="text" class="form-control" id="prazo_execucao" name="prazo_execucao"
+                                       maxlength="120" placeholder="Ex.: 90 dias corridos"
+                                       value="{{ formulario.prazo_execucao|default(demanda.dem_prazo_execucao|default('')) }}">
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label" for="dt_limite">Prazo para manifestações</label>
+                                <input type="date" class="form-control {{ erros.dt_limite is defined ? 'is-invalid' : '' }}"
+                                       id="dt_limite" name="dt_limite"
+                                       value="{{ formulario.dt_limite|default(demanda.dem_dt_limite|default('')) }}">
+                                <div class="form-text">A demanda é encerrada automaticamente após esta data.</div>
+                                {% include 'partials/campo-erro.twig' with { campo: 'dt_limite', erros: erros } only %}
+                            </div>
+
+                            <div class="col-md-2">
+                                <label class="form-label" for="orcamento_min">Orçamento mínimo</label>
+                                <input type="text" class="form-control" id="orcamento_min" name="orcamento_min"
+                                       inputmode="decimal" placeholder="0,00"
+                                       value="{{ formulario.orcamento_min|default(demanda.dem_orcamento_min|default('')) }}">
+                            </div>
+
+                            <div class="col-md-2">
+                                <label class="form-label" for="orcamento_max">Orçamento máximo</label>
+                                <input type="text" class="form-control {{ erros.orcamento_max is defined ? 'is-invalid' : '' }}"
+                                       id="orcamento_max" name="orcamento_max" inputmode="decimal" placeholder="0,00"
+                                       value="{{ formulario.orcamento_max|default(demanda.dem_orcamento_max|default('')) }}">
+                                {% include 'partials/campo-erro.twig' with { campo: 'orcamento_max', erros: erros } only %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {# --- Requisitos ---------------------------------------- #}
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h2 class="h6">3. Requisitos do profissional</h2>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-4">
+                                <label class="form-label" for="experiencia_min">Experiência mínima (anos)</label>
+                                <input type="number" class="form-control" id="experiencia_min" name="experiencia_min"
+                                       min="0" max="50"
+                                       value="{{ formulario.experiencia_min|default(demanda.dem_experiencia_min|default('')) }}">
+                            </div>
+
+                            <div class="col-md-8">
+                                <fieldset>
+                                    <legend class="form-label">Exigências eliminatórias</legend>
+
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="exige_registro" value="1"
+                                               id="exige_registro"
+                                               {{ (formulario.exige_registro|default(demanda.dem_exige_registro|default('S') == 'S')) ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="exige_registro">
+                                            Exigir registro ativo no CREA-AM
+                                            <span class="d-block small text-muted">
+                                                Recomendado para serviços que exigem responsabilidade técnica.
+                                            </span>
+                                        </label>
+                                    </div>
+
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="exige_art" value="1"
+                                               id="exige_art"
+                                               {{ (formulario.exige_art|default(demanda.dem_exige_art|default('N') == 'S')) ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="exige_art">
+                                            Exigir acervo comprovado por ART ou CAT
+                                            <span class="d-block small text-muted">
+                                                Restringe a manifestação a quem tem acervo validado na base oficial.
+                                            </span>
+                                        </label>
+                                    </div>
+                                </fieldset>
+                            </div>
+                        </div>
+
+                        <h3 class="h6 mt-4">Competências técnicas exigidas</h3>
+                        <p class="small text-muted">
+                            Marque as competências necessárias. As obrigatórias pesam o dobro e
+                            funcionam como requisito; o peso de 1 a 5 diferencia a importância entre elas.
+                        </p>
+
+                        {% include 'partials/competencias-selecao.twig' with {
+                            competencias: competencias,
+                            selecionadas: [],
+                            selecionadas_config: selecionadas,
+                            pesos: true
+                        } only %}
+
+                        {% include 'partials/campo-erro.twig' with { campo: 'competencias', erros: erros } only %}
+                    </div>
+                </div>
+
+                {# --- Publicação ---------------------------------------- #}
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h2 class="h6">4. Publicação</h2>
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label" for="situacao">O que fazer agora</label>
+                                <select class="form-select" id="situacao" name="situacao">
+                                    <option value="PUBLICADA"
+                                        {{ (formulario.situacao|default(demanda.dem_situacao|default('PUBLICADA'))) == 'PUBLICADA' ? 'selected' : '' }}>
+                                        Publicar a demanda
+                                    </option>
+                                    <option value="RASCUNHO"
+                                        {{ (formulario.situacao|default(demanda.dem_situacao|default(''))) == 'RASCUNHO' ? 'selected' : '' }}>
+                                        Salvar como rascunho
+                                    </option>
+                                </select>
+                                <div class="form-text">
+                                    Rascunhos não aparecem nas buscas e não recebem manifestações.
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label" for="visibilidade">Quem pode ver</label>
+                                <select class="form-select" id="visibilidade" name="visibilidade">
+                                    <option value="PUBLICO"
+                                        {{ (formulario.visibilidade|default(demanda.dem_visibilidade|default('PUBLICO'))) == 'PUBLICO' ? 'selected' : '' }}>
+                                        Qualquer visitante
+                                    </option>
+                                    <option value="AUTENTICADO"
+                                        {{ (formulario.visibilidade|default(demanda.dem_visibilidade|default(''))) == 'AUTENTICADO' ? 'selected' : '' }}>
+                                        Somente usuários autenticados
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex flex-wrap gap-2">
+                    <button type="submit" class="btn btn-primary">
+                        {{ demanda ? 'Salvar alterações' : 'Salvar demanda' }}
+                    </button>
+                    <a class="btn btn-outline-secondary"
+                       href="{{ demanda ? url('/demandas/' ~ demanda.dem_id) : url('/minhas-demandas') }}">
+                        Cancelar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

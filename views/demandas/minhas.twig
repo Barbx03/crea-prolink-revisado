@@ -1,0 +1,103 @@
+{% extends 'layout/base.twig' %}
+
+{% block menu_ativo %}demandas{% endblock %}
+{% block titulo %}Minhas demandas | {{ app.nome }}{% endblock %}
+{% block robots %}noindex, nofollow{% endblock %}
+
+{% block conteudo %}
+    <div class="d-flex flex-wrap justify-content-between align-items-end gap-2 mb-3">
+        <div>
+            <h1 class="h4 mb-1">Minhas demandas</h1>
+            <p class="text-muted small mb-0">{{ itens|length }} demanda(s).</p>
+        </div>
+        <a class="btn btn-primary" href="{{ url('/demandas/nova') }}">
+            <i class="bi bi-plus-lg" aria-hidden="true"></i> Publicar demanda
+        </a>
+    </div>
+
+    <form method="get" class="card mb-3">
+        <div class="card-body d-flex flex-wrap align-items-end gap-2">
+            <div>
+                <label class="form-label small mb-1" for="situacao">Situação</label>
+                <select class="form-select form-select-sm" id="situacao" name="situacao" data-submete-formulario>
+                    <option value="">Todas</option>
+                    {% for valor in ['RASCUNHO', 'PUBLICADA', 'EM_ANALISE', 'ENCERRADA', 'CANCELADA'] %}
+                        <option value="{{ valor }}" {{ situacao == valor ? 'selected' : '' }}>{{ valor|rotulo }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <noscript><button type="submit" class="btn btn-sm btn-outline-primary">Filtrar</button></noscript>
+        </div>
+    </form>
+
+    {% if itens is empty %}
+        {% include 'partials/lista-vazia.twig' with {
+            icone: 'clipboard-plus',
+            titulo: 'Nenhuma demanda por aqui',
+            mensagem: 'Publique uma demanda descrevendo o serviço técnico de que você precisa. A plataforma calcula os perfis mais aderentes e avisa quem tem alta compatibilidade.',
+            acao_link: '/demandas/nova',
+            acao_texto: 'Publicar demanda'
+        } only %}
+    {% else %}
+        <div class="card">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <caption class="small px-3">
+                        Demandas encerradas e canceladas permanecem acessíveis para consulta e auditoria.
+                    </caption>
+                    <thead>
+                        <tr>
+                            <th scope="col">Demanda</th>
+                            <th scope="col">Situação</th>
+                            <th scope="col">Moderação</th>
+                            <th scope="col">Interessados</th>
+                            <th scope="col">Prazo</th>
+                            <th scope="col"><span class="visually-hidden">Ações</span></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for demanda in itens %}
+                            <tr>
+                                <td>
+                                    <a href="{{ url('/demandas/' ~ demanda.dem_id) }}" class="fw-semibold">
+                                        {{ demanda.dem_titulo }}
+                                    </a>
+                                    <span class="d-block small text-muted">
+                                        {{ demanda.dem_modalidade|rotulo }}
+                                        {% if demanda.are_nome %} · {{ demanda.are_nome }}{% endif %}
+                                        {% if demanda.dem_cidade %} · {{ demanda.dem_cidade }}/{{ demanda.dem_uf }}{% endif %}
+                                    </span>
+                                </td>
+                                <td><span class="badge text-bg-light border">{{ demanda.dem_situacao|rotulo }}</span></td>
+                                <td>
+                                    {% if demanda.dem_moderacao == 'APROVADO' %}
+                                        <span class="small text-success">Aprovada</span>
+                                    {% else %}
+                                        <span class="small text-warning fw-semibold">{{ demanda.dem_moderacao|rotulo }}</span>
+                                        {% if demanda.dem_moderacao_motivo %}
+                                            <span class="d-block small text-muted">{{ demanda.dem_moderacao_motivo }}</span>
+                                        {% endif %}
+                                    {% endif %}
+                                </td>
+                                <td>{{ demanda.dem_total_interesses }}</td>
+                                <td class="small text-muted text-nowrap">
+                                    {{ demanda.dem_dt_limite ? demanda.dem_dt_limite|data : 'sem prazo' }}
+                                </td>
+                                <td class="text-end text-nowrap">
+                                    <a class="btn btn-sm btn-outline-primary"
+                                       href="{{ url('/demandas/' ~ demanda.dem_id ~ '/interessados') }}">
+                                        Interessados
+                                    </a>
+                                    <a class="btn btn-sm btn-outline-secondary"
+                                       href="{{ url('/demandas/' ~ demanda.dem_id ~ '/correspondencias') }}">
+                                        Correspondências
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}
