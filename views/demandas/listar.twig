@@ -1,0 +1,165 @@
+{% extends 'layout/base.twig' %}
+
+{% block menu_ativo %}demandas{% endblock %}
+{% block titulo %}Demandas por serviços técnicos | {{ app.nome }}{% endblock %}
+
+{% block conteudo %}
+    <div class="d-flex flex-wrap justify-content-between align-items-end gap-2 mb-3">
+        <div>
+            <h1 class="h4 mb-1">Demandas por serviços técnicos</h1>
+            <p class="text-muted small mb-0">{{ paginacao.total|numero }} demanda(s) publicada(s).</p>
+        </div>
+        {% if tem_perfil('EMPRESA', 'TERCEIRO', 'ADMIN') %}
+            <a class="btn btn-primary" href="{{ url('/demandas/nova') }}">
+                <i class="bi bi-plus-lg" aria-hidden="true"></i> Publicar demanda
+            </a>
+        {% endif %}
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-3">
+            <form method="get" action="{{ url('/demandas') }}" class="card">
+                <div class="card-body">
+                    <h2 class="h6 mb-3">Filtros</h2>
+
+                    <div class="mb-3">
+                        <label class="form-label" for="termo">Palavra no título ou escopo</label>
+                        <input type="search" class="form-control form-control-sm" id="termo" name="termo"
+                               value="{{ filtros.termo }}">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label" for="area_id">Área</label>
+                        <select class="form-select form-select-sm" id="area_id" name="area_id">
+                            <option value="">Todas as áreas</option>
+                            {% for area in areas %}
+                                <option value="{{ area.are_id }}" {{ filtros.area_id == area.are_id ? 'selected' : '' }}>
+                                    {{ area.are_nome }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label" for="modalidade">Modalidade</label>
+                        <select class="form-select form-select-sm" id="modalidade" name="modalidade">
+                            <option value="">Todas</option>
+                            {% for modalidade in modalidades %}
+                                <option value="{{ modalidade }}" {{ filtros.modalidade == modalidade ? 'selected' : '' }}>
+                                    {{ modalidade|rotulo }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="row g-2 mb-3">
+                        <div class="col-4">
+                            <label class="form-label" for="uf">UF</label>
+                            <select class="form-select form-select-sm" id="uf" name="uf" data-uf-origem>
+                                <option value="">Todas</option>
+                                {% for uf in ufs %}
+                                    <option value="{{ uf }}" {{ filtros.uf == uf ? 'selected' : '' }}>{{ uf }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-8">
+                            <label class="form-label" for="cidade">Cidade</label>
+                            <input type="text" class="form-control form-control-sm" id="cidade" name="cidade"
+                                   value="{{ filtros.cidade }}" list="lista-municipios">
+                            <datalist id="lista-municipios"></datalist>
+                        </div>
+                    </div>
+
+                    <fieldset class="mb-3">
+                        <legend class="form-label">Outros critérios</legend>
+
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="somente_abertas" value="1"
+                                   id="somente_abertas" {{ filtros.somente_abertas ? 'checked' : '' }}>
+                            <label class="form-check-label small" for="somente_abertas">
+                                Apenas com prazo em aberto
+                            </label>
+                        </div>
+
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="exige_art" value="1"
+                                   id="exige_art" {{ filtros.exige_art ? 'checked' : '' }}>
+                            <label class="form-check-label small" for="exige_art">
+                                Que exigem ART ou CAT
+                            </label>
+                        </div>
+
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="incluir_remoto" value="1"
+                                   id="incluir_remoto" {{ filtros.incluir_remoto ? 'checked' : '' }}>
+                            <label class="form-check-label small" for="incluir_remoto">
+                                Incluir as que aceitam remoto
+                            </label>
+                        </div>
+                    </fieldset>
+
+                    <details class="mb-3" {{ filtros.competencias is not empty ? 'open' : '' }}>
+                        <summary class="form-label mb-2">Competências exigidas</summary>
+                        {% include 'partials/competencias-selecao.twig' with {
+                            competencias: competencias,
+                            selecionadas: filtros.competencias
+                        } only %}
+                    </details>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary btn-sm">Aplicar filtros</button>
+                        <a class="btn btn-outline-secondary btn-sm" href="{{ url('/demandas') }}">Limpar</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="col-lg-9">
+            <form method="get" class="d-flex justify-content-end align-items-center gap-2 mb-3">
+                {% for chave, valor in filtros %}
+                    {% if valor and chave != 'ordem' %}
+                        {% if valor is iterable %}
+                            {% for item in valor %}
+                                <input type="hidden" name="{{ chave }}[]" value="{{ item }}">
+                            {% endfor %}
+                        {% else %}
+                            <input type="hidden" name="{{ chave }}" value="{{ valor }}">
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
+
+                <label class="form-label mb-0 small" for="ordem">Ordenar por</label>
+                <select class="form-select form-select-sm w-auto" id="ordem" name="ordem" data-submete-formulario>
+                    {% set ordens = {
+                        'recentes': 'Mais recentes',
+                        'prazo': 'Prazo mais próximo',
+                        'orcamento': 'Maior orçamento',
+                        'interesses': 'Mais interessados'
+                    } %}
+                    {% for valor, rotulo in ordens %}
+                        <option value="{{ valor }}" {{ filtros.ordem == valor ? 'selected' : '' }}>{{ rotulo }}</option>
+                    {% endfor %}
+                </select>
+                <noscript><button type="submit" class="btn btn-sm btn-outline-primary">Ordenar</button></noscript>
+            </form>
+
+            {% if itens is empty %}
+                {% include 'partials/lista-vazia.twig' with {
+                    icone: 'clipboard',
+                    titulo: 'Nenhuma demanda encontrada',
+                    mensagem: 'Não há demandas publicadas que atendam aos filtros aplicados.'
+                } only %}
+            {% else %}
+                <div class="row g-3">
+                    {% for demanda in itens %}
+                        <div class="col-md-6">
+                            {% include 'partials/cartao-demanda.twig' with { demanda: demanda } only %}
+                        </div>
+                    {% endfor %}
+                </div>
+
+                {% include 'partials/paginacao.twig' with { paginacao: paginacao } only %}
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
