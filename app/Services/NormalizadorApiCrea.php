@@ -28,20 +28,20 @@ final class NormalizadorApiCrea
         $dados = self::extrairObjeto($resposta);
 
         return [
-            'nome'            => self::campo($dados, ['nome', 'nomeProfissional', 'nome_completo', 'nomeCompleto', 'razaoSocial']),
-            'cpf'             => Formatador::somenteDigitos((string) self::campo($dados, ['cpf', 'numeroCpf', 'documento'])),
-            'rnp'             => self::campo($dados, ['rnp', 'numeroRnp', 'registroNacional', 'numero_rnp']),
-            'registro'        => self::campo($dados, ['registro', 'numeroRegistro', 'carteira', 'numeroCarteira']),
+            'nome'            => self::campo($dados, ['pro_nome', 'nome', 'nomeProfissional', 'nome_completo', 'nomeCompleto', 'razaoSocial']),
+            'cpf'             => Formatador::somenteDigitos((string) self::campo($dados, ['pro_cpf', 'cpf', 'numeroCpf', 'documento'])),
+            'rnp'             => self::campo($dados, ['pro_rnp', 'rnp', 'numeroRnp', 'registroNacional', 'numero_rnp']),
+            'registro'        => self::campo($dados, ['pro_registro_crea', 'registro', 'numeroRegistro', 'carteira', 'numeroCarteira']),
             'titulo'          => self::campo($dados, ['titulo', 'tituloProfissional', 'titulos', 'formacao']),
-            'situacao'        => self::campo($dados, ['situacao', 'situacaoRegistro', 'status', 'situacaoCadastral']),
+            'situacao'        => self::campo($dados, ['pro_status', 'situacao', 'situacaoRegistro', 'status', 'situacaoCadastral']),
             'tipo_registro'   => self::campo($dados, ['tipoRegistro', 'categoria', 'tipo']),
             'dt_registro'     => self::data(self::campo($dados, ['dataRegistro', 'dtRegistro', 'data_registro'])),
             'dt_visto'        => self::data(self::campo($dados, ['dataVisto', 'dtVisto'])),
-            'uf'              => self::uf(self::campo($dados, ['uf', 'ufRegistro', 'estado'])),
+            'uf'              => self::uf(self::campo($dados, ['art_local_uf', 'uf', 'ufRegistro', 'estado'])),
             'municipio'       => self::campo($dados, ['municipio', 'cidade', 'municipioRegistro']),
             'email'           => self::campo($dados, ['email', 'emailProfissional']),
             'telefone'        => self::campo($dados, ['telefone', 'celular', 'fone']),
-            'ativo'           => self::situacaoAtiva((string) self::campo($dados, ['situacao', 'situacaoRegistro', 'status'])),
+            'ativo'           => self::situacaoAtiva((string) self::campo($dados, ['pro_status', 'situacao', 'situacaoRegistro', 'status'])),
         ];
     }
 
@@ -54,18 +54,18 @@ final class NormalizadorApiCrea
         $dados = self::extrairObjeto($resposta);
 
         return [
-            'razao_social'      => self::campo($dados, ['razaoSocial', 'razao_social', 'nome', 'nomeEmpresarial']),
-            'nome_fantasia'     => self::campo($dados, ['nomeFantasia', 'nome_fantasia', 'fantasia']),
-            'cnpj'              => Formatador::somenteDigitos((string) self::campo($dados, ['cnpj', 'numeroCnpj', 'documento'])),
-            'registro'          => self::campo($dados, ['registro', 'numeroRegistro', 'numeroPessoaJuridica']),
+            'razao_social'      => self::campo($dados, ['emp_razao_social', 'razaoSocial', 'razao_social', 'nome', 'nomeEmpresarial']),
+            'nome_fantasia'     => self::campo($dados, ['emp_nome_fantasia', 'nomeFantasia', 'nome_fantasia', 'fantasia']),
+            'cnpj'              => Formatador::somenteDigitos((string) self::campo($dados, ['emp_cnpj', 'cnpj', 'numeroCnpj', 'documento'])),
+            'registro'          => self::campo($dados, ['emp_registro_crea', 'registro', 'numeroRegistro', 'numeroPessoaJuridica']),
             'situacao'          => self::campo($dados, ['situacao', 'situacaoRegistro', 'status']),
-            'dt_registro'       => self::data(self::campo($dados, ['dataRegistro', 'dtRegistro'])),
+            'dt_registro'       => self::data(self::campo($dados, ['emp_dt_registro', 'dataRegistro', 'dtRegistro'])),
             'uf'                => self::uf(self::campo($dados, ['uf', 'estado'])),
             'municipio'         => self::campo($dados, ['municipio', 'cidade']),
             'email'             => self::campo($dados, ['email']),
             'telefone'          => self::campo($dados, ['telefone', 'fone']),
             'responsaveis'      => self::responsaveis($dados),
-            'ativo'             => self::situacaoAtiva((string) self::campo($dados, ['situacao', 'situacaoRegistro', 'status'])),
+            'ativo'             => self::situacaoAtiva((string) self::campo($dados, ['pro_status', 'situacao', 'situacaoRegistro', 'status'])),
         ];
     }
 
@@ -82,7 +82,7 @@ final class NormalizadorApiCrea
                 continue;
             }
 
-            $numero = (string) self::campo($item, ['numero', 'numeroArt', 'nrArt', 'art', 'numeroAnotacao']);
+            $numero = (string) self::campo($item, ['art_numero', 'numero', 'numeroArt', 'nrArt', 'art', 'numeroAnotacao']);
 
             if ($numero === '') {
                 continue;
@@ -95,15 +95,15 @@ final class NormalizadorApiCrea
             $normalizadas[] = [
                 'numero'         => $numero,
                 'rnp'            => (string) (self::campo($item, ['rnp', 'numeroRnp']) ?: $rnp),
-                'tipo'           => self::campo($item, ['tipo', 'tipoArt', 'modalidade', 'tipoAnotacao']),
-                'objeto'         => self::campo($item, ['objeto', 'descricao', 'objetoContrato', 'atividade', 'descricaoObra']),
-                'contratante'    => self::campo($item, ['contratante', 'nomeContratante', 'cliente', 'proprietario']),
+                'tipo'           => self::campo($item, ['art_tipo', 'tipo', 'tipoArt', 'modalidade', 'tipoAnotacao']),
+                'objeto'         => self::campo($item, ['art_objeto', 'objeto', 'descricao', 'objetoContrato', 'atividade', 'descricaoObra']),
+                'contratante'    => self::campo($item, ['art_contratante_nome', 'contratante', 'nomeContratante', 'cliente', 'proprietario']),
                 'valor_contrato' => self::decimal(self::campo($item, ['valorContrato', 'valor', 'valorObra'])),
-                'municipio'      => self::campo($item, ['municipio', 'cidade', 'municipioObra']),
-                'uf'             => self::uf(self::campo($item, ['uf', 'estado'])),
+                'municipio'      => self::campo($item, ['art_local_municipio', 'municipio', 'cidade', 'municipioObra']),
+                'uf'             => self::uf(self::campo($item, ['art_local_uf', 'uf', 'estado'])),
                 'dt_inicio'      => self::data(self::campo($item, ['dataInicio', 'dtInicio', 'inicio', 'dataRegistro'])),
                 'dt_fim'         => self::data(self::campo($item, ['dataFim', 'dtFim', 'fim', 'dataConclusao', 'dataBaixa'])),
-                'situacao'       => self::campo($item, ['situacao', 'status', 'situacaoArt']),
+                'situacao'       => self::campo($item, ['art_situacao', 'situacao', 'status', 'situacaoArt']),
             ];
         }
 
@@ -123,7 +123,7 @@ final class NormalizadorApiCrea
                 continue;
             }
 
-            $numero = (string) self::campo($item, ['numero', 'numeroCat', 'nrCat', 'cat', 'numeroCertidao']);
+            $numero = (string) self::campo($item, ['cat_numero', 'numero', 'numeroCat', 'nrCat', 'cat', 'numeroCertidao']);
 
             if ($numero === '') {
                 continue;
@@ -136,11 +136,11 @@ final class NormalizadorApiCrea
             $normalizadas[] = [
                 'numero'      => $numero,
                 'rnp'         => (string) (self::campo($item, ['rnp', 'numeroRnp']) ?: $rnp),
-                'tipo'        => self::campo($item, ['tipo', 'tipoCat', 'modalidade']),
-                'objeto'      => self::campo($item, ['objeto', 'descricao', 'atividade', 'objetoCertidao']),
-                'dt_emissao'  => self::data(self::campo($item, ['dataEmissao', 'dtEmissao', 'emissao', 'dataRegistro'])),
-                'dt_validade' => self::data(self::campo($item, ['dataValidade', 'dtValidade', 'validade'])),
-                'situacao'    => self::campo($item, ['situacao', 'status', 'situacaoCat']),
+                'tipo'        => self::campo($item, ['cat_tipo', 'tipo', 'tipoCat', 'modalidade']),
+                'objeto'      => self::campo($item, ['cat_finalidade', 'objeto', 'descricao', 'atividade', 'objetoCertidao']),
+                'dt_emissao'  => self::data(self::campo($item, ['cat_dt_emissao', 'dataEmissao', 'dtEmissao', 'emissao', 'dataRegistro'])),
+                'dt_validade' => self::data(self::campo($item, ['cat_dt_validade', 'dataValidade', 'dtValidade', 'validade'])),
+                'situacao'    => self::campo($item, ['cat_tipo', 'situacao', 'status', 'situacaoCat']),
             ];
         }
 
@@ -242,7 +242,7 @@ final class NormalizadorApiCrea
      */
     private static function responsaveis(array $dados): array
     {
-        foreach (['responsaveis', 'responsaveisTecnicos', 'profissionais', 'quadroTecnico'] as $chave) {
+        foreach (['quadro_tecnico', 'responsaveis', 'responsaveisTecnicos', 'profissionais', 'quadroTecnico'] as $chave) {
             if (isset($dados[$chave]) && is_array($dados[$chave])) {
                 $lista = [];
 
@@ -332,6 +332,11 @@ final class NormalizadorApiCrea
         }
 
         $normalizada = Formatador::normalizar($situacao);
+
+        // A API oficial usa o codigo 'A' para registro ativo
+        if ($normalizada === 'a') {
+            return true;
+        }
 
         foreach (['ativo', 'ativa', 'regular', 'valido', 'valida', 'em dia', 'adimplente'] as $indicativo) {
             if (str_contains($normalizada, $indicativo)) {
