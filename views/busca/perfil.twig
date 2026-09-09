@@ -1,0 +1,429 @@
+{% extends 'layout/base.twig' %}
+
+{% block menu_ativo %}profissionais{% endblock %}
+{% block titulo %}{{ perfil.usu_nome }} | {{ app.nome }}{% endblock %}
+{% block descricao %}{{ perfil.prf_titulo|default(perfil.usu_nome) }} — perfil profissional no CREA Pro-Link.{% endblock %}
+
+{% block conteudo %}
+    {% if eh_titular %}
+        <div class="alert alert-secondary d-flex flex-wrap justify-content-between align-items-center gap-2">
+            <span>
+                <i class="bi bi-eye" aria-hidden="true"></i>
+                Esta é a visão do seu perfil. Itens ocultos aparecem aqui marcados, mas não são
+                exibidos a outras pessoas.
+            </span>
+            <a class="btn btn-sm btn-outline-primary" href="{{ url('/meu-perfil/editar') }}">Editar meu perfil</a>
+        </div>
+    {% endif %}
+
+    {% if eh_admin and not eh_titular %}
+        <div class="alert alert-warning d-flex flex-wrap justify-content-between align-items-center gap-2">
+            <span>
+                <i class="bi bi-shield-check" aria-hidden="true"></i>
+                Visualização administrativa: você vê itens que o titular restringiu.
+                Moderação: <strong>{{ perfil.prf_moderacao|rotulo }}</strong>.
+            </span>
+            <a class="btn btn-sm btn-outline-dark" href="{{ url('/admin/usuarios/' ~ perfil.prf_usu_id) }}">
+                Abrir na administração
+            </a>
+        </div>
+    {% endif %}
+
+    <div class="row g-4">
+        {# --- Coluna principal ------------------------------------------- #}
+        <div class="col-lg-8">
+            <article class="card mb-4">
+                <div class="card-body p-4">
+                    <div class="d-flex flex-wrap gap-3 align-items-start">
+                        <img src="{{ perfil.prf_foto ? url('uploads/' ~ perfil.prf_foto) : asset('img/perfil-sem-foto.svg') }}"
+                             alt="" width="88" height="88" class="rounded-circle border" style="object-fit: cover;">
+
+                        <div class="flex-grow-1">
+                            <h1 class="h4 mb-1">{{ perfil.usu_nome }}</h1>
+
+                            {% if perfil.prf_titulo %}
+                                <p class="fw-semibold text-marca mb-2">{{ perfil.prf_titulo }}</p>
+                            {% endif %}
+
+                            <div class="d-flex flex-wrap gap-2 mb-2">
+                                {% include 'partials/selo-registro.twig' with { registrado: perfil.usu_registrado_crea } only %}
+                                <span class="badge text-bg-light border">{{ perfil.usu_perfil|rotulo }}</span>
+                                <span class="badge text-bg-light border">{{ perfil.prf_disponibilidade|rotulo }}</span>
+                            </div>
+
+                            <dl class="row small mb-0">
+                                {% if perfil.are_nome %}
+                                    <dt class="col-sm-4">Área principal</dt>
+                                    <dd class="col-sm-8">{{ perfil.are_nome }}</dd>
+                                {% endif %}
+
+                                {% if perfil.prf_cidade or perfil.prf_uf %}
+                                    <dt class="col-sm-4">Localização</dt>
+                                    <dd class="col-sm-8">
+                                        {{ perfil.prf_cidade }}{{ perfil.prf_cidade and perfil.prf_uf ? ' — ' : '' }}{{ perfil.prf_uf }}
+                                        {% if perfil.prf_atende_remoto == 'S' %}
+                                            <span class="d-block text-muted">Atende também de forma remota</span>
+                                        {% endif %}
+                                        {% if perfil.prf_raio_atuacao_km %}
+                                            <span class="d-block text-muted">Raio de atuação: {{ perfil.prf_raio_atuacao_km }} km</span>
+                                        {% endif %}
+                                    </dd>
+                                {% endif %}
+
+                                {% if perfil.prf_anos_experiencia %}
+                                    <dt class="col-sm-4">Experiência</dt>
+                                    <dd class="col-sm-8">{{ perfil.prf_anos_experiencia }} ano(s)</dd>
+                                {% endif %}
+
+                                {% if perfil.usu_registrado_crea == 'S' and perfil.usu_rnp and (perfil.prf_exibe_rnp == 'S' or eh_titular or eh_admin) %}
+                                    <dt class="col-sm-4">RNP</dt>
+                                    <dd class="col-sm-8">
+                                        {{ perfil.usu_rnp }}
+                                        {% if perfil.prf_exibe_rnp != 'S' %}
+                                            <span class="badge text-bg-secondary ms-1">oculto ao público</span>
+                                        {% endif %}
+                                    </dd>
+                                {% endif %}
+
+                                {% if perfil.prf_exibe_documento == 'S' or eh_titular or eh_admin %}
+                                    {% set documento = perfil.usu_cpf ?: perfil.usu_cnpj %}
+                                    {% if documento %}
+                                        <dt class="col-sm-4">Documento</dt>
+                                        <dd class="col-sm-8">
+                                            {{ documento|documento }}
+                                            {% if perfil.prf_exibe_documento != 'S' %}
+                                                <span class="badge text-bg-secondary ms-1">oculto ao público</span>
+                                            {% endif %}
+                                        </dd>
+                                    {% endif %}
+                                {% endif %}
+
+                                {% if perfil.prf_exibe_valor_hora == 'S' and perfil.prf_valor_hora %}
+                                    <dt class="col-sm-4">Valor-hora de referência</dt>
+                                    <dd class="col-sm-8">{{ perfil.prf_valor_hora|moeda }}</dd>
+                                {% endif %}
+
+                                {% if perfil.prf_site or perfil.prf_linkedin %}
+                                    <dt class="col-sm-4">Links</dt>
+                                    <dd class="col-sm-8">
+                                        {% if perfil.prf_site %}
+                                            <a href="{{ perfil.prf_site }}" target="_blank" rel="noopener nofollow">Site</a>
+                                        {% endif %}
+                                        {% if perfil.prf_linkedin %}
+                                            <a href="{{ perfil.prf_linkedin }}" target="_blank" rel="noopener nofollow" class="ms-2">LinkedIn</a>
+                                        {% endif %}
+                                    </dd>
+                                {% endif %}
+                            </dl>
+                        </div>
+                    </div>
+
+                    {% if perfil.prf_resumo %}
+                        <div class="mt-4 pt-3 border-top">
+                            <h2 class="h6">Resumo profissional</h2>
+                            <p class="mb-0" style="white-space: pre-line;">{{ perfil.prf_resumo }}</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </article>
+
+            {# --- Competências --------------------------------------------- #}
+            <section class="card mb-4">
+                <div class="card-header card-cabecalho-simples">Competências técnicas declaradas</div>
+                <div class="card-body">
+                    {% if competencias is empty %}
+                        <p class="text-muted small mb-0">Nenhuma competência declarada neste perfil.</p>
+                    {% else %}
+                        {% set porArea = {} %}
+                        <div class="row g-3">
+                            {% for competencia in competencias %}
+                                <div class="col-md-6">
+                                    <div class="border rounded p-2 h-100">
+                                        <span class="fw-semibold small d-block">{{ competencia.cmp_nome }}</span>
+                                        <span class="small text-muted">
+                                            {{ competencia.are_nome }} · nível {{ competencia.pcp_nivel|rotulo|lower }}
+                                        </span>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            </section>
+
+            {# --- Experiências --------------------------------------------- #}
+            <section class="card mb-4">
+                <div class="card-header card-cabecalho-simples">
+                    Experiência profissional
+                    <span class="badge text-bg-light border ms-1">{{ experiencias|length }}</span>
+                </div>
+                <div class="card-body">
+                    {% if experiencias is empty %}
+                        <p class="text-muted small mb-0">Nenhuma experiência publicada neste perfil.</p>
+                    {% else %}
+                        {% for experiencia in experiencias %}
+                            <article class="{{ not loop.first ? 'border-top pt-3 mt-3' : '' }}">
+                                <div class="d-flex flex-wrap justify-content-between gap-2">
+                                    <h3 class="h6 mb-1">{{ experiencia.exp_titulo }}</h3>
+                                    <div class="d-flex flex-wrap gap-1">
+                                        {% if experiencia.exp_comprovada == 'S' %}
+                                            <span class="selo-registrado" title="Vinculada a ART ou CAT validada na base oficial">
+                                                <i class="bi bi-patch-check-fill" aria-hidden="true"></i>
+                                                Comprovada
+                                            </span>
+                                        {% else %}
+                                            <span class="selo-nao-registrado" title="Informação declarada pelo profissional, sem vínculo com ART ou CAT">
+                                                Declarada
+                                            </span>
+                                        {% endif %}
+                                        {% if experiencia.exp_visivel != 'S' %}
+                                            <span class="badge text-bg-secondary">oculta ao público</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+
+                                <p class="small text-muted mb-2">
+                                    {% if experiencia.exp_papel %}{{ experiencia.exp_papel }}{% endif %}
+                                    {% if experiencia.exp_organizacao %}
+                                        {{ experiencia.exp_papel ? ' · ' : '' }}{{ experiencia.exp_organizacao }}
+                                    {% endif %}
+                                    {% if experiencia.exp_municipio or experiencia.exp_uf %}
+                                        · {{ experiencia.exp_municipio }}{{ experiencia.exp_municipio and experiencia.exp_uf ? '/' : '' }}{{ experiencia.exp_uf }}
+                                    {% endif %}
+                                    <span class="d-block">
+                                        {{ experiencia.exp_dt_inicio|data('m/Y') }}
+                                        {% if experiencia.exp_atual == 'S' %}
+                                            até o momento
+                                        {% elseif experiencia.exp_dt_fim %}
+                                            a {{ experiencia.exp_dt_fim|data('m/Y') }}
+                                        {% endif %}
+                                    </span>
+                                </p>
+
+                                {% if experiencia.exp_descricao %}
+                                    <p class="small mb-2" style="white-space: pre-line;">{{ experiencia.exp_descricao }}</p>
+                                {% endif %}
+
+                                {% if experiencia.art_numero or experiencia.cat_numero %}
+                                    <p class="small mb-2">
+                                        <i class="bi bi-file-earmark-check text-success" aria-hidden="true"></i>
+                                        Comprovada por
+                                        {% if experiencia.art_numero %}ART nº {{ experiencia.art_numero }}{% endif %}
+                                        {% if experiencia.cat_numero %}
+                                            {{ experiencia.art_numero ? ' e ' : '' }}CAT nº {{ experiencia.cat_numero }}
+                                        {% endif %}
+                                    </p>
+                                {% endif %}
+
+                                {% if experiencia.competencias is not empty %}
+                                    <div>
+                                        {% for competencia in experiencia.competencias %}
+                                            <span class="etiqueta-competencia">{{ competencia.cmp_nome }}</span>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </article>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </section>
+
+            {# --- Acervo técnico ------------------------------------------- #}
+            <section class="card mb-4">
+                <div class="card-header card-cabecalho-simples">
+                    Acervo técnico validado na base do CREA-AM
+                </div>
+                <div class="card-body">
+                    {% if arts is empty and cats is empty %}
+                        <p class="text-muted small mb-0">
+                            Nenhuma ART ou CAT associada e visível neste perfil.
+                        </p>
+                    {% else %}
+                        {% if arts is not empty %}
+                            <h3 class="h6">Anotações de Responsabilidade Técnica</h3>
+                            <div class="table-responsive mb-4">
+                                <table class="table table-sm align-middle">
+                                    <caption class="small">
+                                        Dados obtidos da API oficial do CREA-AM e não editáveis na plataforma.
+                                    </caption>
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Número</th>
+                                            <th scope="col">Objeto</th>
+                                            <th scope="col">Local</th>
+                                            <th scope="col">Período</th>
+                                            <th scope="col">Situação</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for art in arts %}
+                                            <tr>
+                                                <td class="text-nowrap">
+                                                    {{ art.art_numero }}
+                                                    {% if art.art_destaque == 'S' %}
+                                                        <i class="bi bi-star-fill text-warning" title="Destaque do portfólio" aria-hidden="true"></i>
+                                                    {% endif %}
+                                                    {% if art.art_visivel != 'S' %}
+                                                        <span class="badge text-bg-secondary">oculta</span>
+                                                    {% endif %}
+                                                </td>
+                                                <td class="small">{{ art.art_objeto|default('—') }}</td>
+                                                <td class="small text-nowrap">
+                                                    {{ art.art_municipio }}{{ art.art_municipio and art.art_uf ? '/' : '' }}{{ art.art_uf }}
+                                                </td>
+                                                <td class="small text-nowrap">
+                                                    {{ art.art_dt_inicio|data('m/Y') }}
+                                                    {% if art.art_dt_fim %} a {{ art.art_dt_fim|data('m/Y') }}{% endif %}
+                                                </td>
+                                                <td class="small">{{ art.art_situacao|default('—') }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% endif %}
+
+                        {% if cats is not empty %}
+                            <h3 class="h6">Certidões de Acervo Técnico</h3>
+                            <div class="table-responsive">
+                                <table class="table table-sm align-middle mb-0">
+                                    <caption class="small">
+                                        Dados obtidos da API oficial do CREA-AM.
+                                    </caption>
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Número</th>
+                                            <th scope="col">Objeto</th>
+                                            <th scope="col">Emissão</th>
+                                            <th scope="col">Situação</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for cat in cats %}
+                                            <tr>
+                                                <td class="text-nowrap">
+                                                    {{ cat.cat_numero }}
+                                                    {% if cat.cat_visivel != 'S' %}
+                                                        <span class="badge text-bg-secondary">oculta</span>
+                                                    {% endif %}
+                                                </td>
+                                                <td class="small">{{ cat.cat_objeto|default('—') }}</td>
+                                                <td class="small text-nowrap">{{ cat.cat_dt_emissao|data }}</td>
+                                                <td class="small">{{ cat.cat_situacao|default('—') }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </section>
+        </div>
+
+        {# --- Coluna lateral -------------------------------------------- #}
+        <div class="col-lg-4">
+            {% if eh_titular and completude is not null %}
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h2 class="h6">Completude do perfil</h2>
+                        <div class="progress mb-2" role="progressbar" aria-valuenow="{{ completude }}"
+                             aria-valuemin="0" aria-valuemax="100" aria-label="Completude do perfil">
+                            <div class="progress-bar bg-marca" style="width: {{ completude }}%">{{ completude }}%</div>
+                        </div>
+                        <p class="small text-muted mb-0">
+                            Perfis completos aparecem melhor posicionados nas correspondências.
+                        </p>
+                    </div>
+                </div>
+            {% endif %}
+
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h2 class="h6">Contato</h2>
+
+                    {% if perfil.prf_exibe_contato == 'S' or eh_titular or eh_admin %}
+                        <dl class="small mb-3">
+                            <dt>E-mail</dt>
+                            <dd>{{ perfil.usu_email }}</dd>
+                            {% if perfil.usu_telefone %}
+                                <dt>Telefone</dt>
+                                <dd>{{ perfil.usu_telefone|telefone }}</dd>
+                            {% endif %}
+                        </dl>
+                        {% if perfil.prf_exibe_contato != 'S' %}
+                            <p class="small text-muted">
+                                <i class="bi bi-eye-slash" aria-hidden="true"></i>
+                                O titular optou por não exibir estes dados publicamente.
+                            </p>
+                        {% endif %}
+                    {% else %}
+                        <p class="small text-muted">
+                            Este profissional optou por não exibir dados de contato. Use a mensagem
+                            pela plataforma.
+                        </p>
+                    {% endif %}
+
+                    {% if autenticado() and not eh_titular %}
+                        {% if perfil.prf_aceita_contato == 'S' %}
+                            <form method="post" action="{{ url('/mensagens/iniciar') }}">
+                                {{ campo_csrf() }}
+                                <input type="hidden" name="usuario_id" value="{{ perfil.prf_usu_id }}">
+
+                                <div class="mb-2">
+                                    <label class="form-label small" for="conteudo">Mensagem inicial</label>
+                                    <textarea class="form-control form-control-sm" id="conteudo" name="conteudo"
+                                              rows="3" maxlength="4000"
+                                              placeholder="Apresente brevemente a necessidade técnica."></textarea>
+                                </div>
+
+                                <button type="submit" class="btn btn-primary btn-sm w-100">
+                                    <i class="bi bi-chat-dots" aria-hidden="true"></i>
+                                    Entrar em contato
+                                </button>
+                            </form>
+                        {% else %}
+                            <p class="small text-muted mb-0">
+                                <i class="bi bi-slash-circle" aria-hidden="true"></i>
+                                Este perfil não está aceitando novos contatos pela plataforma.
+                            </p>
+                        {% endif %}
+                    {% elseif not autenticado() %}
+                        <a class="btn btn-outline-primary btn-sm w-100" href="{{ url('/entrar') }}">
+                            Entre para entrar em contato
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h2 class="h6">Resumo do acervo</h2>
+                    <ul class="list-unstyled small mb-0">
+                        <li class="d-flex justify-content-between border-bottom py-1">
+                            <span>ARTs validadas</span><strong>{{ arts|length }}</strong>
+                        </li>
+                        <li class="d-flex justify-content-between border-bottom py-1">
+                            <span>CATs validadas</span><strong>{{ cats|length }}</strong>
+                        </li>
+                        <li class="d-flex justify-content-between border-bottom py-1">
+                            <span>Experiências publicadas</span><strong>{{ experiencias|length }}</strong>
+                        </li>
+                        <li class="d-flex justify-content-between py-1">
+                            <span>Competências declaradas</span><strong>{{ competencias|length }}</strong>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            {% if autenticado() and not eh_titular %}
+                <p class="small text-center">
+                    <a href="{{ url('/denunciar/perfil/' ~ perfil.prf_id) }}" class="text-muted">
+                        <i class="bi bi-flag" aria-hidden="true"></i>
+                        Denunciar este perfil
+                    </a>
+                </p>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

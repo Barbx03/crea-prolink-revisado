@@ -34,6 +34,10 @@ $roteador->get('/termos-de-uso',           'ControladorPagina', 'termosDeUso');
 $roteador->get('/politica-de-privacidade', 'ControladorPagina', 'politicaDePrivacidade');
 $roteador->get('/acessibilidade',          'ControladorPagina', 'acessibilidade');
 
+// Busca de profissionais e perfis públicos (perfil "Público" do item 3)
+$roteador->get('/profissionais',        'ControladorBusca', 'pesquisar');
+$roteador->get('/profissionais/{id}',   'ControladorBusca', 'verPerfil');
+
 // Demandas públicas
 $roteador->get('/demandas',             'ControladorDemanda', 'listar');
 $roteador->get('/demandas/nova',        'ControladorDemanda', 'formularioNova', $CONTRATANTES);

@@ -1,0 +1,64 @@
+{# Cartão de profissional ou empresa nas listagens de busca #}
+<article class="card h-100 cartao-clicavel">
+    <div class="card-body d-flex flex-column">
+        <div class="d-flex gap-3 mb-2">
+            <img src="{{ perfil.prf_foto ? url('uploads/' ~ perfil.prf_foto) : asset('img/perfil-sem-foto.svg') }}"
+                 alt="" width="56" height="56" class="rounded-circle border" style="object-fit: cover;">
+
+            <div class="flex-grow-1 min-w-0">
+                <h3 class="h6 mb-1">
+                    <a href="{{ url('/profissionais/' ~ perfil.prf_id) }}" class="text-decoration-none">
+                        {{ perfil.usu_nome }}
+                    </a>
+                </h3>
+                {% include 'partials/selo-registro.twig' with { registrado: perfil.usu_registrado_crea } only %}
+            </div>
+        </div>
+
+        {% if perfil.prf_titulo %}
+            <p class="fw-semibold text-marca mb-1">{{ perfil.prf_titulo }}</p>
+        {% endif %}
+
+        <p class="small text-muted mb-2">
+            {% if perfil.prf_cidade or perfil.prf_uf %}
+                <i class="bi bi-geo-alt" aria-hidden="true"></i>
+                {{ perfil.prf_cidade }}{{ perfil.prf_cidade and perfil.prf_uf ? ' — ' : '' }}{{ perfil.prf_uf }}
+            {% else %}
+                <span class="fst-italic">Localização não informada</span>
+            {% endif %}
+            {% if perfil.prf_atende_remoto == 'S' %}
+                <span class="ms-2"><i class="bi bi-laptop" aria-hidden="true"></i> atende remoto</span>
+            {% endif %}
+        </p>
+
+        {% if perfil.prf_resumo %}
+            <p class="small mb-2">{{ perfil.prf_resumo|slice(0, 150) }}{{ perfil.prf_resumo|length > 150 ? '…' : '' }}</p>
+        {% endif %}
+
+        {% if perfil.competencias is defined and perfil.competencias is not empty %}
+            <div class="mb-3">
+                {% for competencia in perfil.competencias|slice(0, 4) %}
+                    <span class="etiqueta-competencia">{{ competencia.cmp_nome }}</span>
+                {% endfor %}
+                {% if perfil.competencias|length > 4 %}
+                    <span class="small text-muted">+{{ perfil.competencias|length - 4 }}</span>
+                {% endif %}
+            </div>
+        {% endif %}
+
+        <div class="mt-auto d-flex flex-wrap gap-3 small text-muted border-top pt-2">
+            {% if perfil.total_arts is defined %}
+                <span title="Anotações de Responsabilidade Técnica validadas">
+                    <i class="bi bi-file-earmark-check" aria-hidden="true"></i>
+                    {{ perfil.total_arts }} ART(s)
+                </span>
+            {% endif %}
+            {% if perfil.prf_anos_experiencia %}
+                <span><i class="bi bi-clock-history" aria-hidden="true"></i> {{ perfil.prf_anos_experiencia }} ano(s)</span>
+            {% endif %}
+            {% if perfil.prf_disponibilidade is defined %}
+                <span><i class="bi bi-calendar-check" aria-hidden="true"></i> {{ perfil.prf_disponibilidade|rotulo }}</span>
+            {% endif %}
+        </div>
+    </div>
+</article>
