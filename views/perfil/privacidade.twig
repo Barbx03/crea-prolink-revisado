@@ -1,0 +1,300 @@
+{% extends 'layout/base.twig' %}
+
+{% block titulo %}Privacidade e meus dados | {{ app.nome }}{% endblock %}
+{% block robots %}noindex, nofollow{% endblock %}
+
+{% block conteudo %}
+    <h1 class="h4 mb-1">Privacidade e meus dados</h1>
+    <p class="text-muted small mb-4">
+        Aqui você controla o que é exibido, autoriza ou revoga finalidades de tratamento,
+        leva seus dados consigo e exerce os direitos previstos na Lei Geral de Proteção
+        de Dados Pessoais.
+    </p>
+
+    <div class="row g-4">
+        <div class="col-lg-7">
+            {# --- Visibilidade do perfil ---------------------------------- #}
+            <form method="post" action="{{ url('/privacidade/visibilidade') }}" class="card mb-4">
+                {{ campo_csrf() }}
+                <div class="card-body">
+                    <h2 class="h6">Visibilidade do perfil</h2>
+                    <p class="small text-muted">
+                        Define quem encontra e vê seu perfil. Dados de contato e documento
+                        permanecem ocultos por padrão.
+                    </p>
+
+                    <fieldset class="mb-3">
+                        <legend class="form-label">Quem pode ver meu perfil</legend>
+
+                        {% set opcoes = [
+                            { valor: 'PUBLICO', titulo: 'Público', texto: 'Aparece nas buscas e pode ser visto por qualquer visitante.' },
+                            { valor: 'AUTENTICADO', titulo: 'Somente usuários autenticados', texto: 'Aparece nas buscas apenas para quem tem cadastro e está logado.' },
+                            { valor: 'OCULTO', titulo: 'Oculto', texto: 'Não aparece em busca nenhuma. Você continua podendo manifestar interesse em demandas.' }
+                        ] %}
+
+                        {% for opcao in opcoes %}
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="visibilidade"
+                                       id="vis-{{ opcao.valor }}" value="{{ opcao.valor }}"
+                                       {{ perfil.prf_visibilidade == opcao.valor ? 'checked' : '' }}>
+                                <label class="form-check-label" for="vis-{{ opcao.valor }}">
+                                    <span class="fw-semibold">{{ opcao.titulo }}</span>
+                                    <span class="d-block small text-muted">{{ opcao.texto }}</span>
+                                </label>
+                            </div>
+                        {% endfor %}
+                    </fieldset>
+
+                    <fieldset class="mb-3">
+                        <legend class="form-label">O que exibir no perfil</legend>
+
+                        {% set itens = [
+                            { campo: 'exibe_contato', valor: perfil.prf_exibe_contato, titulo: 'E-mail e telefone', texto: 'Sem isso, o contato ocorre pelas mensagens da plataforma.' },
+                            { campo: 'exibe_documento', valor: perfil.prf_exibe_documento, titulo: 'CPF ou CNPJ mascarado', texto: 'Exibe apenas parte dos dígitos, para conferência.' },
+                            { campo: 'exibe_rnp', valor: perfil.prf_exibe_rnp, titulo: 'RNP', texto: 'Permite a terceiros conferir seu registro no Conselho.' },
+                            { campo: 'exibe_valor_hora', valor: perfil.prf_exibe_valor_hora, titulo: 'Valor-hora de referência', texto: 'Útil quando você trabalha com valor de tabela.' },
+                            { campo: 'aceita_contato', valor: perfil.prf_aceita_contato, titulo: 'Aceitar contato pela plataforma', texto: 'Desmarcado, ninguém pode iniciar conversa com você.' }
+                        ] %}
+
+                        {% for item in itens %}
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="{{ item.campo }}" value="1"
+                                       id="{{ item.campo }}" {{ item.valor == 'S' ? 'checked' : '' }}>
+                                <label class="form-check-label" for="{{ item.campo }}">
+                                    {{ item.titulo }}
+                                    <span class="d-block small text-muted">{{ item.texto }}</span>
+                                </label>
+                            </div>
+                        {% endfor %}
+                    </fieldset>
+
+                    <button type="submit" class="btn btn-primary">Salvar visibilidade</button>
+                </div>
+            </form>
+
+            {# --- Consentimentos ---------------------------------------- #}
+            <form method="post" action="{{ url('/privacidade/consentimentos') }}" class="card mb-4">
+                {{ campo_csrf() }}
+                <div class="card-body">
+                    <h2 class="h6">Finalidades de tratamento</h2>
+                    <p class="small text-muted">
+                        Cada finalidade é uma autorização separada. Revogar não apaga o histórico:
+                        a revogação também é registrada, com data, hora e origem.
+                    </p>
+
+                    {% set gerenciaveis = ['DADOS_CREA', 'PERFIL_PUBLICO', 'COMUNICACOES'] %}
+
+                    {% for finalidade in gerenciaveis %}
+                        {% set situacao = consentimentos[finalidade]|default(null) %}
+                        <div class="form-check border rounded p-3 mb-2">
+                            <input class="form-check-input" type="checkbox" name="finalidades[]"
+                                   value="{{ finalidade }}" id="fin-{{ finalidade }}"
+                                   {{ situacao and situacao.concedido ? 'checked' : '' }}>
+                            <label class="form-check-label" for="fin-{{ finalidade }}">
+                                <span class="fw-semibold">{{ finalidades[finalidade] }}</span>
+                                <span class="d-block small text-muted">
+                                    {% if situacao %}
+                                        {{ situacao.concedido ? 'Autorizado' : 'Revogado' }}
+                                        em {{ situacao.dt_evento|data_hora }}
+                                    {% else %}
+                                        Nunca autorizado.
+                                    {% endif %}
+                                </span>
+                            </label>
+                        </div>
+                    {% endfor %}
+
+                    <div class="alert alert-secondary small">
+                        O aceite dos Termos de Uso e da Política de Privacidade é condição para manter
+                        a conta. Para revogá-los, use o encerramento de conta ao final desta página.
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Salvar autorizações</button>
+                </div>
+            </form>
+
+            {# --- Requisições do titular -------------------------------- #}
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h2 class="h6">Exercer meus direitos</h2>
+                    <p class="small text-muted">
+                        Abra uma requisição e acompanhe a resposta por aqui e por notificação.
+                        Cada requisição recebe um protocolo.
+                    </p>
+
+                    <form method="post" action="{{ url('/privacidade/solicitacoes') }}" class="mb-4">
+                        {{ campo_csrf() }}
+
+                        <div class="row g-2 align-items-end">
+                            <div class="col-md-5">
+                                <label class="form-label small mb-1" for="tipo">Tipo de requisição</label>
+                                <select class="form-select form-select-sm" id="tipo" name="tipo" required>
+                                    {% for tipo in tipos_solicitacao %}
+                                        <option value="{{ tipo }}">{{ tipo|rotulo }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="col-md-7">
+                                <label class="form-label small mb-1" for="descricao">Detalhe (obrigatório na correção)</label>
+                                <input type="text" class="form-control form-control-sm" id="descricao"
+                                       name="descricao" maxlength="4000"
+                                       placeholder="Ex.: corrigir o município de atuação">
+                            </div>
+                        </div>
+
+                        {% include 'partials/campo-erro.twig' with { campo: 'descricao', erros: erros } only %}
+
+                        <button type="submit" class="btn btn-outline-primary btn-sm mt-2">Abrir requisição</button>
+                    </form>
+
+                    {% if solicitacoes is not empty %}
+                        <h3 class="h6">Minhas requisições</h3>
+                        <div class="table-responsive">
+                            <table class="table table-sm align-middle mb-0">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Protocolo</th>
+                                        <th scope="col">Tipo</th>
+                                        <th scope="col">Situação</th>
+                                        <th scope="col">Aberta em</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for solicitacao in solicitacoes %}
+                                        <tr>
+                                            <td class="font-monospace small">
+                                                {{ '%06d'|format(solicitacao.slg_id) }}
+                                            </td>
+                                            <td class="small">{{ solicitacao.slg_tipo|rotulo }}</td>
+                                            <td>
+                                                <span class="badge text-bg-light border">{{ solicitacao.slg_situacao|rotulo }}</span>
+                                            </td>
+                                            <td class="small text-muted">{{ solicitacao.slg_dt_registro|data_hora }}</td>
+                                        </tr>
+                                        {% if solicitacao.slg_resposta %}
+                                            <tr>
+                                                <td colspan="4" class="small bg-light">
+                                                    <strong>Resposta:</strong> {{ solicitacao.slg_resposta }}
+                                                </td>
+                                            </tr>
+                                        {% endif %}
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-5">
+            {# --- Portabilidade --------------------------------------- #}
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h2 class="h6">Levar meus dados</h2>
+                    <p class="small text-muted">
+                        Baixe um arquivo aberto com tudo o que a plataforma guarda sobre você:
+                        cadastro, perfil, competências, experiências, acervo, demandas,
+                        manifestações, consentimentos e requisições.
+                    </p>
+                    <a class="btn btn-outline-primary btn-sm w-100" href="{{ url('/privacidade/exportar') }}">
+                        <i class="bi bi-download" aria-hidden="true"></i>
+                        Baixar meus dados (JSON)
+                    </a>
+                </div>
+            </div>
+
+            {# --- Histórico de consentimentos --------------------------- #}
+            <div class="card mb-4">
+                <div class="card-header card-cabecalho-simples">Histórico de consentimentos</div>
+                <div class="card-body">
+                    {% if historico is empty %}
+                        <p class="small text-muted mb-0">Nenhum registro.</p>
+                    {% else %}
+                        <ul class="list-unstyled small mb-0">
+                            {% for registro in historico|slice(0, 12) %}
+                                <li class="{{ not loop.first ? 'border-top pt-2 mt-2' : '' }}">
+                                    <span class="fw-semibold d-block">
+                                        {{ finalidades[registro.cns_finalidade]|default(registro.cns_finalidade|rotulo) }}
+                                    </span>
+                                    <span class="{{ registro.cns_concedido == 'S' ? 'text-success' : 'text-danger' }}">
+                                        {{ registro.cns_concedido == 'S' ? 'concedido' : 'revogado' }}
+                                    </span>
+                                    <span class="text-muted">
+                                        em {{ registro.cns_dt_evento|data_hora }}
+                                        {% if registro.ter_versao %} · versão {{ registro.ter_versao }}{% endif %}
+                                        {% if registro.cns_ip_origem %} · origem {{ registro.cns_ip_origem }}{% endif %}
+                                    </span>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+            </div>
+
+            {# --- Meus acessos ----------------------------------------- #}
+            <div class="card mb-4">
+                <div class="card-header card-cabecalho-simples">Atividade recente da minha conta</div>
+                <div class="card-body">
+                    {% if meus_acessos is empty %}
+                        <p class="small text-muted mb-0">Nenhum registro.</p>
+                    {% else %}
+                        <ul class="list-unstyled small mb-0">
+                            {% for evento in meus_acessos %}
+                                <li class="{{ not loop.first ? 'border-top pt-2 mt-2' : '' }}">
+                                    <span class="fw-semibold">{{ evento.aud_acao|rotulo }}</span>
+                                    <span class="text-muted d-block">
+                                        {{ evento.aud_dt_registro|data_hora }}
+                                        {% if evento.aud_ip_origem %} · {{ evento.aud_ip_origem }}{% endif %}
+                                    </span>
+                                    {% if evento.aud_descricao %}
+                                        <span class="text-muted d-block">{{ evento.aud_descricao }}</span>
+                                    {% endif %}
+                                </li>
+                            {% endfor %}
+                        </ul>
+                        <p class="small text-muted mt-3 mb-0">
+                            Se você não reconhece algum acesso, altere sua senha imediatamente.
+                        </p>
+                    {% endif %}
+                </div>
+            </div>
+
+            {# --- Encerrar conta --------------------------------------- #}
+            <div class="card border-danger">
+                <div class="card-body">
+                    <h2 class="h6 text-danger">Encerrar minha conta</h2>
+                    <p class="small text-muted">
+                        A conta é desativada e seus dados pessoais são anonimizados de forma
+                        irreversível. Os registros de auditoria exigidos por lei são preservados,
+                        já sem identificação. Esta ação não pode ser desfeita.
+                    </p>
+
+                    <form method="post" action="{{ url('/privacidade/encerrar-conta') }}"
+                          data-confirmar="Encerrar definitivamente sua conta e anonimizar seus dados pessoais?">
+                        {{ campo_csrf() }}
+
+                        <div class="mb-2">
+                            <label class="form-label small" for="senha">Sua senha</label>
+                            <input type="password" class="form-control form-control-sm" id="senha" name="senha"
+                                   autocomplete="current-password" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label small" for="confirmacao">
+                                Digite ENCERRAR para confirmar
+                            </label>
+                            <input type="text" class="form-control form-control-sm" id="confirmacao"
+                                   name="confirmacao" required placeholder="ENCERRAR">
+                        </div>
+
+                        <button type="submit" class="btn btn-danger btn-sm w-100">
+                            Encerrar conta e anonimizar dados
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

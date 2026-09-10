@@ -96,6 +96,14 @@ $roteador->get('/meu-perfil/experiencias/{id}',      'ControladorExperiencia', '
 $roteador->post('/meu-perfil/experiencias/{id}',     'ControladorExperiencia', 'atualizar',      $PRESTADORES);
 $roteador->post('/meu-perfil/experiencias/{id}/remover', 'ControladorExperiencia', 'remover',    $PRESTADORES);
 
+// Privacidade e direitos do titular (LGPD)
+$roteador->get('/privacidade',                   'ControladorPrivacidade', 'painel',              $TODOS_AUTENTICADOS);
+$roteador->post('/privacidade/visibilidade',     'ControladorPrivacidade', 'salvarVisibilidade',  $TODOS_AUTENTICADOS);
+$roteador->post('/privacidade/consentimentos',   'ControladorPrivacidade', 'salvarConsentimentos', $TODOS_AUTENTICADOS);
+$roteador->get('/privacidade/exportar',          'ControladorPrivacidade', 'exportarDados',       $TODOS_AUTENTICADOS);
+$roteador->post('/privacidade/solicitacoes',     'ControladorPrivacidade', 'abrirSolicitacao',    $TODOS_AUTENTICADOS);
+$roteador->post('/privacidade/encerrar-conta',   'ControladorPrivacidade', 'encerrarConta',       $TODOS_AUTENTICADOS);
+
 // -----------------------------------------------------------------------------
 // Demandas do autor e compatibilização (RF04)
 // -----------------------------------------------------------------------------
