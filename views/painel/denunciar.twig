@@ -1,0 +1,73 @@
+{% extends 'layout/base.twig' %}
+
+{% block titulo %}Registrar denúncia | {{ app.nome }}{% endblock %}
+{% block robots %}noindex, nofollow{% endblock %}
+
+{% block conteudo %}
+    <div class="row justify-content-center">
+        <div class="col-lg-7">
+            <h1 class="h4 mb-1">Registrar denúncia</h1>
+            <p class="text-muted small mb-4">
+                A denúncia é encaminhada à moderação da plataforma, que analisa e registra
+                a decisão em trilha de auditoria. Você é avisado do desfecho.
+            </p>
+
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h2 class="h6">Conteúdo denunciado</h2>
+                    <p class="fw-semibold mb-1">{{ alvo.titulo }}</p>
+                    {% if alvo.detalhe %}
+                        <p class="small text-muted mb-2">{{ alvo.detalhe|slice(0, 400) }}</p>
+                    {% endif %}
+                    <p class="small mb-0">
+                        Tipo: <strong>{{ entidade|rotulo }}</strong> · identificador {{ entidade_id }}
+                        {% if alvo.link %}
+                            · <a href="{{ url(alvo.link) }}">abrir conteúdo</a>
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+
+            <form method="post" action="{{ url('/denunciar') }}" class="card" novalidate>
+                {{ campo_csrf() }}
+                <input type="hidden" name="entidade" value="{{ entidade }}">
+                <input type="hidden" name="entidade_id" value="{{ entidade_id }}">
+
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label obrigatorio" for="motivo">Motivo</label>
+                        <select class="form-select {{ erros.motivo is defined ? 'is-invalid' : '' }}"
+                                id="motivo" name="motivo" required>
+                            <option value="">Selecione o motivo</option>
+                            {% for motivo in motivos %}
+                                <option value="{{ motivo }}">{{ motivo|rotulo }}</option>
+                            {% endfor %}
+                        </select>
+                        {% include 'partials/campo-erro.twig' with { campo: 'motivo', erros: erros } only %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label obrigatorio" for="descricao">O que exatamente está errado</label>
+                        <textarea class="form-control {{ erros.descricao is defined ? 'is-invalid' : '' }}"
+                                  id="descricao" name="descricao" rows="6" maxlength="4000" required data-contador
+                                  placeholder="Descreva objetivamente o problema. Se for informação falsa, indique qual e por quê."></textarea>
+                        <div class="form-text">Mínimo de 20 caracteres.</div>
+                        {% include 'partials/campo-erro.twig' with { campo: 'descricao', erros: erros } only %}
+                    </div>
+
+                    <div class="alert alert-secondary small">
+                        Sua identidade é registrada para a moderação e não é revelada ao denunciado.
+                        Denúncias sem fundamento reiteradas podem levar a medidas sobre a sua conta.
+                    </div>
+
+                    <div class="d-flex flex-wrap gap-2">
+                        <button type="submit" class="btn btn-primary">Enviar denúncia</button>
+                        <a class="btn btn-outline-secondary" href="{{ alvo.link ? url(alvo.link) : url('/painel') }}">
+                            Cancelar
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

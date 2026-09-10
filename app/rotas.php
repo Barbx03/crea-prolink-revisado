@@ -136,6 +136,10 @@ $roteador->get('/notificacoes',                  'ControladorNotificacao', 'cent
 $roteador->post('/notificacoes/{id}/lida',       'ControladorNotificacao', 'marcarLida',     $TODOS_AUTENTICADOS);
 $roteador->post('/notificacoes/marcar-todas',    'ControladorNotificacao', 'marcarTodas',    $TODOS_AUTENTICADOS);
 
+// Denúncias (RF06)
+$roteador->get('/denunciar/{entidade}/{id}', 'ControladorDenuncia', 'formulario', $TODOS_AUTENTICADOS);
+$roteador->post('/denunciar',                'ControladorDenuncia', 'registrar',  $TODOS_AUTENTICADOS);
+
 // -----------------------------------------------------------------------------
 // Endpoints JSON de apoio à interface
 // -----------------------------------------------------------------------------
