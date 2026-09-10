@@ -106,6 +106,17 @@ $roteador->post('/demandas/{id}/publicar',         'ControladorDemanda', 'public
 $roteador->post('/demandas/{id}/encerrar',         'ControladorDemanda', 'encerrar',          $CONTRATANTES);
 $roteador->post('/demandas/{id}/remover',          'ControladorDemanda', 'remover',           $CONTRATANTES);
 $roteador->get('/demandas/{id}/correspondencias',  'ControladorDemanda', 'correspondencias',  $CONTRATANTES);
+$roteador->get('/demandas/{id}/interessados',      'ControladorDemanda', 'interessados',      $CONTRATANTES);
+
+// -----------------------------------------------------------------------------
+// Manifestação de interesse e comunicação (RF05)
+// -----------------------------------------------------------------------------
+$roteador->get('/demandas/{id}/manifestar',     'ControladorInteresse', 'formulario', $PRESTADORES);
+$roteador->post('/demandas/{id}/manifestar',    'ControladorInteresse', 'manifestar', $PRESTADORES);
+$roteador->get('/meus-interesses',              'ControladorInteresse', 'meus',       $PRESTADORES);
+$roteador->post('/interesses/{id}/retirar',     'ControladorInteresse', 'retirar',    $PRESTADORES);
+$roteador->post('/interesses/{id}/responder',   'ControladorInteresse', 'responder',  $CONTRATANTES);
+$roteador->post('/interesses/{id}/visualizar',  'ControladorInteresse', 'visualizar', $CONTRATANTES);
 
 // -----------------------------------------------------------------------------
 // Endpoints JSON de apoio à interface

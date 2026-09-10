@@ -1,0 +1,196 @@
+{% extends 'layout/base.twig' %}
+
+{% block menu_ativo %}demandas{% endblock %}
+{% block titulo %}Interessados | {{ app.nome }}{% endblock %}
+{% block robots %}noindex, nofollow{% endblock %}
+
+{% block conteudo %}
+    <nav aria-label="Trilha de navegação">
+        <ol class="breadcrumb small">
+            <li class="breadcrumb-item"><a href="{{ url('/minhas-demandas') }}">Minhas demandas</a></li>
+            <li class="breadcrumb-item">
+                <a href="{{ url('/demandas/' ~ demanda.dem_id) }}">{{ demanda.dem_titulo|slice(0, 50) }}</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">Interessados</li>
+        </ol>
+    </nav>
+
+    <div class="d-flex flex-wrap justify-content-between align-items-end gap-2 mb-3">
+        <div>
+            <h1 class="h4 mb-1">Quem manifestou interesse</h1>
+            <p class="text-muted small mb-0">
+                {{ interessados|length }} manifestação(ões). A aderência exibida é a do momento
+                em que a manifestação foi enviada.
+            </p>
+        </div>
+        <a class="btn btn-outline-primary btn-sm" href="{{ url('/demandas/' ~ demanda.dem_id ~ '/correspondencias') }}">
+            Ver correspondências sugeridas
+        </a>
+    </div>
+
+    {% if interessados is empty %}
+        {% include 'partials/lista-vazia.twig' with {
+            icone: 'send',
+            titulo: 'Nenhuma manifestação ainda',
+            mensagem: 'Assim que um profissional manifestar interesse, ele aparece aqui com a apresentação, a proposta de valor e prazo, e a aderência aos critérios da demanda.'
+        } only %}
+    {% else %}
+        {% for interessado in interessados %}
+            <article class="card mb-3">
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-lg-4">
+                            <div class="d-flex gap-3">
+                                <img src="{{ interessado.prf_foto ? url('uploads/' ~ interessado.prf_foto) : asset('img/perfil-sem-foto.svg') }}"
+                                     alt="" width="52" height="52" class="rounded-circle border" style="object-fit: cover;">
+                                <div class="min-w-0">
+                                    <h2 class="h6 mb-1">
+                                        {% if interessado.prf_id %}
+                                            <a href="{{ url('/profissionais/' ~ interessado.prf_id) }}">{{ interessado.usu_nome }}</a>
+                                        {% else %}
+                                            {{ interessado.usu_nome }}
+                                        {% endif %}
+                                    </h2>
+                                    {% include 'partials/selo-registro.twig' with { registrado: interessado.usu_registrado_crea } only %}
+                                    <p class="small text-muted mb-0 mt-1">
+                                        {{ interessado.prf_titulo|default(interessado.usu_perfil|rotulo) }}
+                                        <span class="d-block">
+                                            {{ interessado.prf_cidade }}{{ interessado.prf_cidade and interessado.prf_uf ? '/' : '' }}{{ interessado.prf_uf }}
+                                            {% if interessado.total_arts %} · {{ interessado.total_arts }} ART(s){% endif %}
+                                        </span>
+                                    </p>
+                                </div>
+                            </div>
+
+                            <dl class="small mt-3 mb-0">
+                                <dt>Aderência no envio</dt>
+                                <dd>
+                                    {{ interessado.int_aderencia ? interessado.int_aderencia|number_format(0) ~ '%' : 'não calculada' }}
+                                </dd>
+
+                                <dt>Situação</dt>
+                                <dd><span class="badge text-bg-light border">{{ interessado.int_situacao|rotulo }}</span></dd>
+
+                                {% if interessado.int_valor_proposto %}
+                                    <dt>Valor proposto</dt>
+                                    <dd>{{ interessado.int_valor_proposto|moeda }}</dd>
+                                {% endif %}
+
+                                {% if interessado.int_prazo_proposto %}
+                                    <dt>Prazo proposto</dt>
+                                    <dd>{{ interessado.int_prazo_proposto }}</dd>
+                                {% endif %}
+
+                                <dt>Enviada em</dt>
+                                <dd>{{ interessado.int_dt_registro|data_hora }}</dd>
+
+                                {% if interessado.prf_exibe_contato == 'S' %}
+                                    <dt>Contato</dt>
+                                    <dd>
+                                        {{ interessado.usu_email }}
+                                        {% if interessado.usu_telefone %}
+                                            <span class="d-block">{{ interessado.usu_telefone|telefone }}</span>
+                                        {% endif %}
+                                    </dd>
+                                {% endif %}
+                            </dl>
+                        </div>
+
+                        <div class="col-lg-8">
+                            {% if interessado.int_mensagem %}
+                                <h3 class="h6">Apresentação</h3>
+                                <p class="small" style="white-space: pre-line;">{{ interessado.int_mensagem }}</p>
+                            {% endif %}
+
+                            {% if interessado.competencias is defined and interessado.competencias is not empty %}
+                                <h3 class="h6 mt-3">Competências declaradas</h3>
+                                <div class="mb-3">
+                                    {% for competencia in interessado.competencias %}
+                                        <span class="etiqueta-competencia">{{ competencia.cmp_nome }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+
+                            {% if interessado.int_resposta %}
+                                <div class="alert alert-light border small">
+                                    <strong>Sua resposta ({{ interessado.int_dt_resposta|data_hora }}):</strong>
+                                    {{ interessado.int_resposta }}
+                                </div>
+                            {% endif %}
+
+                            <div class="border-top pt-3 mt-3">
+                                <div class="d-flex flex-wrap gap-2 mb-3">
+                                    {% if interessado.prf_id %}
+                                        <form method="post" action="{{ url('/interesses/' ~ interessado.int_id ~ '/visualizar') }}">
+                                            {{ campo_csrf() }}
+                                            <button type="submit" class="btn btn-sm btn-outline-primary">
+                                                <i class="bi bi-person-lines-fill" aria-hidden="true"></i>
+                                                Abrir perfil completo
+                                            </button>
+                                        </form>
+                                    {% endif %}
+
+                                    <form method="post" action="{{ url('/mensagens/iniciar') }}">
+                                        {{ campo_csrf() }}
+                                        <input type="hidden" name="usuario_id" value="{{ interessado.int_usu_id }}">
+                                        <input type="hidden" name="demanda_id" value="{{ demanda.dem_id }}">
+                                        <input type="hidden" name="interesse_id" value="{{ interessado.int_id }}">
+                                        <button type="submit" class="btn btn-sm btn-outline-primary">
+                                            <i class="bi bi-chat-dots" aria-hidden="true"></i>
+                                            Conversar
+                                        </button>
+                                    </form>
+                                </div>
+
+                                {% if interessado.int_situacao not in ['RETIRADO'] %}
+                                    <form method="post" action="{{ url('/interesses/' ~ interessado.int_id ~ '/responder') }}">
+                                        {{ campo_csrf() }}
+
+                                        <div class="row g-2 align-items-end">
+                                            <div class="col-md-4">
+                                                <label class="form-label small mb-1"
+                                                       for="situacao-{{ interessado.int_id }}">Resposta</label>
+                                                <select class="form-select form-select-sm"
+                                                        id="situacao-{{ interessado.int_id }}" name="situacao" required>
+                                                    <option value="EM_NEGOCIACAO"
+                                                        {{ interessado.int_situacao == 'EM_NEGOCIACAO' ? 'selected' : '' }}>
+                                                        Iniciar negociação
+                                                    </option>
+                                                    <option value="SELECIONADO"
+                                                        {{ interessado.int_situacao == 'SELECIONADO' ? 'selected' : '' }}>
+                                                        Selecionar
+                                                    </option>
+                                                    <option value="RECUSADO"
+                                                        {{ interessado.int_situacao == 'RECUSADO' ? 'selected' : '' }}>
+                                                        Recusar
+                                                    </option>
+                                                </select>
+                                            </div>
+
+                                            <div class="col-md-6">
+                                                <label class="form-label small mb-1"
+                                                       for="resposta-{{ interessado.int_id }}">
+                                                    Mensagem ao profissional
+                                                </label>
+                                                <input type="text" class="form-control form-control-sm"
+                                                       id="resposta-{{ interessado.int_id }}" name="resposta"
+                                                       maxlength="4000"
+                                                       placeholder="Obrigatória ao recusar">
+                                            </div>
+
+                                            <div class="col-md-2">
+                                                <button type="submit" class="btn btn-sm btn-primary w-100">
+                                                    Registrar
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </article>
+        {% endfor %}
+    {% endif %}
+{% endblock %}

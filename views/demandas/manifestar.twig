@@ -1,0 +1,141 @@
+{% extends 'layout/base.twig' %}
+
+{% block menu_ativo %}demandas{% endblock %}
+{% block titulo %}Manifestar interesse | {{ app.nome }}{% endblock %}
+{% block robots %}noindex, nofollow{% endblock %}
+
+{% block conteudo %}
+    <div class="row g-4">
+        <div class="col-lg-7">
+            <nav aria-label="Trilha de navegação">
+                <ol class="breadcrumb small">
+                    <li class="breadcrumb-item"><a href="{{ url('/demandas') }}">Demandas</a></li>
+                    <li class="breadcrumb-item">
+                        <a href="{{ url('/demandas/' ~ demanda.dem_id) }}">{{ demanda.dem_titulo|slice(0, 40) }}</a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">Manifestar interesse</li>
+                </ol>
+            </nav>
+
+            <h1 class="h4 mb-1">
+                {{ meu_interesse ? 'Revisar minha manifestação' : 'Manifestar interesse' }}
+            </h1>
+            <p class="text-muted small mb-4">
+                Sua apresentação é o que o contratante lê primeiro, junto com a aderência
+                calculada. Seja concreto sobre experiência comparável e como pretende conduzir
+                o trabalho.
+            </p>
+
+            <form method="post" action="{{ url('/demandas/' ~ demanda.dem_id ~ '/manifestar') }}" novalidate>
+                {{ campo_csrf() }}
+
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label obrigatorio" for="mensagem">Apresentação</label>
+                            <textarea class="form-control {{ erros.mensagem is defined ? 'is-invalid' : '' }}"
+                                      id="mensagem" name="mensagem" rows="8" maxlength="4000" required data-contador
+                                      placeholder="Descreva sua experiência com escopos semelhantes, o acervo que comprova essa experiência e como pretende executar o serviço.">{{ formulario.mensagem|default(meu_interesse.int_mensagem|default('')) }}</textarea>
+                            <div class="form-text">Mínimo de 40 caracteres.</div>
+                            {% include 'partials/campo-erro.twig' with { campo: 'mensagem', erros: erros } only %}
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label" for="valor_proposto">Valor proposto (opcional)</label>
+                                <input type="text" class="form-control" id="valor_proposto" name="valor_proposto"
+                                       inputmode="decimal" placeholder="0,00"
+                                       value="{{ formulario.valor_proposto|default(meu_interesse.int_valor_proposto|default('')) }}">
+                                {% if demanda.dem_orcamento_min or demanda.dem_orcamento_max %}
+                                    <div class="form-text">
+                                        Faixa informada na demanda:
+                                        {{ demanda.dem_orcamento_min|moeda }}{{ demanda.dem_orcamento_max ? ' a ' ~ demanda.dem_orcamento_max|moeda : '' }}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label" for="prazo_proposto">Prazo proposto (opcional)</label>
+                                <input type="text" class="form-control" id="prazo_proposto" name="prazo_proposto"
+                                       maxlength="120" placeholder="Ex.: 75 dias corridos"
+                                       value="{{ formulario.prazo_proposto|default(meu_interesse.int_prazo_proposto|default('')) }}">
+                                {% if demanda.dem_prazo_execucao %}
+                                    <div class="form-text">Prazo esperado: {{ demanda.dem_prazo_execucao }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="alert alert-secondary small">
+                    Ao enviar, o contratante recebe uma notificação e passa a poder ver seu perfil
+                    profissional, incluindo o acervo que você deixou visível. Você pode retirar a
+                    manifestação depois, a qualquer momento.
+                </div>
+
+                <div class="d-flex flex-wrap gap-2">
+                    <button type="submit" class="btn btn-primary">
+                        {{ meu_interesse ? 'Atualizar manifestação' : 'Enviar manifestação' }}
+                    </button>
+                    <a class="btn btn-outline-secondary" href="{{ url('/demandas/' ~ demanda.dem_id) }}">Cancelar</a>
+
+                    {% if meu_interesse and meu_interesse.int_situacao != 'RETIRADO' %}
+                        <button type="submit" form="retirar" class="btn btn-outline-danger ms-auto">
+                            Retirar manifestação
+                        </button>
+                    {% endif %}
+                </div>
+            </form>
+
+            {% if meu_interesse and meu_interesse.int_situacao != 'RETIRADO' %}
+                <form method="post" id="retirar" class="d-none"
+                      action="{{ url('/interesses/' ~ meu_interesse.int_id ~ '/retirar') }}"
+                      data-confirmar="Retirar sua manifestação de interesse nesta demanda?">
+                    {{ campo_csrf() }}
+                </form>
+            {% endif %}
+        </div>
+
+        <div class="col-lg-5">
+            <div class="card mb-4">
+                <div class="card-header card-cabecalho-simples">Sua aderência aos critérios</div>
+                <div class="card-body">
+                    {% include 'partials/aderencia.twig' with { avaliacao: aderencia } only %}
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header card-cabecalho-simples">Resumo da demanda</div>
+                <div class="card-body">
+                    <h2 class="h6">{{ demanda.dem_titulo }}</h2>
+                    <p class="small mb-3">{{ demanda.dem_escopo|slice(0, 320) }}{{ demanda.dem_escopo|length > 320 ? '…' : '' }}</p>
+
+                    <dl class="small mb-0">
+                        <dt>Modalidade</dt>
+                        <dd>{{ demanda.dem_modalidade|rotulo }}</dd>
+
+                        <dt>Local</dt>
+                        <dd>
+                            {{ demanda.dem_cidade }}{{ demanda.dem_cidade and demanda.dem_uf ? '/' : '' }}{{ demanda.dem_uf }}
+                            {% if demanda.dem_aceita_remoto == 'S' %}
+                                <span class="d-block text-muted">Aceita atendimento remoto</span>
+                            {% endif %}
+                        </dd>
+
+                        {% if demanda.dem_dt_limite %}
+                            <dt>Prazo para manifestação</dt>
+                            <dd>{{ demanda.dem_dt_limite|data }}</dd>
+                        {% endif %}
+
+                        <dt>Publicada por</dt>
+                        <dd>{{ demanda.autor_nome }}</dd>
+                    </dl>
+
+                    <a class="btn btn-sm btn-outline-primary w-100 mt-3" href="{{ url('/demandas/' ~ demanda.dem_id) }}">
+                        Ver demanda completa
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

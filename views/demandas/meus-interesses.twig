@@ -1,0 +1,94 @@
+{% extends 'layout/base.twig' %}
+
+{% block titulo %}Minhas manifestações | {{ app.nome }}{% endblock %}
+{% block robots %}noindex, nofollow{% endblock %}
+
+{% block conteudo %}
+    <h1 class="h4 mb-1">Minhas manifestações de interesse</h1>
+    <p class="text-muted small mb-4">{{ itens|length }} manifestação(ões) registrada(s).</p>
+
+    {% if itens is empty %}
+        {% include 'partials/lista-vazia.twig' with {
+            icone: 'send',
+            titulo: 'Você ainda não manifestou interesse',
+            mensagem: 'Encontre demandas compatíveis com seu perfil e envie sua apresentação. A aderência calculada acompanha a manifestação e ajuda o contratante a avaliar.',
+            acao_link: '/demandas',
+            acao_texto: 'Ver demandas abertas'
+        } only %}
+    {% else %}
+        {% for interesse in itens %}
+            <article class="card mb-3">
+                <div class="card-body">
+                    <div class="d-flex flex-wrap justify-content-between gap-2 mb-2">
+                        <div>
+                            <h2 class="h6 mb-1">
+                                <a href="{{ url('/demandas/' ~ interesse.dem_id) }}">{{ interesse.dem_titulo }}</a>
+                            </h2>
+                            <p class="small text-muted mb-0">
+                                {{ interesse.autor_nome }} ·
+                                {{ interesse.dem_cidade }}{{ interesse.dem_cidade and interesse.dem_uf ? '/' : '' }}{{ interesse.dem_uf }}
+                                · {{ interesse.dem_modalidade|rotulo }}
+                            </p>
+                        </div>
+
+                        <div class="text-end">
+                            <span class="badge text-bg-light border">{{ interesse.int_situacao|rotulo }}</span>
+                            <span class="d-block small text-muted mt-1">
+                                aderência {{ interesse.int_aderencia ? interesse.int_aderencia|number_format(0) ~ '%' : '—' }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <dl class="row small mb-0">
+                        <dt class="col-sm-3">Enviada em</dt>
+                        <dd class="col-sm-9">{{ interesse.int_dt_registro|data_hora }}</dd>
+
+                        {% if interesse.int_dt_visualizacao %}
+                            <dt class="col-sm-3">Perfil visto em</dt>
+                            <dd class="col-sm-9">{{ interesse.int_dt_visualizacao|data_hora }}</dd>
+                        {% endif %}
+
+                        {% if interesse.int_valor_proposto %}
+                            <dt class="col-sm-3">Valor proposto</dt>
+                            <dd class="col-sm-9">{{ interesse.int_valor_proposto|moeda }}</dd>
+                        {% endif %}
+
+                        <dt class="col-sm-3">Situação da demanda</dt>
+                        <dd class="col-sm-9">
+                            {{ interesse.dem_situacao|rotulo }}
+                            {% if interesse.dem_dt_limite %}
+                                · prazo {{ interesse.dem_dt_limite|data }}
+                            {% endif %}
+                        </dd>
+                    </dl>
+
+                    {% if interesse.int_resposta %}
+                        <div class="alert alert-light border small mt-3 mb-0">
+                            <strong>Resposta do contratante ({{ interesse.int_dt_resposta|data_hora }}):</strong>
+                            {{ interesse.int_resposta }}
+                        </div>
+                    {% endif %}
+
+                    <div class="d-flex flex-wrap gap-2 mt-3">
+                        <a class="btn btn-sm btn-outline-primary" href="{{ url('/demandas/' ~ interesse.dem_id) }}">
+                            Ver demanda
+                        </a>
+
+                        {% if interesse.int_situacao != 'RETIRADO' and interesse.dem_situacao == 'PUBLICADA' %}
+                            <a class="btn btn-sm btn-outline-secondary"
+                               href="{{ url('/demandas/' ~ interesse.dem_id ~ '/manifestar') }}">
+                                Revisar apresentação
+                            </a>
+
+                            <form method="post" action="{{ url('/interesses/' ~ interesse.int_id ~ '/retirar') }}"
+                                  data-confirmar="Retirar sua manifestação nesta demanda?">
+                                {{ campo_csrf() }}
+                                <button type="submit" class="btn btn-sm btn-outline-danger">Retirar</button>
+                            </form>
+                        {% endif %}
+                    </div>
+                </div>
+            </article>
+        {% endfor %}
+    {% endif %}
+{% endblock %}
