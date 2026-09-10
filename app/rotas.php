@@ -118,6 +118,11 @@ $roteador->post('/interesses/{id}/retirar',     'ControladorInteresse', 'retirar
 $roteador->post('/interesses/{id}/responder',   'ControladorInteresse', 'responder',  $CONTRATANTES);
 $roteador->post('/interesses/{id}/visualizar',  'ControladorInteresse', 'visualizar', $CONTRATANTES);
 
+$roteador->get('/mensagens',                'ControladorMensagem', 'caixaDeEntrada', $TODOS_AUTENTICADOS);
+$roteador->get('/mensagens/{id}',           'ControladorMensagem', 'conversa',       $TODOS_AUTENTICADOS);
+$roteador->post('/mensagens/{id}',          'ControladorMensagem', 'enviar',         $TODOS_AUTENTICADOS);
+$roteador->post('/mensagens/iniciar',       'ControladorMensagem', 'iniciar',        $TODOS_AUTENTICADOS);
+
 // -----------------------------------------------------------------------------
 // Endpoints JSON de apoio à interface
 // -----------------------------------------------------------------------------

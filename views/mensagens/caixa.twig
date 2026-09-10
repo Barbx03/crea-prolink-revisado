@@ -1,0 +1,59 @@
+{% extends 'layout/base.twig' %}
+
+{% block titulo %}Mensagens | {{ app.nome }}{% endblock %}
+{% block robots %}noindex, nofollow{% endblock %}
+
+{% block conteudo %}
+    <h1 class="h4 mb-1">Mensagens</h1>
+    <p class="text-muted small mb-4">
+        A comunicação inicial entre as partes acontece pela plataforma, ficando registrada
+        para as duas pontas.
+    </p>
+
+    {% if conversas is empty %}
+        {% include 'partials/lista-vazia.twig' with {
+            icone: 'chat-dots',
+            titulo: 'Nenhuma conversa por aqui',
+            mensagem: 'As conversas começam a partir de uma demanda em que ambas as partes estejam envolvidas, ou a partir de um perfil que autorizou receber contato.'
+        } only %}
+    {% else %}
+        <div class="card">
+            <ul class="list-group list-group-flush">
+                {% for conversa in conversas %}
+                    <li class="list-group-item">
+                        <a href="{{ url('/mensagens/' ~ conversa.cnv_id) }}"
+                           class="d-flex flex-wrap justify-content-between gap-2 text-decoration-none">
+                            <div class="min-w-0">
+                                <span class="fw-semibold">
+                                    {{ conversa.interlocutor_nome }}
+                                    <span class="badge text-bg-light border">{{ conversa.interlocutor_perfil|rotulo }}</span>
+                                    {% if conversa.nao_lidas > 0 %}
+                                        <span class="badge text-bg-danger">{{ conversa.nao_lidas }} nova(s)</span>
+                                    {% endif %}
+                                    {% if conversa.cnv_bloqueada == 'S' %}
+                                        <span class="badge text-bg-warning">bloqueada</span>
+                                    {% endif %}
+                                </span>
+
+                                {% if conversa.dem_titulo %}
+                                    <span class="d-block small text-muted">
+                                        <i class="bi bi-clipboard" aria-hidden="true"></i>
+                                        {{ conversa.dem_titulo }}
+                                    </span>
+                                {% endif %}
+
+                                <span class="d-block small text-muted">
+                                    {{ conversa.ultima_mensagem|default('Conversa sem mensagens')|slice(0, 110) }}
+                                </span>
+                            </div>
+
+                            <span class="small text-muted text-nowrap">
+                                {{ conversa.cnv_dt_ultima_msg ? conversa.cnv_dt_ultima_msg|desde : 'sem atividade' }}
+                            </span>
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+{% endblock %}

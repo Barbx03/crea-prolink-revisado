@@ -1,0 +1,126 @@
+{% extends 'layout/base.twig' %}
+
+{% block titulo %}Conversa com {{ interlocutor.nome }} | {{ app.nome }}{% endblock %}
+{% block robots %}noindex, nofollow{% endblock %}
+
+{% block conteudo %}
+    <nav aria-label="Trilha de navegação">
+        <ol class="breadcrumb small">
+            <li class="breadcrumb-item"><a href="{{ url('/mensagens') }}">Mensagens</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ interlocutor.nome }}</li>
+        </ol>
+    </nav>
+
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header card-cabecalho-simples d-flex flex-wrap justify-content-between align-items-center gap-2">
+                    <div>
+                        {{ interlocutor.nome }}
+                        <span class="badge text-bg-light border">{{ interlocutor.perfil|rotulo }}</span>
+                    </div>
+                    {% if conversa.dem_titulo %}
+                        <a class="small" href="{{ url('/demandas/' ~ conversa.dem_id) }}">
+                            <i class="bi bi-clipboard" aria-hidden="true"></i>
+                            {{ conversa.dem_titulo|slice(0, 60) }}
+                        </a>
+                    {% endif %}
+                </div>
+
+                <div class="card-body">
+                    {% if conversa.cnv_bloqueada == 'S' %}
+                        <div class="alert alert-warning small">
+                            Esta conversa foi bloqueada pela moderação e não aceita novas mensagens.
+                        </div>
+                    {% endif %}
+
+                    <div class="lista-mensagens mb-3">
+                        {% if mensagens is empty %}
+                            <p class="text-center text-muted small mb-0">
+                                Nenhuma mensagem ainda. Envie a primeira abaixo.
+                            </p>
+                        {% else %}
+                            {% for mensagem in mensagens %}
+                                {% set minha = mensagem.msg_usu_id == usuario().id %}
+                                <div class="d-flex mb-2">
+                                    <div class="balao-mensagem {{ minha ? 'minha' : '' }}">
+                                        <p class="small fw-semibold mb-1">
+                                            {{ minha ? 'Você' : mensagem.usu_nome }}
+                                            <span class="fw-normal text-muted">
+                                                · {{ mensagem.msg_dt_registro|data_hora }}
+                                                {% if minha and mensagem.msg_dt_leitura %}
+                                                    · <i class="bi bi-check2-all" aria-hidden="true"></i> lida
+                                                {% endif %}
+                                            </span>
+                                        </p>
+                                        <p class="mb-0" style="white-space: pre-line;">{{ mensagem.msg_conteudo }}</p>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+
+                    {% if conversa.cnv_bloqueada != 'S' %}
+                        <form method="post" action="{{ url('/mensagens/' ~ conversa.cnv_id) }}">
+                            {{ campo_csrf() }}
+
+                            <div class="mb-2">
+                                <label class="form-label visually-hidden" for="conteudo">Nova mensagem</label>
+                                <textarea class="form-control {{ erros.conteudo is defined ? 'is-invalid' : '' }}"
+                                          id="conteudo" name="conteudo" rows="3" maxlength="4000" required
+                                          placeholder="Escreva sua mensagem"></textarea>
+                                {% include 'partials/campo-erro.twig' with { campo: 'conteudo', erros: erros } only %}
+                            </div>
+
+                            <div class="d-flex justify-content-between align-items-center">
+                                <p class="small text-muted mb-0">
+                                    Não compartilhe senhas ou dados sensíveis por aqui.
+                                </p>
+                                <button type="submit" class="btn btn-primary btn-sm">
+                                    <i class="bi bi-send" aria-hidden="true"></i> Enviar
+                                </button>
+                            </div>
+                        </form>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h2 class="h6">Sobre {{ interlocutor.nome|split(' ')|first }}</h2>
+
+                    {% if perfil_interlocutor %}
+                        <p class="small mb-2">
+                            {{ perfil_interlocutor.prf_titulo|default(interlocutor.perfil|rotulo) }}
+                        </p>
+                        <div class="mb-2">
+                            {% include 'partials/selo-registro.twig' with {
+                                registrado: perfil_interlocutor.usu_registrado_crea
+                            } only %}
+                        </div>
+                        <p class="small text-muted">
+                            {{ perfil_interlocutor.prf_cidade }}{{ perfil_interlocutor.prf_cidade and perfil_interlocutor.prf_uf ? '/' : '' }}{{ perfil_interlocutor.prf_uf }}
+                        </p>
+                        <a class="btn btn-sm btn-outline-primary w-100"
+                           href="{{ url('/profissionais/' ~ perfil_interlocutor.prf_id) }}">
+                            Ver perfil completo
+                        </a>
+                    {% else %}
+                        <p class="small text-muted mb-0">
+                            Este usuário não possui perfil profissional publicado.
+                        </p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <p class="small text-center">
+                <a href="{{ url('/denunciar/usuario/' ~ interlocutor.id) }}" class="text-muted">
+                    <i class="bi bi-flag" aria-hidden="true"></i>
+                    Denunciar conduta nesta conversa
+                </a>
+            </p>
+        </div>
+    </div>
+{% endblock %}
