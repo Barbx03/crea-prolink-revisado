@@ -105,3 +105,11 @@ $roteador->post('/demandas/{id}',                  'ControladorDemanda', 'atuali
 $roteador->post('/demandas/{id}/publicar',         'ControladorDemanda', 'publicar',          $CONTRATANTES);
 $roteador->post('/demandas/{id}/encerrar',         'ControladorDemanda', 'encerrar',          $CONTRATANTES);
 $roteador->post('/demandas/{id}/remover',          'ControladorDemanda', 'remover',           $CONTRATANTES);
+$roteador->get('/demandas/{id}/correspondencias',  'ControladorDemanda', 'correspondencias',  $CONTRATANTES);
+
+// -----------------------------------------------------------------------------
+// Endpoints JSON de apoio à interface
+// -----------------------------------------------------------------------------
+$roteador->get('/api/competencias',              'Api\ControladorApoio', 'competencias');
+$roteador->get('/api/municipios/{uf}',           'Api\ControladorApoio', 'municipios');
+$roteador->get('/api/aderencia/{demanda}',       'Api\ControladorApoio', 'aderencia', $PRESTADORES);

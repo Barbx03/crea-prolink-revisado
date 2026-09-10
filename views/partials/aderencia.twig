@@ -1,0 +1,85 @@
+{# =============================================================================
+   Explicação da compatibilização (RF04 e cenário 7.3 do Termo de Referência).
+
+   Não basta mostrar a nota: esta parcial abre cada critério avaliado, o peso
+   que ele tem no cálculo, o quanto foi obtido e a razão em linguagem comum.
+   Recebe:
+     avaliacao  — retorno de App\Services\ServicoCompatibilizacao::avaliar()
+     compacto   — quando verdadeiro, mostra apenas nota e resumo
+   ============================================================================ #}
+
+{% set classeMedidor = avaliacao.elegivel == false
+    ? 'inelegivel'
+    : (avaliacao.score >= 70 ? 'alta' : (avaliacao.score >= 45 ? 'media' : 'baixa')) %}
+
+<div class="d-flex gap-3 align-items-start">
+    <div class="medidor-aderencia {{ classeMedidor }}"
+         role="img"
+         aria-label="Aderência de {{ avaliacao.score }} por cento{{ avaliacao.elegivel ? '' : ', requisito obrigatório não atendido' }}">
+        {{ avaliacao.score }}%
+    </div>
+
+    <div class="flex-grow-1">
+        <p class="mb-1 fw-semibold">{{ avaliacao.resumo }}</p>
+
+        {% if avaliacao.impedimentos is not empty %}
+            <ul class="small text-danger mb-0 ps-3">
+                {% for impedimento in avaliacao.impedimentos %}
+                    <li>{{ impedimento }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+        {% if compacto|default(false) == false %}
+            <p class="small text-muted mb-0">
+                Cálculo por critérios objetivos e de peso declarado, aplicados igualmente
+                a todos os perfis avaliados.
+            </p>
+        {% endif %}
+    </div>
+</div>
+
+{% if compacto|default(false) == false and avaliacao.criterios is not empty %}
+    <div class="mt-3">
+        {% for criterio in avaliacao.criterios %}
+            <div class="criterio-aderencia {{ criterio.atendido ? 'atendido' : 'nao-atendido' }}">
+                <div class="d-flex justify-content-between align-items-baseline gap-2">
+                    <span class="fw-semibold small">
+                        {% if criterio.atendido %}
+                            <i class="bi bi-check-circle-fill text-success" aria-hidden="true"></i>
+                        {% else %}
+                            <i class="bi bi-exclamation-circle-fill text-warning" aria-hidden="true"></i>
+                        {% endif %}
+                        {{ criterio.rotulo }}
+                    </span>
+                    <span class="small text-muted">
+                        {{ criterio.percentual }}% do critério · peso {{ criterio.peso }}
+                    </span>
+                </div>
+
+                <div class="barra my-1" role="presentation">
+                    <span style="width: {{ criterio.percentual }}%"></span>
+                </div>
+
+                <p class="small text-muted mb-1">{{ criterio.explicacao }}</p>
+
+                {% if criterio.detalhes.atendidas is defined and criterio.detalhes.atendidas is not empty %}
+                    <div class="mb-1">
+                        {% for nome in criterio.detalhes.atendidas %}
+                            <span class="etiqueta-competencia">{{ nome }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                {% if criterio.detalhes.faltantes is defined and criterio.detalhes.faltantes is not empty %}
+                    <div>
+                        <span class="small text-muted">Não atendidas:</span>
+                        {% for nome in criterio.detalhes.faltantes %}
+                            <span class="etiqueta-competencia faltante">{{ nome }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}

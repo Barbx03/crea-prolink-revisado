@@ -1,0 +1,151 @@
+{% extends 'layout/base.twig' %}
+
+{% block menu_ativo %}demandas{% endblock %}
+{% block titulo %}Correspondências | {{ app.nome }}{% endblock %}
+{% block robots %}noindex, nofollow{% endblock %}
+
+{% block conteudo %}
+    <nav aria-label="Trilha de navegação">
+        <ol class="breadcrumb small">
+            <li class="breadcrumb-item"><a href="{{ url('/minhas-demandas') }}">Minhas demandas</a></li>
+            <li class="breadcrumb-item">
+                <a href="{{ url('/demandas/' ~ demanda.dem_id) }}">{{ demanda.dem_titulo|slice(0, 50) }}</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">Correspondências</li>
+        </ol>
+    </nav>
+
+    <div class="d-flex flex-wrap justify-content-between align-items-end gap-2 mb-3">
+        <div>
+            <h1 class="h4 mb-1">Profissionais mais compatíveis</h1>
+            <p class="text-muted small mb-0">
+                {{ candidatos|length }} perfil(is) com aderência igual ou superior a {{ score_minimo }}%,
+                em ordem decrescente de compatibilidade.
+            </p>
+        </div>
+        <a class="btn btn-outline-primary btn-sm" href="{{ url('/demandas/' ~ demanda.dem_id ~ '/interessados') }}">
+            Ver quem manifestou interesse ({{ demanda.dem_total_interesses }})
+        </a>
+    </div>
+
+    {# --- Critérios aplicados --------------------------------------------- #}
+    <div class="card mb-4">
+        <div class="card-body">
+            <h2 class="h6">Como esta lista foi montada</h2>
+            <p class="small text-muted">
+                Todo perfil ativo e público da plataforma foi avaliado contra os critérios que
+                você declarou nesta demanda. Primeiro são verificados os requisitos
+                eliminatórios; em seguida, cinco critérios de peso conhecido compõem a nota.
+            </p>
+
+            <div class="row g-2">
+                {% set rotulosPesos = {
+                    'competencias': 'Competências técnicas',
+                    'localizacao': 'Localização',
+                    'acervo': 'Acervo validado (ART/CAT)',
+                    'experiencia': 'Tempo de experiência',
+                    'disponibilidade': 'Disponibilidade'
+                } %}
+
+                {% for chave, peso in pesos %}
+                    <div class="col-6 col-lg">
+                        <div class="indicador text-center">
+                            <div class="valor">{{ peso }}</div>
+                            <div class="rotulo">{{ rotulosPesos[chave]|default(chave) }}</div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <ul class="small text-muted mt-3 mb-0">
+                <li>
+                    Requisito eliminatório desta demanda:
+                    {% if demanda.dem_exige_registro == 'S' %}registro ativo no CREA-AM{% endif %}
+                    {% if demanda.dem_exige_registro == 'S' and demanda.dem_exige_art == 'S' %} e {% endif %}
+                    {% if demanda.dem_exige_art == 'S' %}acervo comprovado por ART ou CAT{% endif %}
+                    {% if demanda.dem_exige_registro != 'S' and demanda.dem_exige_art != 'S' %}nenhum{% endif %}.
+                </li>
+                <li>
+                    Competências marcadas como obrigatórias pesam o dobro dentro do critério de
+                    competências técnicas.
+                </li>
+                <li>Perfis ocultos, reprovados na moderação ou bloqueados não entram na avaliação.</li>
+            </ul>
+        </div>
+    </div>
+
+    {% if candidatos is empty %}
+        {% include 'partials/lista-vazia.twig' with {
+            icone: 'people',
+            titulo: 'Nenhum perfil alcançou a aderência mínima',
+            mensagem: 'Isso costuma acontecer quando as competências exigidas são muito específicas ou quando os requisitos eliminatórios são restritivos. Reveja as competências obrigatórias, o local de execução ou considere aceitar atendimento remoto.'
+        } only %}
+
+        <div class="text-center">
+            <a class="btn btn-outline-primary" href="{{ url('/demandas/' ~ demanda.dem_id ~ '/editar') }}">
+                Revisar critérios da demanda
+            </a>
+        </div>
+    {% else %}
+        {% for candidato in candidatos %}
+            <article class="card mb-3">
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-lg-4">
+                            <div class="d-flex gap-3">
+                                <img src="{{ candidato.prf_foto ? url('uploads/' ~ candidato.prf_foto) : asset('img/perfil-sem-foto.svg') }}"
+                                     alt="" width="56" height="56" class="rounded-circle border"
+                                     style="object-fit: cover;">
+
+                                <div class="min-w-0">
+                                    <h2 class="h6 mb-1">
+                                        <a href="{{ url('/profissionais/' ~ candidato.prf_id) }}">{{ candidato.usu_nome }}</a>
+                                    </h2>
+                                    {% include 'partials/selo-registro.twig' with { registrado: candidato.usu_registrado_crea } only %}
+
+                                    {% if candidato.prf_titulo %}
+                                        <p class="small fw-semibold text-marca mb-1 mt-1">{{ candidato.prf_titulo }}</p>
+                                    {% endif %}
+
+                                    <p class="small text-muted mb-0">
+                                        {{ candidato.prf_cidade }}{{ candidato.prf_cidade and candidato.prf_uf ? '/' : '' }}{{ candidato.prf_uf }}
+                                        {% if candidato.prf_anos_experiencia %}
+                                            · {{ candidato.prf_anos_experiencia }} ano(s)
+                                        {% endif %}
+                                        <span class="d-block">
+                                            {{ candidato.total_arts }} ART(s) · {{ candidato.total_cats }} CAT(s) validadas
+                                        </span>
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="d-grid gap-2 mt-3">
+                                <a class="btn btn-sm btn-outline-primary" href="{{ url('/profissionais/' ~ candidato.prf_id) }}">
+                                    Ver perfil completo
+                                </a>
+
+                                {% if candidato.prf_aceita_contato == 'S' %}
+                                    <form method="post" action="{{ url('/mensagens/iniciar') }}">
+                                        {{ campo_csrf() }}
+                                        <input type="hidden" name="usuario_id" value="{{ candidato.usu_id }}">
+                                        <input type="hidden" name="demanda_id" value="{{ demanda.dem_id }}">
+                                        <input type="hidden" name="conteudo"
+                                               value="Olá. Publiquei a demanda &quot;{{ demanda.dem_titulo }}&quot; e seu perfil apareceu entre os mais compatíveis. Você teria interesse em conversar sobre o escopo?">
+                                        <button type="submit" class="btn btn-sm btn-primary w-100">
+                                            <i class="bi bi-chat-dots" aria-hidden="true"></i>
+                                            Convidar para conversar
+                                        </button>
+                                    </form>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="col-lg-8 border-start-lg">
+                            {% include 'partials/aderencia.twig' with { avaliacao: candidato.avaliacao } only %}
+                        </div>
+                    </div>
+                </div>
+            </article>
+        {% endfor %}
+    {% endif %}
+{% endblock %}
