@@ -1,0 +1,84 @@
+{% extends 'layout/base.twig' %}
+
+{% block titulo %}Notificações | {{ app.nome }}{% endblock %}
+{% block robots %}noindex, nofollow{% endblock %}
+
+{% block conteudo %}
+    <div class="d-flex flex-wrap justify-content-between align-items-end gap-2 mb-4">
+        <div>
+            <h1 class="h4 mb-1">Notificações</h1>
+            <p class="text-muted small mb-0">
+                {{ itens|length }} registro(s){{ nao_lidas > 0 ? ', ' ~ nao_lidas ~ ' não lida(s)' : '' }}.
+            </p>
+        </div>
+
+        {% if nao_lidas > 0 %}
+            <form method="post" action="{{ url('/notificacoes/marcar-todas') }}">
+                {{ campo_csrf() }}
+                <button type="submit" class="btn btn-outline-primary btn-sm">Marcar todas como lidas</button>
+            </form>
+        {% endif %}
+    </div>
+
+    {% if itens is empty %}
+        {% include 'partials/lista-vazia.twig' with {
+            icone: 'bell',
+            titulo: 'Nenhuma notificação',
+            mensagem: 'Você será avisado aqui sobre demandas compatíveis, manifestações de interesse, respostas, mensagens e decisões de moderação.'
+        } only %}
+    {% else %}
+        <div class="card">
+            <ul class="list-group list-group-flush">
+                {% for notificacao in itens %}
+                    <li class="list-group-item {{ notificacao.not_lida == 'N' ? 'bg-light' : '' }}">
+                        <div class="d-flex flex-wrap justify-content-between gap-2">
+                            <div class="min-w-0">
+                                <p class="mb-1 fw-semibold">
+                                    {% if notificacao.not_lida == 'N' %}
+                                        <span class="badge text-bg-primary">nova</span>
+                                    {% endif %}
+                                    {{ notificacao.not_assunto }}
+                                </p>
+
+                                <p class="small text-muted mb-1">
+                                    {{ eventos[notificacao.not_evento]|default(notificacao.not_evento|rotulo) }}
+                                    · {{ notificacao.not_dt_registro|data_hora }}
+                                    · canal {{ notificacao.not_canal|lower }}
+                                    {% if notificacao.not_status == 'E' %}
+                                        · <span class="text-success">enviada por e-mail</span>
+                                    {% elseif notificacao.not_status == 'F' %}
+                                        · <span class="text-danger">falha no envio do e-mail</span>
+                                    {% elseif notificacao.not_canal == 'EMAIL' %}
+                                        · <span class="text-warning">envio pendente</span>
+                                    {% endif %}
+                                </p>
+                            </div>
+
+                            <div class="d-flex flex-wrap gap-2 align-items-start">
+                                {% if notificacao.not_link %}
+                                    <a class="btn btn-sm btn-outline-primary" href="{{ url(notificacao.not_link) }}">
+                                        Abrir
+                                    </a>
+                                {% endif %}
+
+                                {% if notificacao.not_lida == 'N' %}
+                                    <form method="post" action="{{ url('/notificacoes/' ~ notificacao.not_id ~ '/lida') }}">
+                                        {{ campo_csrf() }}
+                                        <button type="submit" class="btn btn-sm btn-outline-secondary">
+                                            Marcar como lida
+                                        </button>
+                                    </form>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <p class="small text-muted mt-3">
+            O envio por e-mail depende da configuração de SMTP da instalação. Independentemente
+            do envio, todo evento fica registrado aqui.
+        </p>
+    {% endif %}
+{% endblock %}

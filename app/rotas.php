@@ -123,6 +123,11 @@ $roteador->get('/mensagens/{id}',           'ControladorMensagem', 'conversa',  
 $roteador->post('/mensagens/{id}',          'ControladorMensagem', 'enviar',         $TODOS_AUTENTICADOS);
 $roteador->post('/mensagens/iniciar',       'ControladorMensagem', 'iniciar',        $TODOS_AUTENTICADOS);
 
+// Notificações (RF07)
+$roteador->get('/notificacoes',                  'ControladorNotificacao', 'central',        $TODOS_AUTENTICADOS);
+$roteador->post('/notificacoes/{id}/lida',       'ControladorNotificacao', 'marcarLida',     $TODOS_AUTENTICADOS);
+$roteador->post('/notificacoes/marcar-todas',    'ControladorNotificacao', 'marcarTodas',    $TODOS_AUTENTICADOS);
+
 // -----------------------------------------------------------------------------
 // Endpoints JSON de apoio à interface
 // -----------------------------------------------------------------------------
