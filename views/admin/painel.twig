@@ -1,0 +1,170 @@
+{% extends 'layout/base.twig' %}
+
+{% block titulo %}Painel administrativo | {{ app.nome }}{% endblock %}
+{% block robots %}noindex, nofollow{% endblock %}
+
+{% block conteudo %}
+    <h1 class="h4 mb-1">Painel administrativo</h1>
+    <p class="text-muted small mb-4">
+        Visão geral da plataforma, pendências que exigem ação e últimos eventos registrados.
+    </p>
+
+    <div class="row g-4">
+        <div class="col-lg-3">
+            {% include 'admin/_menu.twig' with { secao: '/admin' } only %}
+        </div>
+
+        <div class="col-lg-9">
+            {# --- Pendências ------------------------------------------- #}
+            {% if pendencias is not empty %}
+                <div class="card mb-4">
+                    <div class="card-header card-cabecalho-simples">Pendências que exigem ação</div>
+                    <ul class="list-group list-group-flush">
+                        {% for pendencia in pendencias %}
+                            <li class="list-group-item d-flex flex-wrap justify-content-between align-items-center gap-2">
+                                <span>
+                                    {% if pendencia.urgente %}
+                                        <i class="bi bi-exclamation-triangle-fill text-danger" aria-hidden="true"></i>
+                                    {% else %}
+                                        <i class="bi bi-clock text-warning" aria-hidden="true"></i>
+                                    {% endif %}
+                                    {{ pendencia.rotulo }}
+                                    <span class="badge {{ pendencia.urgente ? 'text-bg-danger' : 'text-bg-warning' }}">
+                                        {{ pendencia.total }}
+                                    </span>
+                                </span>
+                                <a class="btn btn-sm btn-outline-primary" href="{{ url(pendencia.link) }}">Tratar</a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% else %}
+                <div class="alert alert-success">
+                    <i class="bi bi-check-circle" aria-hidden="true"></i>
+                    Nenhuma pendência aberta: denúncias, requisições de titulares e moderação em dia.
+                </div>
+            {% endif %}
+
+            {# --- Estado dos serviços ---------------------------------- #}
+            <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h2 class="h6">Integração com a API oficial</h2>
+                            {% if integracao_ativa %}
+                                <p class="mb-2">
+                                    <span class="selo-registrado">
+                                        <i class="bi bi-plug-fill" aria-hidden="true"></i> configurada
+                                    </span>
+                                </p>
+                            {% else %}
+                                <p class="mb-2"><span class="selo-nao-registrado">não configurada</span></p>
+                            {% endif %}
+                            <ul class="list-unstyled small mb-2">
+                                <li>Consultas realizadas: <strong>{{ api.total|default(0)|numero }}</strong></li>
+                                <li>Sucessos: <strong>{{ api.sucessos|default(0)|numero }}</strong></li>
+                                <li>Falhas: <strong>{{ api.falhas|default(0)|numero }}</strong></li>
+                                <li>Duração média: <strong>{{ api.duracao_media|default(0)|numero }} ms</strong></li>
+                            </ul>
+                            <a class="small" href="{{ url('/admin/auditoria/api') }}">Ver registro das consultas</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h2 class="h6">Envio de e-mail</h2>
+                            {% if smtp_ativo %}
+                                <p class="mb-2">
+                                    <span class="selo-registrado">
+                                        <i class="bi bi-envelope-check" aria-hidden="true"></i> SMTP ativo
+                                    </span>
+                                </p>
+                            {% else %}
+                                <p class="mb-2"><span class="selo-nao-registrado">SMTP desativado</span></p>
+                            {% endif %}
+                            <ul class="list-unstyled small mb-2">
+                                <li>Enviadas: <strong>{{ notificacoes.enviadas|default(0)|numero }}</strong></li>
+                                <li>Pendentes: <strong>{{ notificacoes.pendentes|default(0)|numero }}</strong></li>
+                                <li>Falhas: <strong>{{ notificacoes.falhas|default(0)|numero }}</strong></li>
+                            </ul>
+                            <a class="small" href="{{ url('/admin/configuracoes') }}">Configurar SMTP</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {# --- Indicadores ----------------------------------------- #}
+            <div class="card mb-4">
+                <div class="card-header card-cabecalho-simples d-flex justify-content-between align-items-center">
+                    <span>Números da plataforma</span>
+                    <a class="small" href="{{ url('/admin/indicadores') }}">Indicadores detalhados</a>
+                </div>
+                <div class="card-body">
+                    <div class="row g-2">
+                        {% set blocos = [
+                            { valor: usuarios.total, rotulo: 'Usuários' },
+                            { valor: usuarios.registrados, rotulo: 'Registrados no CREA' },
+                            { valor: usuarios.bloqueados, rotulo: 'Bloqueados' },
+                            { valor: demandas.publicadas, rotulo: 'Demandas abertas' },
+                            { valor: interesses.total, rotulo: 'Manifestações' },
+                            { valor: denuncias.abertas, rotulo: 'Denúncias abertas' },
+                            { valor: lgpd.abertas, rotulo: 'Requisições LGPD' },
+                            { valor: auditoria.hoje, rotulo: 'Eventos hoje' }
+                        ] %}
+
+                        {% for bloco in blocos %}
+                            <div class="col-6 col-md-3">
+                                <div class="indicador text-center">
+                                    <div class="valor">{{ bloco.valor|default(0)|numero }}</div>
+                                    <div class="rotulo">{{ bloco.rotulo }}</div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    {% if auditoria.falhas_login_24h > 0 %}
+                        <p class="small text-warning mt-3 mb-0">
+                            <i class="bi bi-exclamation-triangle" aria-hidden="true"></i>
+                            {{ auditoria.falhas_login_24h }} tentativa(s) de acesso malsucedida(s) nas últimas 24 horas.
+                            <a href="{{ url('/admin/auditoria?acao=LOGIN_FALHA') }}">Ver na trilha de auditoria</a>.
+                        </p>
+                    {% endif %}
+                </div>
+            </div>
+
+            {# --- Últimos eventos ------------------------------------- #}
+            <div class="card">
+                <div class="card-header card-cabecalho-simples d-flex justify-content-between align-items-center">
+                    <span>Últimos eventos auditados</span>
+                    <a class="small" href="{{ url('/admin/auditoria') }}">Ver trilha completa</a>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-sm tabela-auditoria mb-0">
+                        <thead>
+                            <tr>
+                                <th scope="col">Quando</th>
+                                <th scope="col">Quem</th>
+                                <th scope="col">Ação</th>
+                                <th scope="col">Descrição</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for evento in ultimos_eventos %}
+                                <tr>
+                                    <td class="text-nowrap">{{ evento.aud_dt_registro|data_hora }}</td>
+                                    <td>{{ evento.usu_nome|default('anônimo') }}</td>
+                                    <td>
+                                        <code class="severidade-{{ evento.aud_severidade }}">{{ evento.aud_acao }}</code>
+                                    </td>
+                                    <td>{{ evento.aud_descricao|default('—')|slice(0, 90) }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

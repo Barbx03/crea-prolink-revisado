@@ -141,6 +141,12 @@ $roteador->get('/denunciar/{entidade}/{id}', 'ControladorDenuncia', 'formulario'
 $roteador->post('/denunciar',                'ControladorDenuncia', 'registrar',  $TODOS_AUTENTICADOS);
 
 // -----------------------------------------------------------------------------
+// Painel administrativo (RF06)
+// -----------------------------------------------------------------------------
+$roteador->get('/admin',            'Admin\ControladorPainelAdmin', 'painel',      $SOMENTE_ADMIN);
+$roteador->get('/admin/indicadores', 'Admin\ControladorPainelAdmin', 'indicadores', $SOMENTE_ADMIN);
+
+// -----------------------------------------------------------------------------
 // Endpoints JSON de apoio à interface
 // -----------------------------------------------------------------------------
 $roteador->get('/api/competencias',              'Api\ControladorApoio', 'competencias');

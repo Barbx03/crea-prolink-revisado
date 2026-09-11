@@ -1,0 +1,283 @@
+{% extends 'layout/base.twig' %}
+
+{% block titulo %}Indicadores gerenciais | Administração | {{ app.nome }}{% endblock %}
+{% block robots %}noindex, nofollow{% endblock %}
+
+{% block conteudo %}
+    <h1 class="h4 mb-1">Indicadores gerenciais</h1>
+    <p class="text-muted small mb-4">
+        Números consolidados da plataforma, para acompanhamento de adoção, atividade e
+        aderência da oferta à demanda.
+    </p>
+
+    <div class="row g-4">
+        <div class="col-lg-3">
+            {% include 'admin/_menu.twig' with { secao: '/admin/indicadores' } only %}
+
+            <div class="card">
+                <div class="card-header card-cabecalho-simples">Pesos da compatibilização</div>
+                <div class="card-body">
+                    <ul class="list-unstyled small mb-2">
+                        {% for chave, valor in pesos_matching %}
+                            {% if chave starts with 'peso_' %}
+                                <li class="d-flex justify-content-between border-bottom py-1">
+                                    <span>{{ chave|replace({'peso_': ''})|replace({'_': ' '})|capitalize }}</span>
+                                    <strong>{{ valor }}</strong>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+                    <a class="small" href="{{ url('/admin/configuracoes') }}">Ajustar pesos</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-9">
+            {# --- Adoção -------------------------------------------- #}
+            <div class="card mb-4">
+                <div class="card-header card-cabecalho-simples">Adoção</div>
+                <div class="card-body">
+                    <div class="row g-2">
+                        {% set blocos = [
+                            { valor: usuarios.total, rotulo: 'Usuários cadastrados' },
+                            { valor: usuarios.registrados, rotulo: 'Com registro validado' },
+                            { valor: usuarios.profissionais, rotulo: 'Profissionais' },
+                            { valor: usuarios.empresas, rotulo: 'Empresas' },
+                            { valor: usuarios.terceiros, rotulo: 'Contratantes' },
+                            { valor: usuarios.ultimos_30_dias, rotulo: 'Novos em 30 dias' }
+                        ] %}
+                        {% for bloco in blocos %}
+                            <div class="col-6 col-md-4">
+                                <div class="indicador text-center">
+                                    <div class="valor">{{ bloco.valor|default(0)|numero }}</div>
+                                    <div class="rotulo">{{ bloco.rotulo }}</div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    {% if cadastros_mes is not empty %}
+                        <h3 class="h6 mt-4">Cadastros por mês</h3>
+                        <div class="table-responsive">
+                            <table class="table table-sm align-middle mb-0">
+                                <caption class="small">Últimos 12 meses.</caption>
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Mês</th>
+                                        <th scope="col">Total</th>
+                                        <th scope="col">Profissionais</th>
+                                        <th scope="col">Empresas</th>
+                                        <th scope="col">Contratantes</th>
+                                        <th scope="col">Distribuição</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% set maximo = 1 %}
+                                    {% for linha in cadastros_mes %}
+                                        {% if linha.total > maximo %}{% set maximo = linha.total %}{% endif %}
+                                    {% endfor %}
+
+                                    {% for linha in cadastros_mes %}
+                                        <tr>
+                                            <td class="small text-nowrap">{{ linha.mes }}</td>
+                                            <td><strong>{{ linha.total }}</strong></td>
+                                            <td class="small">{{ linha.profissionais }}</td>
+                                            <td class="small">{{ linha.empresas }}</td>
+                                            <td class="small">{{ linha.terceiros }}</td>
+                                            <td style="min-width: 120px;">
+                                                <div class="progress" role="img"
+                                                     aria-label="{{ linha.total }} cadastros em {{ linha.mes }}">
+                                                    <div class="progress-bar bg-marca"
+                                                         style="width: {{ (linha.total / maximo * 100)|round }}%"></div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            {# --- Atividade ---------------------------------------- #}
+            <div class="card mb-4">
+                <div class="card-header card-cabecalho-simples">Atividade</div>
+                <div class="card-body">
+                    <div class="row g-2 mb-3">
+                        {% set blocos = [
+                            { valor: demandas.total, rotulo: 'Demandas cadastradas' },
+                            { valor: demandas.publicadas, rotulo: 'Publicadas' },
+                            { valor: demandas.encerradas, rotulo: 'Encerradas' },
+                            { valor: interesses.total, rotulo: 'Manifestações' },
+                            { valor: interesses.selecionados, rotulo: 'Profissionais selecionados' },
+                            { valor: interesses.em_negociacao, rotulo: 'Em negociação' }
+                        ] %}
+                        {% for bloco in blocos %}
+                            <div class="col-6 col-md-4">
+                                <div class="indicador text-center">
+                                    <div class="valor">{{ bloco.valor|default(0)|numero }}</div>
+                                    <div class="rotulo">{{ bloco.rotulo }}</div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    {% if demandas.publicadas > 0 %}
+                        <p class="small text-muted mb-0">
+                            Média de {{ (interesses.total / demandas.publicadas)|number_format(1, ',', '.') }}
+                            manifestação(ões) por demanda publicada.
+                            {% if interesses.total > 0 %}
+                                Taxa de seleção:
+                                {{ (interesses.selecionados / interesses.total * 100)|number_format(1, ',', '.') }}%.
+                            {% endif %}
+                        </p>
+                    {% endif %}
+
+                    {% if demandas_mes is not empty %}
+                        <h3 class="h6 mt-4">Demandas por mês</h3>
+                        <div class="table-responsive">
+                            <table class="table table-sm align-middle mb-0">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Mês</th>
+                                        <th scope="col">Cadastradas</th>
+                                        <th scope="col">Publicadas</th>
+                                        <th scope="col">Encerradas</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for linha in demandas_mes %}
+                                        <tr>
+                                            <td class="small text-nowrap">{{ linha.mes }}</td>
+                                            <td>{{ linha.total }}</td>
+                                            <td class="small">{{ linha.publicadas }}</td>
+                                            <td class="small">{{ linha.encerradas }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            {# --- Oferta x demanda de competências ---------------- #}
+            <div class="card mb-4">
+                <div class="card-header card-cabecalho-simples">
+                    Competências: o que se pede e o que se oferece
+                </div>
+                <div class="card-body">
+                    <p class="small text-muted">
+                        Comparar as duas listas mostra onde há escassez de oferta e onde há
+                        excesso, o que orienta ações de mobilização de profissionais.
+                    </p>
+
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <h3 class="h6">Mais pedidas nas demandas</h3>
+                            {% if mais_demandadas is empty %}
+                                <p class="small text-muted mb-0">Sem dados suficientes.</p>
+                            {% else %}
+                                <ol class="small mb-0 ps-3">
+                                    {% for linha in mais_demandadas %}
+                                        <li class="py-1">
+                                            {{ linha.cmp_nome }}
+                                            <span class="text-muted">({{ linha.total }})</span>
+                                        </li>
+                                    {% endfor %}
+                                </ol>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-6">
+                            <h3 class="h6">Mais ofertadas pelos perfis</h3>
+                            {% if mais_ofertadas is empty %}
+                                <p class="small text-muted mb-0">Sem dados suficientes.</p>
+                            {% else %}
+                                <ol class="small mb-0 ps-3">
+                                    {% for linha in mais_ofertadas %}
+                                        <li class="py-1">
+                                            {{ linha.cmp_nome }}
+                                            <span class="text-muted">({{ linha.total }})</span>
+                                        </li>
+                                    {% endfor %}
+                                </ol>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {# --- Integração e governança ------------------------- #}
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <div class="card-header card-cabecalho-simples">Integração com o CREA-AM</div>
+                        <div class="card-body">
+                            <ul class="list-unstyled small mb-0">
+                                <li class="d-flex justify-content-between border-bottom py-1">
+                                    <span>Consultas realizadas</span><strong>{{ api.total|default(0)|numero }}</strong>
+                                </li>
+                                <li class="d-flex justify-content-between border-bottom py-1">
+                                    <span>Sucessos</span><strong>{{ api.sucessos|default(0)|numero }}</strong>
+                                </li>
+                                <li class="d-flex justify-content-between border-bottom py-1">
+                                    <span>Falhas</span><strong>{{ api.falhas|default(0)|numero }}</strong>
+                                </li>
+                                <li class="d-flex justify-content-between py-1">
+                                    <span>Duração média</span><strong>{{ api.duracao_media|default(0)|numero }} ms</strong>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <div class="card-header card-cabecalho-simples">Governança</div>
+                        <div class="card-body">
+                            <ul class="list-unstyled small mb-0">
+                                <li class="d-flex justify-content-between border-bottom py-1">
+                                    <span>Denúncias recebidas</span><strong>{{ denuncias.total|default(0) }}</strong>
+                                </li>
+                                <li class="d-flex justify-content-between border-bottom py-1">
+                                    <span>Julgadas procedentes</span><strong>{{ denuncias.procedentes|default(0) }}</strong>
+                                </li>
+                                <li class="d-flex justify-content-between py-1">
+                                    <span>Em aberto</span><strong>{{ denuncias.abertas|default(0) }}</strong>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {% if resumo_auditoria is not empty %}
+                <div class="card mt-4">
+                    <div class="card-header card-cabecalho-simples">Eventos auditados nos últimos 30 dias</div>
+                    <div class="table-responsive">
+                        <table class="table table-sm mb-0">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Ação</th>
+                                    <th scope="col">Ocorrências</th>
+                                    <th scope="col">Último evento</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for linha in resumo_auditoria %}
+                                    <tr>
+                                        <td><code>{{ linha.aud_acao }}</code></td>
+                                        <td>{{ linha.total }}</td>
+                                        <td class="small text-muted">{{ linha.ultimo_evento|data_hora }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

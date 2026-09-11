@@ -1,0 +1,29 @@
+{# Navegação lateral do painel administrativo #}
+<nav class="card mb-4" aria-label="Menu administrativo">
+    <div class="card-header card-cabecalho-simples">Administração</div>
+    <ul class="list-group list-group-flush">
+        {% set itens = [
+            { rota: '/admin', rotulo: 'Visão geral', icone: 'speedometer2' },
+            { rota: '/admin/indicadores', rotulo: 'Indicadores gerenciais', icone: 'graph-up' },
+            { rota: '/admin/usuarios', rotulo: 'Usuários e perfis', icone: 'people' },
+            { rota: '/admin/moderacao', rotulo: 'Moderação', icone: 'shield-check' },
+            { rota: '/admin/moderacao/denuncias', rotulo: 'Denúncias', icone: 'flag' },
+            { rota: '/admin/lgpd', rotulo: 'Requisições de titulares', icone: 'file-lock2' },
+            { rota: '/admin/auditoria', rotulo: 'Trilha de auditoria', icone: 'clipboard-data' },
+            { rota: '/admin/auditoria/api', rotulo: 'Integração CREA-AM', icone: 'plug' },
+            { rota: '/admin/notificacoes', rotulo: 'Fila de notificações', icone: 'envelope' },
+            { rota: '/admin/configuracoes', rotulo: 'Configurações', icone: 'sliders' },
+            { rota: '/admin/lixeira', rotulo: 'Lixeira', icone: 'trash' }
+        ] %}
+
+        {% for item in itens %}
+            <li class="list-group-item {{ secao|default('') == item.rota ? 'active' : '' }}">
+                <a href="{{ url(item.rota) }}"
+                   class="text-decoration-none {{ secao|default('') == item.rota ? 'text-white' : '' }}">
+                    <i class="bi bi-{{ item.icone }}" aria-hidden="true"></i>
+                    {{ item.rotulo }}
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+</nav>
