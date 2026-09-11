@@ -146,6 +146,13 @@ $roteador->post('/denunciar',                'ControladorDenuncia', 'registrar',
 $roteador->get('/admin',            'Admin\ControladorPainelAdmin', 'painel',      $SOMENTE_ADMIN);
 $roteador->get('/admin/indicadores', 'Admin\ControladorPainelAdmin', 'indicadores', $SOMENTE_ADMIN);
 
+$roteador->get('/admin/usuarios',                  'Admin\ControladorUsuarios', 'listar',      $SOMENTE_ADMIN);
+$roteador->get('/admin/usuarios/{id}',             'Admin\ControladorUsuarios', 'ver',         $SOMENTE_ADMIN);
+$roteador->post('/admin/usuarios/{id}/bloquear',   'Admin\ControladorUsuarios', 'bloquear',    $SOMENTE_ADMIN);
+$roteador->post('/admin/usuarios/{id}/desbloquear', 'Admin\ControladorUsuarios', 'desbloquear', $SOMENTE_ADMIN);
+$roteador->post('/admin/usuarios/{id}/perfil',     'Admin\ControladorUsuarios', 'alterarPerfil', $SOMENTE_ADMIN);
+$roteador->post('/admin/usuarios/{id}/excluir',    'Admin\ControladorUsuarios', 'excluir',     $SOMENTE_ADMIN);
+
 // -----------------------------------------------------------------------------
 // Endpoints JSON de apoio à interface
 // -----------------------------------------------------------------------------

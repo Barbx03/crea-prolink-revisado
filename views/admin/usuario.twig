@@ -1,0 +1,369 @@
+{% extends 'layout/base.twig' %}
+
+{% block titulo %}{{ usuario.usu_nome }} | Administração | {{ app.nome }}{% endblock %}
+{% block robots %}noindex, nofollow{% endblock %}
+
+{% block conteudo %}
+    <nav aria-label="Trilha de navegação">
+        <ol class="breadcrumb small">
+            <li class="breadcrumb-item"><a href="{{ url('/admin') }}">Administração</a></li>
+            <li class="breadcrumb-item"><a href="{{ url('/admin/usuarios') }}">Usuários</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ usuario.usu_nome }}</li>
+        </ol>
+    </nav>
+
+    <div class="d-flex flex-wrap justify-content-between align-items-end gap-2 mb-4">
+        <div>
+            <h1 class="h4 mb-1">{{ usuario.usu_nome }}</h1>
+            <p class="text-muted small mb-0">
+                {{ usuario.usu_email }} · {{ usuario.usu_perfil|rotulo }} ·
+                cadastro em {{ usuario.usu_dt_registro|data_hora }}
+            </p>
+        </div>
+
+        <div class="d-flex flex-wrap gap-2">
+            {% include 'partials/selo-registro.twig' with { registrado: usuario.usu_registrado_crea } only %}
+            {% if perfil %}
+                <a class="btn btn-sm btn-outline-primary" href="{{ url('/profissionais/' ~ perfil.prf_id) }}">
+                    Ver perfil público
+                </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-8">
+            {# --- Dados cadastrais --------------------------------------- #}
+            <div class="card mb-4">
+                <div class="card-header card-cabecalho-simples">Dados cadastrais</div>
+                <div class="card-body">
+                    <dl class="row small mb-0">
+                        <dt class="col-sm-4">Tipo de pessoa</dt>
+                        <dd class="col-sm-8">{{ usuario.usu_tipo_pessoa == 'PJ' ? 'Pessoa jurídica' : 'Pessoa física' }}</dd>
+
+                        <dt class="col-sm-4">Documento</dt>
+                        <dd class="col-sm-8">
+                            {{ (usuario.usu_cpf ?: usuario.usu_cnpj)|documento|default('não informado') }}
+                        </dd>
+
+                        {% if usuario.usu_rnp %}
+                            <dt class="col-sm-4">RNP</dt>
+                            <dd class="col-sm-8">{{ usuario.usu_rnp }}</dd>
+                        {% endif %}
+
+                        <dt class="col-sm-4">Registro validado</dt>
+                        <dd class="col-sm-8">
+                            {{ usuario.usu_registrado_crea == 'S' ? 'Sim' : 'Não' }}
+                            {% if usuario.usu_dt_validacao %}
+                                em {{ usuario.usu_dt_validacao|data_hora }}
+                            {% endif %}
+                        </dd>
+
+                        <dt class="col-sm-4">Telefone</dt>
+                        <dd class="col-sm-8">{{ usuario.usu_telefone|telefone|default('não informado') }}</dd>
+
+                        <dt class="col-sm-4">Localização</dt>
+                        <dd class="col-sm-8">
+                            {{ usuario.usu_cidade }}{{ usuario.usu_cidade and usuario.usu_uf ? '/' : '' }}{{ usuario.usu_uf }}
+                        </dd>
+
+                        <dt class="col-sm-4">E-mail verificado</dt>
+                        <dd class="col-sm-8">{{ usuario.usu_email_verificado == 'S' ? 'Sim' : 'Não' }}</dd>
+
+                        <dt class="col-sm-4">Último acesso</dt>
+                        <dd class="col-sm-8">{{ usuario.usu_dt_ultimo_acesso|data_hora|default('nunca acessou') }}</dd>
+
+                        <dt class="col-sm-4">Tentativas malsucedidas</dt>
+                        <dd class="col-sm-8">
+                            {{ usuario.usu_falhas_login }}
+                            {% if usuario.usu_bloqueado_ate %}
+                                · bloqueio temporário até {{ usuario.usu_bloqueado_ate|data_hora }}
+                            {% endif %}
+                        </dd>
+
+                        <dt class="col-sm-4">Última ação registrada</dt>
+                        <dd class="col-sm-8">{{ usuario.usu_log|default('—') }}</dd>
+                    </dl>
+                </div>
+            </div>
+
+            {# --- Perfil profissional ------------------------------------ #}
+            {% if perfil %}
+                <div class="card mb-4">
+                    <div class="card-header card-cabecalho-simples d-flex justify-content-between align-items-center">
+                        <span>Perfil profissional</span>
+                        <span class="badge {{ perfil.prf_moderacao == 'APROVADO' ? 'text-bg-success' : 'text-bg-warning' }}">
+                            {{ perfil.prf_moderacao|rotulo }}
+                        </span>
+                    </div>
+                    <div class="card-body">
+                        <dl class="row small">
+                            <dt class="col-sm-4">Título</dt>
+                            <dd class="col-sm-8">{{ perfil.prf_titulo|default('não informado') }}</dd>
+
+                            <dt class="col-sm-4">Visibilidade</dt>
+                            <dd class="col-sm-8">{{ perfil.prf_visibilidade|rotulo }}</dd>
+
+                            <dt class="col-sm-4">Disponibilidade</dt>
+                            <dd class="col-sm-8">{{ perfil.prf_disponibilidade|rotulo }}</dd>
+
+                            <dt class="col-sm-4">Aceita contato</dt>
+                            <dd class="col-sm-8">{{ perfil.prf_aceita_contato == 'S' ? 'Sim' : 'Não' }}</dd>
+                        </dl>
+
+                        {% if competencias is not empty %}
+                            <h3 class="h6">Competências ({{ competencias|length }})</h3>
+                            <div class="mb-3">
+                                {% for competencia in competencias %}
+                                    <span class="etiqueta-competencia">{{ competencia.cmp_nome }}</span>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+
+                        <div class="row g-2 text-center">
+                            <div class="col-4">
+                                <div class="indicador">
+                                    <div class="valor">{{ arts|length }}</div>
+                                    <div class="rotulo">ARTs</div>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="indicador">
+                                    <div class="valor">{{ cats|length }}</div>
+                                    <div class="rotulo">CATs</div>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="indicador">
+                                    <div class="valor">{{ experiencias|length }}</div>
+                                    <div class="rotulo">Experiências</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <form method="post" action="{{ url('/admin/moderacao/perfis/' ~ perfil.prf_id) }}" class="mt-3">
+                            {{ campo_csrf() }}
+                            <div class="row g-2 align-items-end">
+                                <div class="col-md-4">
+                                    <label class="form-label small mb-1" for="moderacao">Moderação do perfil</label>
+                                    <select class="form-select form-select-sm" id="moderacao" name="moderacao">
+                                        {% for valor in ['APROVADO', 'EM_ANALISE', 'REPROVADO'] %}
+                                            <option value="{{ valor }}" {{ perfil.prf_moderacao == valor ? 'selected' : '' }}>
+                                                {{ valor|rotulo }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label small mb-1" for="motivo_moderacao">Motivo (ao reprovar)</label>
+                                    <input type="text" class="form-control form-control-sm" id="motivo_moderacao"
+                                           name="motivo" maxlength="255"
+                                           value="{{ perfil.prf_moderacao_motivo|default('') }}">
+                                </div>
+                                <div class="col-md-2">
+                                    <button type="submit" class="btn btn-sm btn-primary w-100">Aplicar</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            {% endif %}
+
+            {# --- Atividade -------------------------------------------- #}
+            <div class="card mb-4">
+                <div class="card-header card-cabecalho-simples">Atividade na plataforma</div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <h3 class="h6">Demandas publicadas ({{ demandas|length }})</h3>
+                            {% if demandas is empty %}
+                                <p class="small text-muted mb-0">Nenhuma.</p>
+                            {% else %}
+                                <ul class="list-unstyled small mb-0">
+                                    {% for demanda in demandas|slice(0, 8) %}
+                                        <li class="border-bottom py-1">
+                                            <a href="{{ url('/demandas/' ~ demanda.dem_id) }}">{{ demanda.dem_titulo|slice(0, 50) }}</a>
+                                            <span class="d-block text-muted">{{ demanda.dem_situacao|rotulo }}</span>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-6">
+                            <h3 class="h6">Manifestações enviadas ({{ interesses|length }})</h3>
+                            {% if interesses is empty %}
+                                <p class="small text-muted mb-0">Nenhuma.</p>
+                            {% else %}
+                                <ul class="list-unstyled small mb-0">
+                                    {% for interesse in interesses|slice(0, 8) %}
+                                        <li class="border-bottom py-1">
+                                            <a href="{{ url('/demandas/' ~ interesse.dem_id) }}">{{ interesse.dem_titulo|slice(0, 50) }}</a>
+                                            <span class="d-block text-muted">{{ interesse.int_situacao|rotulo }}</span>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {# --- Trilha de auditoria ---------------------------------- #}
+            <div class="card">
+                <div class="card-header card-cabecalho-simples d-flex justify-content-between align-items-center">
+                    <span>Trilha de auditoria deste usuário</span>
+                    <a class="small" href="{{ url('/admin/auditoria?usuario_id=' ~ usuario.usu_id) }}">
+                        Ver tudo
+                    </a>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-sm tabela-auditoria mb-0">
+                        <thead>
+                            <tr>
+                                <th scope="col">Quando</th>
+                                <th scope="col">Ação</th>
+                                <th scope="col">Descrição</th>
+                                <th scope="col">Origem</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for evento in auditoria %}
+                                <tr>
+                                    <td class="text-nowrap">{{ evento.aud_dt_registro|data_hora }}</td>
+                                    <td><code class="severidade-{{ evento.aud_severidade }}">{{ evento.aud_acao }}</code></td>
+                                    <td>{{ evento.aud_descricao|default('—')|slice(0, 80) }}</td>
+                                    <td class="text-nowrap">{{ evento.aud_ip_origem|default('—') }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        {# --- Ações administrativas ------------------------------------ #}
+        <div class="col-lg-4">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h2 class="h6">Perfil de acesso</h2>
+                    <form method="post" action="{{ url('/admin/usuarios/' ~ usuario.usu_id ~ '/perfil') }}">
+                        {{ campo_csrf() }}
+                        <div class="mb-2">
+                            <label class="form-label small" for="perfil_acesso">Perfil</label>
+                            <select class="form-select form-select-sm" id="perfil_acesso" name="perfil">
+                                {% for item in perfis %}
+                                    <option value="{{ item }}" {{ usuario.usu_perfil == item ? 'selected' : '' }}>
+                                        {{ item|rotulo }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <p class="small text-muted">
+                            Os perfis de profissional e empresa registrada dependem de validação na API
+                            oficial: não podem ser concedidos manualmente.
+                        </p>
+                        <button type="submit" class="btn btn-outline-primary btn-sm w-100">Alterar perfil</button>
+                    </form>
+                </div>
+            </div>
+
+            {% if usuario.usu_status == 'B' %}
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h2 class="h6">Desbloquear conta</h2>
+                        <p class="small text-muted">
+                            Motivo do bloqueio: {{ usuario.usu_motivo_bloqueio|default('não informado') }}
+                        </p>
+                        <form method="post" action="{{ url('/admin/usuarios/' ~ usuario.usu_id ~ '/desbloquear') }}">
+                            {{ campo_csrf() }}
+                            <button type="submit" class="btn btn-outline-success btn-sm w-100">
+                                Restabelecer acesso
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            {% elseif usuario.usu_status == 'A' %}
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h2 class="h6">Bloquear conta</h2>
+                        <form method="post" action="{{ url('/admin/usuarios/' ~ usuario.usu_id ~ '/bloquear') }}"
+                              data-confirmar="Bloquear o acesso deste usuário?">
+                            {{ campo_csrf() }}
+                            <div class="mb-2">
+                                <label class="form-label small" for="motivo">Motivo (informado ao usuário)</label>
+                                <textarea class="form-control form-control-sm {{ erros.motivo is defined ? 'is-invalid' : '' }}"
+                                          id="motivo" name="motivo" rows="3" maxlength="255" required></textarea>
+                                {% include 'partials/campo-erro.twig' with { campo: 'motivo', erros: erros } only %}
+                            </div>
+                            <button type="submit" class="btn btn-outline-danger btn-sm w-100">Bloquear acesso</button>
+                        </form>
+                    </div>
+                </div>
+            {% endif %}
+
+            {# --- Consentimentos --------------------------------------- #}
+            <div class="card mb-4">
+                <div class="card-header card-cabecalho-simples">Consentimentos vigentes</div>
+                <div class="card-body">
+                    <ul class="list-unstyled small mb-0">
+                        {% for finalidade, rotulo in finalidades %}
+                            {% set situacao = consentimentos[finalidade]|default(null) %}
+                            <li class="border-bottom py-1">
+                                <span class="d-block">{{ rotulo }}</span>
+                                {% if situacao %}
+                                    <span class="{{ situacao.concedido ? 'text-success' : 'text-danger' }}">
+                                        {{ situacao.concedido ? 'concedido' : 'revogado' }}
+                                    </span>
+                                    <span class="text-muted">em {{ situacao.dt_evento|data_hora }}</span>
+                                {% else %}
+                                    <span class="text-muted">sem registro</span>
+                                {% endif %}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+
+            {% if solicitacoes is not empty %}
+                <div class="card mb-4">
+                    <div class="card-header card-cabecalho-simples">Requisições LGPD</div>
+                    <ul class="list-group list-group-flush">
+                        {% for solicitacao in solicitacoes %}
+                            <li class="list-group-item small">
+                                <a href="{{ url('/admin/lgpd/' ~ solicitacao.slg_id) }}">
+                                    {{ solicitacao.slg_tipo|rotulo }}
+                                </a>
+                                <span class="d-block text-muted">
+                                    {{ solicitacao.slg_situacao|rotulo }} · {{ solicitacao.slg_dt_registro|data }}
+                                </span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+
+            {% if usuario.usu_status != 'X' %}
+                <div class="card border-danger">
+                    <div class="card-body">
+                        <h2 class="h6 text-danger">Excluir conta</h2>
+                        <p class="small text-muted">
+                            Exclusão lógica: a conta sai das telas operacionais, mas permanece na base
+                            e pode ser restaurada pela lixeira.
+                        </p>
+                        <form method="post" action="{{ url('/admin/usuarios/' ~ usuario.usu_id ~ '/excluir') }}"
+                              data-confirmar="Marcar esta conta como excluída?">
+                            {{ campo_csrf() }}
+                            <div class="mb-2">
+                                <label class="form-label small" for="motivo_exclusao">Motivo</label>
+                                <textarea class="form-control form-control-sm" id="motivo_exclusao" name="motivo"
+                                          rows="2" maxlength="255" required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-outline-danger btn-sm w-100">Excluir conta</button>
+                        </form>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

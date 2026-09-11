@@ -1,0 +1,156 @@
+{% extends 'layout/base.twig' %}
+
+{% block titulo %}Usuários | Administração | {{ app.nome }}{% endblock %}
+{% block robots %}noindex, nofollow{% endblock %}
+
+{% block conteudo %}
+    <h1 class="h4 mb-1">Usuários e perfis</h1>
+    <p class="text-muted small mb-4">
+        Gestão de contas, perfis de acesso, bloqueios e exclusão lógica.
+    </p>
+
+    <div class="row g-4">
+        <div class="col-lg-3">
+            {% include 'admin/_menu.twig' with { secao: '/admin/usuarios' } only %}
+
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="h6">Distribuição</h2>
+                    <ul class="list-unstyled small mb-0">
+                        <li class="d-flex justify-content-between border-bottom py-1">
+                            <span>Ativos</span><strong>{{ indicadores.ativos|numero }}</strong>
+                        </li>
+                        <li class="d-flex justify-content-between border-bottom py-1">
+                            <span>Registrados no CREA</span><strong>{{ indicadores.registrados|numero }}</strong>
+                        </li>
+                        <li class="d-flex justify-content-between border-bottom py-1">
+                            <span>Profissionais</span><strong>{{ indicadores.profissionais|numero }}</strong>
+                        </li>
+                        <li class="d-flex justify-content-between border-bottom py-1">
+                            <span>Empresas</span><strong>{{ indicadores.empresas|numero }}</strong>
+                        </li>
+                        <li class="d-flex justify-content-between border-bottom py-1">
+                            <span>Contratantes</span><strong>{{ indicadores.terceiros|numero }}</strong>
+                        </li>
+                        <li class="d-flex justify-content-between border-bottom py-1">
+                            <span>Bloqueados</span><strong>{{ indicadores.bloqueados|numero }}</strong>
+                        </li>
+                        <li class="d-flex justify-content-between py-1">
+                            <span>Excluídos</span><strong>{{ indicadores.excluidos|numero }}</strong>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-9">
+            <form method="get" class="card mb-3">
+                <div class="card-body">
+                    <div class="row g-2 align-items-end">
+                        <div class="col-md-4">
+                            <label class="form-label small mb-1" for="termo">Nome ou e-mail</label>
+                            <input type="search" class="form-control form-control-sm" id="termo" name="termo"
+                                   value="{{ filtros.termo }}">
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label small mb-1" for="perfil">Perfil</label>
+                            <select class="form-select form-select-sm" id="perfil" name="perfil">
+                                <option value="">Todos</option>
+                                {% for perfil in perfis %}
+                                    <option value="{{ perfil }}" {{ filtros.perfil == perfil ? 'selected' : '' }}>
+                                        {{ perfil|rotulo }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label small mb-1" for="situacao">Situação</label>
+                            <select class="form-select form-select-sm" id="situacao" name="situacao">
+                                <option value="">Ativos e bloqueados</option>
+                                <option value="A" {{ filtros.situacao == 'A' ? 'selected' : '' }}>Ativos</option>
+                                <option value="B" {{ filtros.situacao == 'B' ? 'selected' : '' }}>Bloqueados</option>
+                                <option value="X" {{ filtros.situacao == 'X' ? 'selected' : '' }}>Excluídos</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-2">
+                            <label class="form-label small mb-1" for="registrado">Registro</label>
+                            <select class="form-select form-select-sm" id="registrado" name="registrado">
+                                <option value="">Todos</option>
+                                <option value="S" {{ filtros.registrado == 'S' ? 'selected' : '' }}>Validado</option>
+                                <option value="N" {{ filtros.registrado == 'N' ? 'selected' : '' }}>Sem registro</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-2 mt-3">
+                        <button type="submit" class="btn btn-primary btn-sm">Filtrar</button>
+                        <a class="btn btn-outline-secondary btn-sm" href="{{ url('/admin/usuarios') }}">Limpar</a>
+                    </div>
+                </div>
+            </form>
+
+            <div class="card">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <caption class="small px-3">
+                            {{ paginacao.total|numero }} usuário(s) encontrado(s).
+                            Contas excluídas permanecem na base e podem ser restauradas pela lixeira.
+                        </caption>
+                        <thead>
+                            <tr>
+                                <th scope="col">Usuário</th>
+                                <th scope="col">Perfil</th>
+                                <th scope="col">Registro</th>
+                                <th scope="col">Situação</th>
+                                <th scope="col">Cadastro</th>
+                                <th scope="col"><span class="visually-hidden">Ações</span></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for usuario in itens %}
+                                <tr>
+                                    <td>
+                                        <span class="fw-semibold d-block">{{ usuario.usu_nome }}</span>
+                                        <span class="small text-muted">{{ usuario.usu_email }}</span>
+                                    </td>
+                                    <td><span class="badge text-bg-light border">{{ usuario.usu_perfil|rotulo }}</span></td>
+                                    <td>
+                                        {% include 'partials/selo-registro.twig' with {
+                                            registrado: usuario.usu_registrado_crea
+                                        } only %}
+                                    </td>
+                                    <td>
+                                        {% if usuario.usu_status == 'A' %}
+                                            <span class="text-success small">Ativo</span>
+                                        {% elseif usuario.usu_status == 'B' %}
+                                            <span class="text-danger small fw-semibold">Bloqueado</span>
+                                            {% if usuario.usu_motivo_bloqueio %}
+                                                <span class="d-block small text-muted">{{ usuario.usu_motivo_bloqueio|slice(0, 60) }}</span>
+                                            {% endif %}
+                                        {% elseif usuario.usu_status == 'X' %}
+                                            <span class="text-muted small">Excluído</span>
+                                        {% else %}
+                                            <span class="text-warning small">Pendente</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="small text-muted text-nowrap">{{ usuario.usu_dt_registro|data }}</td>
+                                    <td class="text-end">
+                                        <a class="btn btn-sm btn-outline-primary"
+                                           href="{{ url('/admin/usuarios/' ~ usuario.usu_id) }}">
+                                            Detalhes
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            {% include 'partials/paginacao.twig' with { paginacao: paginacao } only %}
+        </div>
+    </div>
+{% endblock %}
