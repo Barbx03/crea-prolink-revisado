@@ -174,6 +174,14 @@ $roteador->post('/admin/configuracoes/api/testar',    'Admin\ControladorConfigur
 $roteador->get('/admin/notificacoes',             'Admin\ControladorNotificacoes', 'listar',        $SOMENTE_ADMIN);
 $roteador->post('/admin/notificacoes/processar',  'Admin\ControladorNotificacoes', 'processarFila', $SOMENTE_ADMIN);
 
+$roteador->get('/admin/lgpd',                  'Admin\ControladorLgpd', 'solicitacoes',      $SOMENTE_ADMIN);
+$roteador->get('/admin/lgpd/{id}',             'Admin\ControladorLgpd', 'verSolicitacao',    $SOMENTE_ADMIN);
+$roteador->post('/admin/lgpd/{id}',            'Admin\ControladorLgpd', 'tratarSolicitacao', $SOMENTE_ADMIN);
+$roteador->post('/admin/lgpd/{id}/anonimizar', 'Admin\ControladorLgpd', 'anonimizar',        $SOMENTE_ADMIN);
+
+$roteador->get('/admin/lixeira',                          'Admin\ControladorLixeira', 'listar',    $SOMENTE_ADMIN);
+$roteador->post('/admin/lixeira/{entidade}/{id}/restaurar', 'Admin\ControladorLixeira', 'restaurar', $SOMENTE_ADMIN);
+
 // -----------------------------------------------------------------------------
 // Endpoints JSON de apoio à interface
 // -----------------------------------------------------------------------------

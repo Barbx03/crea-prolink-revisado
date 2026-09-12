@@ -1,0 +1,98 @@
+{% extends 'layout/base.twig' %}
+
+{% block titulo %}Lixeira | Administração | {{ app.nome }}{% endblock %}
+{% block robots %}noindex, nofollow{% endblock %}
+
+{% block conteudo %}
+    <h1 class="h4 mb-1">Lixeira administrativa</h1>
+    <p class="text-muted small mb-4">
+        Registros marcados como excluídos. Nenhum deles foi removido fisicamente do banco:
+        conforme o item 8.6.j do Termo de Referência, a exclusão é lógica, preserva a
+        integridade histórica e admite restauração.
+    </p>
+
+    <div class="row g-4">
+        <div class="col-lg-3">
+            {% include 'admin/_menu.twig' with { secao: '/admin/lixeira' } only %}
+
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="h6">Resumo</h2>
+                    <ul class="list-unstyled small mb-0">
+                        {% for chave, grupo in grupos %}
+                            <li class="d-flex justify-content-between border-bottom py-1">
+                                <a href="#grupo-{{ chave }}">{{ grupo.rotulo }}</a>
+                                <strong>{{ grupo.itens|length }}</strong>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-9">
+            {% set vazia = true %}
+            {% for grupo in grupos %}
+                {% if grupo.itens is not empty %}{% set vazia = false %}{% endif %}
+            {% endfor %}
+
+            {% if vazia %}
+                {% include 'partials/lista-vazia.twig' with {
+                    icone: 'trash',
+                    titulo: 'Lixeira vazia',
+                    mensagem: 'Nenhum registro está marcado como excluído neste momento.'
+                } only %}
+            {% else %}
+                {% for chave, grupo in grupos %}
+                    {% if grupo.itens is not empty %}
+                        <div class="card mb-4" id="grupo-{{ chave }}">
+                            <div class="card-header card-cabecalho-simples">
+                                {{ grupo.rotulo }}
+                                <span class="badge text-bg-light border">{{ grupo.itens|length }}</span>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-sm align-middle mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Identificador</th>
+                                            <th scope="col">Registro</th>
+                                            <th scope="col">Motivo registrado</th>
+                                            <th scope="col"><span class="visually-hidden">Ações</span></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for item in grupo.itens %}
+                                            <tr>
+                                                <td class="font-monospace small">
+                                                    #{{ attribute(item, grupo.campo_id) }}
+                                                </td>
+                                                <td class="small">
+                                                    {{ attribute(item, grupo.campo_titulo)|default('sem identificação')|slice(0, 70) }}
+                                                </td>
+                                                <td class="small text-muted">
+                                                    {% for campo, valor in item %}
+                                                        {% if campo ends with '_log' and valor %}{{ valor }}{% endif %}
+                                                    {% endfor %}
+                                                </td>
+                                                <td class="text-end">
+                                                    <form method="post"
+                                                          action="{{ url('/admin/lixeira/' ~ chave ~ '/' ~ attribute(item, grupo.campo_id) ~ '/restaurar') }}"
+                                                          data-confirmar="Restaurar este registro? Ele volta a aparecer nas telas operacionais.">
+                                                        {{ campo_csrf() }}
+                                                        <button type="submit" class="btn btn-sm btn-outline-primary">
+                                                            Restaurar
+                                                        </button>
+                                                    </form>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

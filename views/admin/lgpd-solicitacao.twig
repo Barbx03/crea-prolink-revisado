@@ -1,0 +1,215 @@
+{% extends 'layout/base.twig' %}
+
+{% block titulo %}Requisição {{ '%06d'|format(solicitacao.slg_id) }} | Administração | {{ app.nome }}{% endblock %}
+{% block robots %}noindex, nofollow{% endblock %}
+
+{% block conteudo %}
+    <nav aria-label="Trilha de navegação">
+        <ol class="breadcrumb small">
+            <li class="breadcrumb-item"><a href="{{ url('/admin') }}">Administração</a></li>
+            <li class="breadcrumb-item"><a href="{{ url('/admin/lgpd') }}">Requisições de titulares</a></li>
+            <li class="breadcrumb-item active" aria-current="page">
+                Protocolo {{ '%06d'|format(solicitacao.slg_id) }}
+            </li>
+        </ol>
+    </nav>
+
+    <h1 class="h4 mb-1">{{ solicitacao.slg_tipo|rotulo }}</h1>
+    <p class="text-muted small mb-4">
+        Protocolo {{ '%06d'|format(solicitacao.slg_id) }} ·
+        aberta em {{ solicitacao.slg_dt_registro|data_hora }} ·
+        situação <strong>{{ solicitacao.slg_situacao|rotulo }}</strong>
+    </p>
+
+    <div class="row g-4">
+        <div class="col-lg-7">
+            <div class="card mb-4">
+                <div class="card-header card-cabecalho-simples">Pedido do titular</div>
+                <div class="card-body">
+                    <dl class="row small mb-3">
+                        <dt class="col-sm-3">Titular</dt>
+                        <dd class="col-sm-9">
+                            {% if titular %}
+                                <a href="{{ url('/admin/usuarios/' ~ titular.usu_id) }}">{{ titular.usu_nome }}</a>
+                                <span class="d-block text-muted">
+                                    {{ titular.usu_email }} · {{ titular.usu_perfil|rotulo }}
+                                </span>
+                            {% else %}
+                                {{ solicitacao.usu_nome }}
+                            {% endif %}
+                        </dd>
+
+                        <dt class="col-sm-3">Tipo</dt>
+                        <dd class="col-sm-9">{{ solicitacao.slg_tipo|rotulo }}</dd>
+                    </dl>
+
+                    <h3 class="h6">Descrição informada</h3>
+                    <p class="small mb-0" style="white-space: pre-line;">
+                        {{ solicitacao.slg_descricao|default('Sem descrição adicional.') }}
+                    </p>
+                </div>
+            </div>
+
+            {% if solicitacao.slg_situacao in ['ABERTA', 'EM_ANALISE'] %}
+                <form method="post" action="{{ url('/admin/lgpd/' ~ solicitacao.slg_id) }}" class="card mb-4">
+                    {{ campo_csrf() }}
+                    <div class="card-body">
+                        <h2 class="h6">Resposta ao titular</h2>
+
+                        <div class="mb-3">
+                            <label class="form-label obrigatorio" for="situacao">Situação</label>
+                            <select class="form-select {{ erros.situacao is defined ? 'is-invalid' : '' }}"
+                                    id="situacao" name="situacao" required>
+                                <option value="EM_ANALISE">Em análise (registrar andamento)</option>
+                                <option value="ATENDIDA">Atendida</option>
+                                <option value="RECUSADA">Recusada</option>
+                            </select>
+                            {% include 'partials/campo-erro.twig' with { campo: 'situacao', erros: erros } only %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label obrigatorio" for="resposta">Resposta</label>
+                            <textarea class="form-control {{ erros.resposta is defined ? 'is-invalid' : '' }}"
+                                      id="resposta" name="resposta" rows="6" maxlength="4000" required data-contador
+                                      placeholder="Explique ao titular o que foi feito, ou o fundamento da recusa. Este texto é enviado a ele."></textarea>
+                            <div class="form-text">
+                                Mínimo de 20 caracteres. A resposta é notificada ao titular e fica
+                                registrada na trilha de auditoria.
+                            </div>
+                            {% include 'partials/campo-erro.twig' with { campo: 'resposta', erros: erros } only %}
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Registrar resposta</button>
+                    </div>
+                </form>
+
+                {% if solicitacao.slg_tipo in ['ANONIMIZACAO', 'ELIMINACAO'] %}
+                    <div class="card border-danger">
+                        <div class="card-body">
+                            <h2 class="h6 text-danger">Executar anonimização</h2>
+                            <p class="small text-muted">
+                                Substitui de forma irreversível os dados pessoais do titular, oculta e
+                                exclui logicamente o perfil, e mantém a trilha de auditoria exigida por
+                                lei sem identificação. O titular é notificado antes da execução, no
+                                último endereço válido.
+                            </p>
+
+                            <form method="post" action="{{ url('/admin/lgpd/' ~ solicitacao.slg_id ~ '/anonimizar') }}"
+                                  data-confirmar="Anonimizar de forma irreversível os dados deste titular?">
+                                {{ campo_csrf() }}
+                                <div class="mb-2">
+                                    <label class="form-label small" for="confirmacao">
+                                        Digite ANONIMIZAR para confirmar
+                                    </label>
+                                    <input type="text" class="form-control form-control-sm" id="confirmacao"
+                                           name="confirmacao" required placeholder="ANONIMIZAR">
+                                </div>
+                                <button type="submit" class="btn btn-danger btn-sm">
+                                    Executar anonimização
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                {% endif %}
+            {% else %}
+                <div class="card">
+                    <div class="card-header card-cabecalho-simples">Resposta registrada</div>
+                    <div class="card-body">
+                        <dl class="row small mb-0">
+                            <dt class="col-sm-3">Situação</dt>
+                            <dd class="col-sm-9">{{ solicitacao.slg_situacao|rotulo }}</dd>
+
+                            <dt class="col-sm-3">Concluída em</dt>
+                            <dd class="col-sm-9">{{ solicitacao.slg_dt_conclusao|data_hora|default('—') }}</dd>
+
+                            <dt class="col-sm-3">Resposta</dt>
+                            <dd class="col-sm-9" style="white-space: pre-line;">
+                                {{ solicitacao.slg_resposta|default('—') }}
+                            </dd>
+                        </dl>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="col-lg-5">
+            <div class="card mb-4">
+                <div class="card-header card-cabecalho-simples">Consentimentos vigentes do titular</div>
+                <div class="card-body">
+                    <ul class="list-unstyled small mb-0">
+                        {% for finalidade, rotulo in finalidades %}
+                            {% set situacao = consentimentos[finalidade]|default(null) %}
+                            <li class="border-bottom py-1">
+                                <span class="d-block">{{ rotulo }}</span>
+                                {% if situacao %}
+                                    <span class="{{ situacao.concedido ? 'text-success' : 'text-danger' }}">
+                                        {{ situacao.concedido ? 'concedido' : 'revogado' }}
+                                    </span>
+                                    <span class="text-muted">em {{ situacao.dt_evento|data_hora }}</span>
+                                {% else %}
+                                    <span class="text-muted">sem registro</span>
+                                {% endif %}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+
+            {% if perfil %}
+                <div class="card mb-4">
+                    <div class="card-header card-cabecalho-simples">Perfil do titular</div>
+                    <div class="card-body">
+                        <dl class="small mb-0">
+                            <dt>Título</dt>
+                            <dd>{{ perfil.prf_titulo|default('—') }}</dd>
+                            <dt>Visibilidade</dt>
+                            <dd>{{ perfil.prf_visibilidade|rotulo }}</dd>
+                            <dt>Situação do registro</dt>
+                            <dd>{{ perfil.prf_status == 'X' ? 'excluído logicamente' : 'ativo' }}</dd>
+                        </dl>
+                    </div>
+                </div>
+            {% endif %}
+
+            {% if outras is not empty and outras|length > 1 %}
+                <div class="card mb-4">
+                    <div class="card-header card-cabecalho-simples">Outras requisições deste titular</div>
+                    <ul class="list-group list-group-flush">
+                        {% for outra in outras %}
+                            {% if outra.slg_id != solicitacao.slg_id %}
+                                <li class="list-group-item small">
+                                    <a href="{{ url('/admin/lgpd/' ~ outra.slg_id) }}">
+                                        {{ '%06d'|format(outra.slg_id) }} — {{ outra.slg_tipo|rotulo }}
+                                    </a>
+                                    <span class="d-block text-muted">
+                                        {{ outra.slg_situacao|rotulo }} · {{ outra.slg_dt_registro|data }}
+                                    </span>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+
+            {% if historico is not empty %}
+                <div class="card">
+                    <div class="card-header card-cabecalho-simples">Histórico de consentimentos</div>
+                    <ul class="list-group list-group-flush">
+                        {% for registro in historico|slice(0, 15) %}
+                            <li class="list-group-item small">
+                                {{ finalidades[registro.cns_finalidade]|default(registro.cns_finalidade|rotulo) }}
+                                <span class="{{ registro.cns_concedido == 'S' ? 'text-success' : 'text-danger' }}">
+                                    {{ registro.cns_concedido == 'S' ? 'concedido' : 'revogado' }}
+                                </span>
+                                <span class="d-block text-muted">
+                                    {{ registro.cns_dt_evento|data_hora }}
+                                    {% if registro.cns_ip_origem %} · {{ registro.cns_ip_origem }}{% endif %}
+                                </span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

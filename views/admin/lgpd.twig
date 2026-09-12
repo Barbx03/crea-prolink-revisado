@@ -1,0 +1,131 @@
+{% extends 'layout/base.twig' %}
+
+{% block titulo %}Requisições de titulares | Administração | {{ app.nome }}{% endblock %}
+{% block robots %}noindex, nofollow{% endblock %}
+
+{% block conteudo %}
+    <h1 class="h4 mb-1">Requisições de titulares de dados</h1>
+    <p class="text-muted small mb-4">
+        Pedidos de acesso, correção, portabilidade, anonimização e eliminação, nos termos
+        do artigo 18 da Lei Geral de Proteção de Dados Pessoais.
+    </p>
+
+    <div class="row g-4">
+        <div class="col-lg-3">
+            {% include 'admin/_menu.twig' with { secao: '/admin/lgpd' } only %}
+
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="h6">Situação</h2>
+                    <ul class="list-unstyled small mb-0">
+                        <li class="d-flex justify-content-between border-bottom py-1">
+                            <span>Abertas</span>
+                            <strong class="text-danger">{{ indicadores.abertas }}</strong>
+                        </li>
+                        <li class="d-flex justify-content-between border-bottom py-1">
+                            <span>Em análise</span>
+                            <strong class="text-warning">{{ indicadores.em_analise }}</strong>
+                        </li>
+                        <li class="d-flex justify-content-between border-bottom py-1">
+                            <span>Atendidas</span>
+                            <strong class="text-success">{{ indicadores.atendidas }}</strong>
+                        </li>
+                        <li class="d-flex justify-content-between py-1">
+                            <span>Recusadas</span><strong>{{ indicadores.recusadas }}</strong>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-9">
+            <form method="get" class="card mb-3">
+                <div class="card-body d-flex flex-wrap gap-2 align-items-end">
+                    <div>
+                        <label class="form-label small mb-1" for="situacao">Situação</label>
+                        <select class="form-select form-select-sm" id="situacao" name="situacao">
+                            <option value="">Todas</option>
+                            {% for valor in ['ABERTA', 'EM_ANALISE', 'ATENDIDA', 'RECUSADA'] %}
+                                <option value="{{ valor }}" {{ filtros.situacao == valor ? 'selected' : '' }}>
+                                    {{ valor|rotulo }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="form-label small mb-1" for="tipo">Tipo</label>
+                        <select class="form-select form-select-sm" id="tipo" name="tipo">
+                            <option value="">Todos</option>
+                            {% for valor in tipos %}
+                                <option value="{{ valor }}" {{ filtros.tipo == valor ? 'selected' : '' }}>
+                                    {{ valor|rotulo }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-sm">Filtrar</button>
+                    <a class="btn btn-outline-secondary btn-sm" href="{{ url('/admin/lgpd') }}">Limpar</a>
+                </div>
+            </form>
+
+            {% if itens is empty %}
+                {% include 'partials/lista-vazia.twig' with {
+                    icone: 'file-lock2',
+                    titulo: 'Nenhuma requisição',
+                    mensagem: 'Não há requisições de titulares que atendam aos filtros aplicados.'
+                } only %}
+            {% else %}
+                <div class="card">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <caption class="small px-3">
+                                {{ paginacao.total|numero }} requisição(ões). Requisições em aberto devem ser
+                                tratadas com prioridade, por envolverem direito do titular.
+                            </caption>
+                            <thead>
+                                <tr>
+                                    <th scope="col">Protocolo</th>
+                                    <th scope="col">Titular</th>
+                                    <th scope="col">Tipo</th>
+                                    <th scope="col">Situação</th>
+                                    <th scope="col">Aberta em</th>
+                                    <th scope="col"><span class="visually-hidden">Ações</span></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for solicitacao in itens %}
+                                    <tr>
+                                        <td class="font-monospace small">{{ '%06d'|format(solicitacao.slg_id) }}</td>
+                                        <td>
+                                            <span class="d-block">{{ solicitacao.usu_nome }}</span>
+                                            <span class="small text-muted">{{ solicitacao.usu_email }}</span>
+                                        </td>
+                                        <td class="small">{{ solicitacao.slg_tipo|rotulo }}</td>
+                                        <td>
+                                            <span class="badge {{ solicitacao.slg_situacao == 'ABERTA' ? 'text-bg-danger' : (solicitacao.slg_situacao == 'EM_ANALISE' ? 'text-bg-warning' : 'text-bg-light border') }}">
+                                                {{ solicitacao.slg_situacao|rotulo }}
+                                            </span>
+                                        </td>
+                                        <td class="small text-muted text-nowrap">
+                                            {{ solicitacao.slg_dt_registro|data_hora }}
+                                        </td>
+                                        <td class="text-end">
+                                            <a class="btn btn-sm btn-outline-primary"
+                                               href="{{ url('/admin/lgpd/' ~ solicitacao.slg_id) }}">
+                                                Tratar
+                                            </a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                {% include 'partials/paginacao.twig' with { paginacao: paginacao } only %}
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
