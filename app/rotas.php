@@ -166,6 +166,14 @@ $roteador->get('/admin/auditoria',          'Admin\ControladorAuditoria', 'consu
 $roteador->get('/admin/auditoria/exportar', 'Admin\ControladorAuditoria', 'exportar',  $SOMENTE_ADMIN);
 $roteador->get('/admin/auditoria/api',      'Admin\ControladorAuditoria', 'integracao', $SOMENTE_ADMIN);
 
+$roteador->get('/admin/configuracoes',                'Admin\ControladorConfiguracoes', 'painel',      $SOMENTE_ADMIN);
+$roteador->post('/admin/configuracoes/{grupo}',       'Admin\ControladorConfiguracoes', 'salvar',      $SOMENTE_ADMIN);
+$roteador->post('/admin/configuracoes/smtp/testar',   'Admin\ControladorConfiguracoes', 'testarSmtp',  $SOMENTE_ADMIN);
+$roteador->post('/admin/configuracoes/api/testar',    'Admin\ControladorConfiguracoes', 'testarApi',   $SOMENTE_ADMIN);
+
+$roteador->get('/admin/notificacoes',             'Admin\ControladorNotificacoes', 'listar',        $SOMENTE_ADMIN);
+$roteador->post('/admin/notificacoes/processar',  'Admin\ControladorNotificacoes', 'processarFila', $SOMENTE_ADMIN);
+
 // -----------------------------------------------------------------------------
 // Endpoints JSON de apoio à interface
 // -----------------------------------------------------------------------------

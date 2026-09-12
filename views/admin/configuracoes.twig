@@ -1,0 +1,180 @@
+{% extends 'layout/base.twig' %}
+
+{% block titulo %}Configurações | Administração | {{ app.nome }}{% endblock %}
+{% block robots %}noindex, nofollow{% endblock %}
+
+{% block conteudo %}
+    <h1 class="h4 mb-1">Configurações da plataforma</h1>
+    <p class="text-muted small mb-4">
+        Parâmetros que podem ser ajustados sem novo deploy. Valores sensíveis aparecem em
+        branco e só são gravados quando você digita algo novo — o que já está salvo permanece.
+    </p>
+
+    <div class="row g-4">
+        <div class="col-lg-3">
+            {% include 'admin/_menu.twig' with { secao: '/admin/configuracoes' } only %}
+
+            <div class="card">
+                <div class="card-header card-cabecalho-simples">Ambiente</div>
+                <div class="card-body">
+                    <dl class="small mb-0">
+                        <dt>Ambiente</dt>
+                        <dd>
+                            {{ ambiente.ambiente }}
+                            {% if ambiente.debug %}
+                                <span class="badge text-bg-warning">depuração ativa</span>
+                            {% endif %}
+                        </dd>
+
+                        <dt>Versão da aplicação</dt>
+                        <dd>{{ ambiente.versao }}</dd>
+
+                        <dt>PHP</dt>
+                        <dd>{{ ambiente.php }}</dd>
+
+                        <dt>Banco de dados</dt>
+                        <dd>{{ ambiente.banco }}</dd>
+
+                        <dt>Fuso horário</dt>
+                        <dd>{{ ambiente.fuso }}</dd>
+
+                        <dt>URL da aplicação</dt>
+                        <dd class="text-break">{{ ambiente.url }}</dd>
+
+                        <dt>Driver da API</dt>
+                        <dd>
+                            {{ ambiente.api_driver }}
+                            {% if ambiente.api_driver == 'offline' %}
+                                <span class="badge text-bg-warning">integração desligada</span>
+                            {% endif %}
+                        </dd>
+
+                        <dt>URL da API no ambiente</dt>
+                        <dd class="text-break">{{ ambiente.api_url_env|default('não definida') }}</dd>
+
+                        <dt>Token no ambiente</dt>
+                        <dd>{{ ambiente.api_token_env ? 'definido no .env' : 'não definido' }}</dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-9">
+            {# --- Testes rápidos ------------------------------------ #}
+            <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h2 class="h6">Testar envio de e-mail</h2>
+                            <p class="small text-muted">
+                                Estado atual: {{ smtp_ativo ? 'SMTP ativo' : 'SMTP desativado' }}.
+                            </p>
+                            <form method="post" action="{{ url('/admin/configuracoes/smtp/testar') }}">
+                                {{ campo_csrf() }}
+                                <div class="mb-2">
+                                    <label class="form-label small" for="destinatario">Enviar teste para</label>
+                                    <input type="email" class="form-control form-control-sm" id="destinatario"
+                                           name="destinatario" required value="{{ usuario().email }}">
+                                </div>
+                                <button type="submit" class="btn btn-outline-primary btn-sm w-100"
+                                        {{ smtp_ativo ? '' : 'disabled' }}>
+                                    Enviar e-mail de teste
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h2 class="h6">Testar a API oficial</h2>
+                            <p class="small text-muted">
+                                Estado atual: {{ integracao_ativa ? 'integração configurada' : 'integração não configurada' }}.
+                                O teste apenas consulta, sem gravar nada.
+                            </p>
+                            <form method="post" action="{{ url('/admin/configuracoes/api/testar') }}">
+                                {{ campo_csrf() }}
+                                <div class="mb-2">
+                                    <label class="form-label small" for="documento">CPF ou CNPJ para consulta</label>
+                                    <input type="text" class="form-control form-control-sm" id="documento"
+                                           name="documento" required inputmode="numeric">
+                                </div>
+                                <button type="submit" class="btn btn-outline-primary btn-sm w-100"
+                                        {{ integracao_ativa ? '' : 'disabled' }}>
+                                    Consultar na API oficial
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {# --- Grupos de configuração ---------------------------- #}
+            {% set descricoesGrupo = {
+                'PLATAFORMA': 'Identificação e comportamento geral da plataforma.',
+                'SMTP': 'Servidor de e-mail usado para as notificações (RF07). Quando desativado, as notificações continuam sendo registradas na fila e visíveis ao usuário.',
+                'API_CREA': 'Acesso à API oficial do desafio. Preferir definir URL e token no arquivo .env; o que for informado aqui tem precedência sobre o ambiente.',
+                'MATCHING': 'Pesos dos critérios de compatibilização entre demandas e perfis. A soma precisa ser maior que zero.'
+            } %}
+
+            {% set titulosGrupo = {
+                'PLATAFORMA': 'Plataforma',
+                'SMTP': 'Envio de e-mail (SMTP)',
+                'API_CREA': 'Integração com a API oficial do CREA-AM',
+                'MATCHING': 'Pesos da compatibilização'
+            } %}
+
+            {% for nomeGrupo, definicoes in grupos %}
+                <form method="post" action="{{ url('/admin/configuracoes/' ~ nomeGrupo) }}" class="card mb-4">
+                    {{ campo_csrf() }}
+                    <div class="card-header card-cabecalho-simples">{{ titulosGrupo[nomeGrupo] }}</div>
+                    <div class="card-body">
+                        <p class="small text-muted">{{ descricoesGrupo[nomeGrupo] }}</p>
+
+                        <div class="row g-3">
+                            {% for definicao in definicoes %}
+                                <div class="{{ definicao.cfg_tipo == 'BOOLEANO' ? 'col-12' : 'col-md-6' }}">
+                                    {% if definicao.cfg_tipo == 'BOOLEANO' %}
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox"
+                                                   id="cfg-{{ definicao.cfg_id }}"
+                                                   name="cfg[{{ definicao.cfg_chave }}]" value="1"
+                                                   {{ definicao.cfg_valor == '1' ? 'checked' : '' }}>
+                                            <label class="form-check-label" for="cfg-{{ definicao.cfg_id }}">
+                                                {{ definicao.cfg_chave|replace({'_': ' '})|capitalize }}
+                                                {% if definicao.cfg_descricao %}
+                                                    <span class="d-block small text-muted">{{ definicao.cfg_descricao }}</span>
+                                                {% endif %}
+                                            </label>
+                                        </div>
+                                    {% else %}
+                                        <label class="form-label" for="cfg-{{ definicao.cfg_id }}">
+                                            {{ definicao.cfg_chave|replace({'_': ' '})|capitalize }}
+                                        </label>
+
+                                        <input type="{{ definicao.cfg_tipo == 'SENHA' ? 'password' : (definicao.cfg_tipo == 'INTEIRO' ? 'number' : 'text') }}"
+                                               class="form-control form-control-sm"
+                                               id="cfg-{{ definicao.cfg_id }}"
+                                               name="cfg[{{ definicao.cfg_chave }}]"
+                                               value="{{ definicao.cfg_sensivel == 'S' ? '' : definicao.cfg_valor }}"
+                                               {{ definicao.cfg_tipo == 'SENHA' ? 'autocomplete="new-password"' : '' }}
+                                               placeholder="{{ definicao.cfg_sensivel == 'S' and definicao.cfg_valor ? 'valor gravado — deixe em branco para manter' : '' }}">
+
+                                        {% if definicao.cfg_descricao %}
+                                            <div class="form-text">{{ definicao.cfg_descricao }}</div>
+                                        {% endif %}
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-sm mt-3">
+                            Salvar {{ titulosGrupo[nomeGrupo]|lower }}
+                        </button>
+                    </div>
+                </form>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
