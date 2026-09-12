@@ -1,0 +1,121 @@
+# =============================================================================
+# CREA Pro-Link | Ambiente de execução completo
+#
+# Atende ao item 8.8 do Termo de Referência: a aplicação, suas dependências,
+# o banco de dados e a carga estrutural inicial sobem de forma padronizada,
+# reproduzível e automatizada, com um único comando:
+#
+#     cp .env.docker.example .env.docker && docker compose up -d
+#
+# Nenhuma credencial real consta deste arquivo: os valores vêm de
+# .env.docker, que não é versionado.
+# =============================================================================
+
+services:
+  # ---------------------------------------------------------------------------
+  # Aplicação: PHP 8.3 + Apache
+  # ---------------------------------------------------------------------------
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: crea-prolink:1.0.0
+    container_name: prolink-app
+    restart: unless-stopped
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    ports:
+      - "${APP_PORTA:-8080}:80"
+    environment:
+      APP_AMBIENTE: "${APP_AMBIENTE:-desenvolvimento}"
+      APP_DEBUG: "${APP_DEBUG:-false}"
+      APP_URL: "${APP_URL:-http://localhost:8080}"
+      DB_HOST: mariadb
+      DB_PORTA: 3306
+      DB_NOME: "${DB_NOME:-crea_prolink}"
+      DB_USUARIO: "${DB_USUARIO:-prolink}"
+      DB_SENHA: "${DB_SENHA:?defina DB_SENHA em .env.docker}"
+      # Integração com a API oficial do desafio: token individual da equipe,
+      # obtido em https://desafio-prolink.crea-am.org.br
+      CREA_API_URL: "${CREA_API_URL:-}"
+      CREA_API_TOKEN: "${CREA_API_TOKEN:-}"
+      CREA_API_DRIVER: "${CREA_API_DRIVER:-http}"
+      # SMTP: por padrão aponta para o Mailpit deste mesmo ambiente
+      MAIL_ATIVO: "${MAIL_ATIVO:-true}"
+      MAIL_HOST: "${MAIL_HOST:-mailpit}"
+      MAIL_PORTA: "${MAIL_PORTA:-1025}"
+      MAIL_SEGURANCA: "${MAIL_SEGURANCA:-}"
+      MAIL_REMETENTE_EMAIL: "${MAIL_REMETENTE_EMAIL:-nao-responda@prolink.local}"
+      MAIL_REMETENTE_NOME: "${MAIL_REMETENTE_NOME:-CREA Pro-Link}"
+      SESSAO_COOKIE_SEGURO: "${SESSAO_COOKIE_SEGURO:-false}"
+    volumes:
+      # Persistem apenas os dados produzidos em execução
+      - prolink_uploads:/var/www/html/public/uploads
+      - prolink_logs:/var/www/html/storage/logs
+    networks:
+      - prolink
+
+  # ---------------------------------------------------------------------------
+  # Banco de dados: MariaDB 10.11 (item 8.1.2 do Termo de Referência)
+  # ---------------------------------------------------------------------------
+  mariadb:
+    image: mariadb:10.11
+    container_name: prolink-mariadb
+    restart: unless-stopped
+    command: >
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_unicode_ci
+      --default-time-zone=-04:00
+      --sql-mode=STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION
+    environment:
+      MARIADB_DATABASE: "${DB_NOME:-crea_prolink}"
+      MARIADB_USER: "${DB_USUARIO:-prolink}"
+      MARIADB_PASSWORD: "${DB_SENHA:?defina DB_SENHA em .env.docker}"
+      MARIADB_ROOT_PASSWORD: "${DB_SENHA_ROOT:?defina DB_SENHA_ROOT em .env.docker}"
+    ports:
+      # Exposto apenas em localhost, para inspeção com cliente externo
+      - "127.0.0.1:${DB_PORTA_HOST:-3307}:3306"
+    volumes:
+      - prolink_banco:/var/lib/mysql
+      # Estrutura e carga aplicadas na primeira subida do volume
+      - ./_arq/estrutura.sql:/docker-entrypoint-initdb.d/01-estrutura.sql:ro
+      - ./_arq/dados-iniciais.sql:/docker-entrypoint-initdb.d/02-dados-iniciais.sql:ro
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    networks:
+      - prolink
+
+  # ---------------------------------------------------------------------------
+  # Mailpit: servidor SMTP local, para conferir as notificações do RF07
+  # sem depender de provedor externo. Interface em http://localhost:8025
+  # ---------------------------------------------------------------------------
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: prolink-mailpit
+    restart: unless-stopped
+    ports:
+      - "${MAILPIT_PORTA:-8025}:8025"
+    environment:
+      MP_MAX_MESSAGES: 500
+      MP_SMTP_AUTH_ACCEPT_ANY: 1
+      MP_SMTP_AUTH_ALLOW_INSECURE: 1
+    networks:
+      - prolink
+
+volumes:
+  prolink_banco:
+    name: prolink_banco
+  prolink_uploads:
+    name: prolink_uploads
+  prolink_logs:
+    name: prolink_logs
+
+networks:
+  prolink:
+    name: prolink
+    driver: bridge

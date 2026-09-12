@@ -1,0 +1,12 @@
+.git
+.gitignore
+.env
+.env.docker
+vendor
+node_modules
+storage/logs/*
+storage/cache/*
+public/uploads/*
+tests/tmp
+*.log
+.DS_Store
