@@ -1,0 +1,841 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2000" height="1392" viewBox="0 0 2000 1392" font-family="Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="pontaFk" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#7a8b9c"/>
+    </marker>
+    <style>
+      .titulo-tabela { font-size: 12.5px; font-weight: 700; fill: #ffffff; }
+      .modulo-tabela { font-size: 8.5px; fill: rgba(255,255,255,0.78); letter-spacing: 0.04em; }
+      .coluna { font-size: 9.6px; fill: #263238; }
+      .coluna-tipo { font-size: 8.6px; fill: #78909c; }
+      .pk { font-weight: 700; fill: #0b3d6b; }
+      .fk { fill: #1a7f4b; }
+      .aresta { stroke: #7a8b9c; stroke-width: 1.1; fill: none; }
+      .legenda { font-size: 10.5px; fill: #37474f; }
+      .legenda-titulo { font-size: 13px; font-weight: 700; fill: #0b3d6b; }
+      .cabecalho-titulo { font-size: 21px; font-weight: 700; fill: #0b3d6b; }
+      .cabecalho-sub { font-size: 11.5px; fill: #607d8b; }
+    </style>
+  </defs>
+  <rect width="100%" height="100%" fill="#f7f9fb"/>
+  <path class="aresta" marker-end="url(#pontaFk)" d="M 1000.0 216.2 C 974.0 216.2, 974.0 243.2, 948.0 243.2"/>
+  <path class="aresta" marker-end="url(#pontaFk)" d="M 1000.0 565.0 C 974.0 565.0, 974.0 243.2, 948.0 243.2"/>
+  <path class="aresta" marker-end="url(#pontaFk)" d="M 948.0 697.8 C 814.0 697.8, 814.0 538.0, 680.0 538.0"/>
+  <path class="aresta" marker-end="url(#pontaFk)" d="M 1640.0 135.2 C 1614.0 135.2, 1614.0 250.0, 1588.0 250.0"/>
+  <path class="aresta" marker-end="url(#pontaFk)" d="M 1640.0 135.2 C 1614.0 135.2, 1614.0 792.2, 1588.0 792.2"/>
+  <path class="aresta" marker-end="url(#pontaFk)" d="M 1640.0 135.2 C 974.0 135.2, 974.0 216.2, 308.0 216.2"/>
+  <path class="aresta" marker-end="url(#pontaFk)" d="M 1640.0 135.2 C 974.0 135.2, 974.0 216.2, 308.0 216.2"/>
+  <path class="aresta" marker-end="url(#pontaFk)" d="M 1320.0 250.0 C 1134.0 250.0, 1134.0 538.0, 948.0 538.0"/>
+  <path class="aresta" marker-end="url(#pontaFk)" d="M 1320.0 250.0 C 814.0 250.0, 814.0 216.2, 308.0 216.2"/>
+  <path class="aresta" marker-end="url(#pontaFk)" d="M 1320.0 565.0 C 1134.0 565.0, 1134.0 697.8, 948.0 697.8"/>
+  <path class="aresta" marker-end="url(#pontaFk)" d="M 1588.0 565.0 C 1454.0 565.0, 1454.0 250.0, 1320.0 250.0"/>
+  <path class="aresta" marker-end="url(#pontaFk)" d="M 1640.0 576.2 C 974.0 576.2, 974.0 216.2, 308.0 216.2"/>
+  <path class="aresta" marker-end="url(#pontaFk)" d="M 1640.0 576.2 C 974.0 576.2, 974.0 216.2, 308.0 216.2"/>
+  <path class="aresta" marker-end="url(#pontaFk)" d="M 1268.0 893.5 C 1134.0 893.5, 1134.0 216.2, 1000.0 216.2"/>
+  <path class="aresta" marker-end="url(#pontaFk)" d="M 1268.0 893.5 C 1134.0 893.5, 1134.0 565.0, 1000.0 565.0"/>
+  <path class="aresta" marker-end="url(#pontaFk)" d="M 1000.0 893.5 C 974.0 893.5, 974.0 243.2, 948.0 243.2"/>
+  <path class="aresta" marker-end="url(#pontaFk)" d="M 1000.0 1141.0 C 974.0 1141.0, 974.0 697.8, 948.0 697.8"/>
+  <path class="aresta" marker-end="url(#pontaFk)" d="M 1268.0 1141.0 C 1134.0 1141.0, 1134.0 893.5, 1000.0 893.5"/>
+  <path class="aresta" marker-end="url(#pontaFk)" d="M 1588.0 792.2 C 1454.0 792.2, 1454.0 250.0, 1320.0 250.0"/>
+  <path class="aresta" marker-end="url(#pontaFk)" d="M 1320.0 792.2 C 814.0 792.2, 814.0 216.2, 308.0 216.2"/>
+  <path class="aresta" marker-end="url(#pontaFk)" d="M 1908.0 342.2 C 1774.0 342.2, 1774.0 135.2, 1640.0 135.2"/>
+  <path class="aresta" marker-end="url(#pontaFk)" d="M 1640.0 342.2 C 974.0 342.2, 974.0 216.2, 308.0 216.2"/>
+  <path class="aresta" marker-end="url(#pontaFk)" d="M 948.0 864.2 C 814.0 864.2, 814.0 697.8, 680.0 697.8"/>
+  <path class="aresta" marker-end="url(#pontaFk)" d="M 948.0 864.2 C 814.0 864.2, 814.0 243.2, 680.0 243.2"/>
+  <path class="aresta" marker-end="url(#pontaFk)" d="M 948.0 243.2 C 814.0 243.2, 814.0 538.0, 680.0 538.0"/>
+  <path class="aresta" marker-end="url(#pontaFk)" d="M 680.0 243.2 C 494.0 243.2, 494.0 216.2, 308.0 216.2"/>
+  <path class="aresta" marker-end="url(#pontaFk)" d="M 1320.0 1046.5 C 814.0 1046.5, 814.0 216.2, 308.0 216.2"/>
+  <path class="aresta" marker-end="url(#pontaFk)" d="M 1320.0 1046.5 C 814.0 1046.5, 814.0 216.2, 308.0 216.2"/>
+  <path class="aresta" marker-end="url(#pontaFk)" d="M 360.0 416.5 C 334.0 416.5, 334.0 216.2, 308.0 216.2"/>
+  <path class="aresta" marker-end="url(#pontaFk)" d="M 360.0 162.2 C 334.0 162.2, 334.0 216.2, 308.0 216.2"/>
+  <path class="aresta" marker-end="url(#pontaFk)" d="M 308.0 918.2 C 174.0 918.2, 174.0 711.2, 40.0 711.2"/>
+  <path class="aresta" marker-end="url(#pontaFk)" d="M 308.0 918.2 C 174.0 918.2, 174.0 216.2, 40.0 216.2"/>
+  <path class="aresta" marker-end="url(#pontaFk)" d="M 360.0 670.8 C 334.0 670.8, 334.0 216.2, 308.0 216.2"/>
+  <path class="aresta" marker-end="url(#pontaFk)" d="M 308.0 511.0 C 174.0 511.0, 174.0 216.2, 40.0 216.2"/>
+  <g transform="translate(40.0, 40.0)">
+    <rect width="268" height="352.5" rx="7" fill="#ffffff" stroke="#cfd8dc" stroke-width="1"/>
+    <path d="M 0 7 A 7 7 0 0 1 7 0 L 261 0 A 7 7 0 0 1 268 7 L 268 34 L 0 34 Z" fill="#0b3d6b"/>
+    <text class="modulo-tabela" x="10" y="13">MÓDULO SIS · SISTEMA</text>
+    <text class="titulo-tabela" x="10" y="27">sis_usuarios</text>
+    <text class="coluna pk" x="10" y="46.0">PK usu_id</text>
+    <text class="coluna-tipo" x="258" y="46.0" text-anchor="end">INT ·</text>
+    <text class="coluna" x="10" y="59.5">usu_nome</text>
+    <text class="coluna-tipo" x="258" y="59.5" text-anchor="end">VARCHAR(150) ·</text>
+    <text class="coluna" x="10" y="73.0">usu_email</text>
+    <text class="coluna-tipo" x="258" y="73.0" text-anchor="end">VARCHAR(190) ·</text>
+    <text class="coluna" x="10" y="86.5">usu_senha</text>
+    <text class="coluna-tipo" x="258" y="86.5" text-anchor="end">VARCHAR(255) ·</text>
+    <text class="coluna" x="10" y="100.0">usu_tipo_pessoa</text>
+    <text class="coluna-tipo" x="258" y="100.0" text-anchor="end">CHAR(2) ·</text>
+    <text class="coluna" x="10" y="113.5">usu_perfil</text>
+    <text class="coluna-tipo" x="258" y="113.5" text-anchor="end">VARCHAR(20) ·</text>
+    <text class="coluna" x="10" y="127.0">usu_cpf</text>
+    <text class="coluna-tipo" x="258" y="127.0" text-anchor="end">VARCHAR(11)</text>
+    <text class="coluna" x="10" y="140.5">usu_cnpj</text>
+    <text class="coluna-tipo" x="258" y="140.5" text-anchor="end">VARCHAR(14)</text>
+    <text class="coluna" x="10" y="154.0">usu_rnp</text>
+    <text class="coluna-tipo" x="258" y="154.0" text-anchor="end">VARCHAR(20)</text>
+    <text class="coluna" x="10" y="167.5">usu_registrado_crea</text>
+    <text class="coluna-tipo" x="258" y="167.5" text-anchor="end">CHAR(1) ·</text>
+    <text class="coluna" x="10" y="181.0">usu_dt_validacao</text>
+    <text class="coluna-tipo" x="258" y="181.0" text-anchor="end">DATETIME</text>
+    <text class="coluna" x="10" y="194.5">usu_telefone</text>
+    <text class="coluna-tipo" x="258" y="194.5" text-anchor="end">VARCHAR(20)</text>
+    <text class="coluna" x="10" y="208.0">usu_uf</text>
+    <text class="coluna-tipo" x="258" y="208.0" text-anchor="end">CHAR(2)</text>
+    <text class="coluna" x="10" y="221.5">usu_cidade</text>
+    <text class="coluna-tipo" x="258" y="221.5" text-anchor="end">VARCHAR(120)</text>
+    <text class="coluna" x="10" y="235.0">usu_email_verificado</text>
+    <text class="coluna-tipo" x="258" y="235.0" text-anchor="end">CHAR(1) ·</text>
+    <text class="coluna" x="10" y="248.5">usu_falhas_login</text>
+    <text class="coluna-tipo" x="258" y="248.5" text-anchor="end">TINYINT ·</text>
+    <text class="coluna" x="10" y="262.0">usu_bloqueado_ate</text>
+    <text class="coluna-tipo" x="258" y="262.0" text-anchor="end">DATETIME</text>
+    <text class="coluna" x="10" y="275.5">usu_dt_ultimo_acesso</text>
+    <text class="coluna-tipo" x="258" y="275.5" text-anchor="end">DATETIME</text>
+    <text class="coluna" x="10" y="289.0">usu_motivo_bloqueio</text>
+    <text class="coluna-tipo" x="258" y="289.0" text-anchor="end">VARCHAR(255)</text>
+    <text class="coluna" x="10" y="302.5">usu_dt_registro</text>
+    <text class="coluna-tipo" x="258" y="302.5" text-anchor="end">DATETIME ·</text>
+    <text class="coluna" x="10" y="316.0">usu_dt_alteracao</text>
+    <text class="coluna-tipo" x="258" y="316.0" text-anchor="end">DATETIME</text>
+    <text class="coluna" x="10" y="329.5">usu_log</text>
+    <text class="coluna-tipo" x="258" y="329.5" text-anchor="end">VARCHAR(255)</text>
+    <text class="coluna" x="10" y="343.0">usu_status</text>
+    <text class="coluna-tipo" x="258" y="343.0" text-anchor="end">CHAR(1) ·</text>
+  </g>
+  <g transform="translate(40.0, 422.5)">
+    <rect width="268" height="177.0" rx="7" fill="#ffffff" stroke="#cfd8dc" stroke-width="1"/>
+    <path d="M 0 7 A 7 7 0 0 1 7 0 L 261 0 A 7 7 0 0 1 268 7 L 268 34 L 0 34 Z" fill="#0b3d6b"/>
+    <text class="modulo-tabela" x="10" y="13">MÓDULO SIS · SISTEMA</text>
+    <text class="titulo-tabela" x="10" y="27">sis_tokens</text>
+    <text class="coluna pk" x="10" y="46.0">PK tok_id</text>
+    <text class="coluna-tipo" x="258" y="46.0" text-anchor="end">INT ·</text>
+    <text class="coluna fk" x="10" y="59.5">FK tok_usu_id</text>
+    <text class="coluna-tipo" x="258" y="59.5" text-anchor="end">INT ·</text>
+    <text class="coluna" x="10" y="73.0">tok_tipo</text>
+    <text class="coluna-tipo" x="258" y="73.0" text-anchor="end">VARCHAR(30) ·</text>
+    <text class="coluna" x="10" y="86.5">tok_hash</text>
+    <text class="coluna-tipo" x="258" y="86.5" text-anchor="end">CHAR(64) ·</text>
+    <text class="coluna" x="10" y="100.0">tok_dt_expira</text>
+    <text class="coluna-tipo" x="258" y="100.0" text-anchor="end">DATETIME ·</text>
+    <text class="coluna" x="10" y="113.5">tok_dt_uso</text>
+    <text class="coluna-tipo" x="258" y="113.5" text-anchor="end">DATETIME</text>
+    <text class="coluna" x="10" y="127.0">tok_ip_origem</text>
+    <text class="coluna-tipo" x="258" y="127.0" text-anchor="end">VARCHAR(45)</text>
+    <text class="coluna" x="10" y="140.5">tok_dt_registro</text>
+    <text class="coluna-tipo" x="258" y="140.5" text-anchor="end">DATETIME ·</text>
+    <text class="coluna" x="10" y="154.0">tok_log</text>
+    <text class="coluna-tipo" x="258" y="154.0" text-anchor="end">VARCHAR(255)</text>
+    <text class="coluna" x="10" y="167.5">tok_status</text>
+    <text class="coluna-tipo" x="258" y="167.5" text-anchor="end">CHAR(1) ·</text>
+  </g>
+  <g transform="translate(40.0, 629.5)">
+    <rect width="268" height="163.5" rx="7" fill="#ffffff" stroke="#cfd8dc" stroke-width="1"/>
+    <path d="M 0 7 A 7 7 0 0 1 7 0 L 261 0 A 7 7 0 0 1 268 7 L 268 34 L 0 34 Z" fill="#0b3d6b"/>
+    <text class="modulo-tabela" x="10" y="13">MÓDULO SIS · SISTEMA</text>
+    <text class="titulo-tabela" x="10" y="27">sis_termos</text>
+    <text class="coluna pk" x="10" y="46.0">PK ter_id</text>
+    <text class="coluna-tipo" x="258" y="46.0" text-anchor="end">INT ·</text>
+    <text class="coluna" x="10" y="59.5">ter_tipo</text>
+    <text class="coluna-tipo" x="258" y="59.5" text-anchor="end">VARCHAR(30) ·</text>
+    <text class="coluna" x="10" y="73.0">ter_versao</text>
+    <text class="coluna-tipo" x="258" y="73.0" text-anchor="end">VARCHAR(20) ·</text>
+    <text class="coluna" x="10" y="86.5">ter_titulo</text>
+    <text class="coluna-tipo" x="258" y="86.5" text-anchor="end">VARCHAR(150) ·</text>
+    <text class="coluna" x="10" y="100.0">ter_conteudo</text>
+    <text class="coluna-tipo" x="258" y="100.0" text-anchor="end">MEDIUMTEXT ·</text>
+    <text class="coluna" x="10" y="113.5">ter_dt_vigencia</text>
+    <text class="coluna-tipo" x="258" y="113.5" text-anchor="end">DATE ·</text>
+    <text class="coluna" x="10" y="127.0">ter_dt_registro</text>
+    <text class="coluna-tipo" x="258" y="127.0" text-anchor="end">DATETIME ·</text>
+    <text class="coluna" x="10" y="140.5">ter_log</text>
+    <text class="coluna-tipo" x="258" y="140.5" text-anchor="end">VARCHAR(255)</text>
+    <text class="coluna" x="10" y="154.0">ter_status</text>
+    <text class="coluna-tipo" x="258" y="154.0" text-anchor="end">CHAR(1) ·</text>
+  </g>
+  <g transform="translate(40.0, 823.0)">
+    <rect width="268" height="190.5" rx="7" fill="#ffffff" stroke="#cfd8dc" stroke-width="1"/>
+    <path d="M 0 7 A 7 7 0 0 1 7 0 L 261 0 A 7 7 0 0 1 268 7 L 268 34 L 0 34 Z" fill="#0b3d6b"/>
+    <text class="modulo-tabela" x="10" y="13">MÓDULO SIS · SISTEMA</text>
+    <text class="titulo-tabela" x="10" y="27">sis_consentimentos</text>
+    <text class="coluna pk" x="10" y="46.0">PK cns_id</text>
+    <text class="coluna-tipo" x="258" y="46.0" text-anchor="end">INT ·</text>
+    <text class="coluna fk" x="10" y="59.5">FK cns_usu_id</text>
+    <text class="coluna-tipo" x="258" y="59.5" text-anchor="end">INT ·</text>
+    <text class="coluna fk" x="10" y="73.0">FK cns_ter_id</text>
+    <text class="coluna-tipo" x="258" y="73.0" text-anchor="end">INT</text>
+    <text class="coluna" x="10" y="86.5">cns_finalidade</text>
+    <text class="coluna-tipo" x="258" y="86.5" text-anchor="end">VARCHAR(50) ·</text>
+    <text class="coluna" x="10" y="100.0">cns_concedido</text>
+    <text class="coluna-tipo" x="258" y="100.0" text-anchor="end">CHAR(1) ·</text>
+    <text class="coluna" x="10" y="113.5">cns_dt_evento</text>
+    <text class="coluna-tipo" x="258" y="113.5" text-anchor="end">DATETIME ·</text>
+    <text class="coluna" x="10" y="127.0">cns_ip_origem</text>
+    <text class="coluna-tipo" x="258" y="127.0" text-anchor="end">VARCHAR(45)</text>
+    <text class="coluna" x="10" y="140.5">cns_user_agent</text>
+    <text class="coluna-tipo" x="258" y="140.5" text-anchor="end">VARCHAR(255)</text>
+    <text class="coluna" x="10" y="154.0">cns_dt_registro</text>
+    <text class="coluna-tipo" x="258" y="154.0" text-anchor="end">DATETIME ·</text>
+    <text class="coluna" x="10" y="167.5">cns_log</text>
+    <text class="coluna-tipo" x="258" y="167.5" text-anchor="end">VARCHAR(255)</text>
+    <text class="coluna" x="10" y="181.0">cns_status</text>
+    <text class="coluna-tipo" x="258" y="181.0" text-anchor="end">CHAR(1) ·</text>
+  </g>
+  <g transform="translate(360.0, 40.0)">
+    <rect width="268" height="244.5" rx="7" fill="#ffffff" stroke="#cfd8dc" stroke-width="1"/>
+    <path d="M 0 7 A 7 7 0 0 1 7 0 L 261 0 A 7 7 0 0 1 268 7 L 268 34 L 0 34 Z" fill="#0b3d6b"/>
+    <text class="modulo-tabela" x="10" y="13">MÓDULO SIS · SISTEMA</text>
+    <text class="titulo-tabela" x="10" y="27">sis_auditoria</text>
+    <text class="coluna pk" x="10" y="46.0">PK aud_id</text>
+    <text class="coluna-tipo" x="258" y="46.0" text-anchor="end">BIGINT ·</text>
+    <text class="coluna fk" x="10" y="59.5">FK aud_usu_id</text>
+    <text class="coluna-tipo" x="258" y="59.5" text-anchor="end">INT</text>
+    <text class="coluna" x="10" y="73.0">aud_acao</text>
+    <text class="coluna-tipo" x="258" y="73.0" text-anchor="end">VARCHAR(60) ·</text>
+    <text class="coluna" x="10" y="86.5">aud_entidade</text>
+    <text class="coluna-tipo" x="258" y="86.5" text-anchor="end">VARCHAR(60)</text>
+    <text class="coluna" x="10" y="100.0">aud_entidade_id</text>
+    <text class="coluna-tipo" x="258" y="100.0" text-anchor="end">VARCHAR(40)</text>
+    <text class="coluna" x="10" y="113.5">aud_descricao</text>
+    <text class="coluna-tipo" x="258" y="113.5" text-anchor="end">VARCHAR(500)</text>
+    <text class="coluna" x="10" y="127.0">aud_dados_antes</text>
+    <text class="coluna-tipo" x="258" y="127.0" text-anchor="end">LONGTEXT</text>
+    <text class="coluna" x="10" y="140.5">aud_dados_depois</text>
+    <text class="coluna-tipo" x="258" y="140.5" text-anchor="end">LONGTEXT</text>
+    <text class="coluna" x="10" y="154.0">aud_ip_origem</text>
+    <text class="coluna-tipo" x="258" y="154.0" text-anchor="end">VARCHAR(45)</text>
+    <text class="coluna" x="10" y="167.5">aud_user_agent</text>
+    <text class="coluna-tipo" x="258" y="167.5" text-anchor="end">VARCHAR(255)</text>
+    <text class="coluna" x="10" y="181.0">aud_rota</text>
+    <text class="coluna-tipo" x="258" y="181.0" text-anchor="end">VARCHAR(190)</text>
+    <text class="coluna" x="10" y="194.5">aud_severidade</text>
+    <text class="coluna-tipo" x="258" y="194.5" text-anchor="end">VARCHAR(10) ·</text>
+    <text class="coluna" x="10" y="208.0">aud_dt_registro</text>
+    <text class="coluna-tipo" x="258" y="208.0" text-anchor="end">DATETIME ·</text>
+    <text class="coluna" x="10" y="221.5">aud_log</text>
+    <text class="coluna-tipo" x="258" y="221.5" text-anchor="end">VARCHAR(255)</text>
+    <text class="coluna" x="10" y="235.0">aud_status</text>
+    <text class="coluna-tipo" x="258" y="235.0" text-anchor="end">CHAR(1) ·</text>
+  </g>
+  <g transform="translate(360.0, 314.5)">
+    <rect width="268" height="204.0" rx="7" fill="#ffffff" stroke="#cfd8dc" stroke-width="1"/>
+    <path d="M 0 7 A 7 7 0 0 1 7 0 L 261 0 A 7 7 0 0 1 268 7 L 268 34 L 0 34 Z" fill="#0b3d6b"/>
+    <text class="modulo-tabela" x="10" y="13">MÓDULO SIS · SISTEMA</text>
+    <text class="titulo-tabela" x="10" y="27">sis_api_consultas</text>
+    <text class="coluna pk" x="10" y="46.0">PK apc_id</text>
+    <text class="coluna-tipo" x="258" y="46.0" text-anchor="end">BIGINT ·</text>
+    <text class="coluna fk" x="10" y="59.5">FK apc_usu_id</text>
+    <text class="coluna-tipo" x="258" y="59.5" text-anchor="end">INT</text>
+    <text class="coluna" x="10" y="73.0">apc_recurso</text>
+    <text class="coluna-tipo" x="258" y="73.0" text-anchor="end">VARCHAR(40) ·</text>
+    <text class="coluna" x="10" y="86.5">apc_parametros</text>
+    <text class="coluna-tipo" x="258" y="86.5" text-anchor="end">VARCHAR(255)</text>
+    <text class="coluna" x="10" y="100.0">apc_endpoint</text>
+    <text class="coluna-tipo" x="258" y="100.0" text-anchor="end">VARCHAR(255)</text>
+    <text class="coluna" x="10" y="113.5">apc_http_status</text>
+    <text class="coluna-tipo" x="258" y="113.5" text-anchor="end">SMALLINT</text>
+    <text class="coluna" x="10" y="127.0">apc_sucesso</text>
+    <text class="coluna-tipo" x="258" y="127.0" text-anchor="end">CHAR(1) ·</text>
+    <text class="coluna" x="10" y="140.5">apc_duracao_ms</text>
+    <text class="coluna-tipo" x="258" y="140.5" text-anchor="end">INT</text>
+    <text class="coluna" x="10" y="154.0">apc_mensagem</text>
+    <text class="coluna-tipo" x="258" y="154.0" text-anchor="end">VARCHAR(500)</text>
+    <text class="coluna" x="10" y="167.5">apc_dt_registro</text>
+    <text class="coluna-tipo" x="258" y="167.5" text-anchor="end">DATETIME ·</text>
+    <text class="coluna" x="10" y="181.0">apc_log</text>
+    <text class="coluna-tipo" x="258" y="181.0" text-anchor="end">VARCHAR(255)</text>
+    <text class="coluna" x="10" y="194.5">apc_status</text>
+    <text class="coluna-tipo" x="258" y="194.5" text-anchor="end">CHAR(1) ·</text>
+  </g>
+  <g transform="translate(360.0, 548.5)">
+    <rect width="268" height="244.5" rx="7" fill="#ffffff" stroke="#cfd8dc" stroke-width="1"/>
+    <path d="M 0 7 A 7 7 0 0 1 7 0 L 261 0 A 7 7 0 0 1 268 7 L 268 34 L 0 34 Z" fill="#0b3d6b"/>
+    <text class="modulo-tabela" x="10" y="13">MÓDULO SIS · SISTEMA</text>
+    <text class="titulo-tabela" x="10" y="27">sis_notificacoes</text>
+    <text class="coluna pk" x="10" y="46.0">PK not_id</text>
+    <text class="coluna-tipo" x="258" y="46.0" text-anchor="end">BIGINT ·</text>
+    <text class="coluna fk" x="10" y="59.5">FK not_usu_id</text>
+    <text class="coluna-tipo" x="258" y="59.5" text-anchor="end">INT</text>
+    <text class="coluna" x="10" y="73.0">not_canal</text>
+    <text class="coluna-tipo" x="258" y="73.0" text-anchor="end">VARCHAR(20) ·</text>
+    <text class="coluna" x="10" y="86.5">not_evento</text>
+    <text class="coluna-tipo" x="258" y="86.5" text-anchor="end">VARCHAR(60) ·</text>
+    <text class="coluna" x="10" y="100.0">not_destinatario</text>
+    <text class="coluna-tipo" x="258" y="100.0" text-anchor="end">VARCHAR(190)</text>
+    <text class="coluna" x="10" y="113.5">not_assunto</text>
+    <text class="coluna-tipo" x="258" y="113.5" text-anchor="end">VARCHAR(190) ·</text>
+    <text class="coluna" x="10" y="127.0">not_corpo</text>
+    <text class="coluna-tipo" x="258" y="127.0" text-anchor="end">MEDIUMTEXT ·</text>
+    <text class="coluna" x="10" y="140.5">not_link</text>
+    <text class="coluna-tipo" x="258" y="140.5" text-anchor="end">VARCHAR(255)</text>
+    <text class="coluna" x="10" y="154.0">not_lida</text>
+    <text class="coluna-tipo" x="258" y="154.0" text-anchor="end">CHAR(1) ·</text>
+    <text class="coluna" x="10" y="167.5">not_tentativas</text>
+    <text class="coluna-tipo" x="258" y="167.5" text-anchor="end">TINYINT ·</text>
+    <text class="coluna" x="10" y="181.0">not_erro</text>
+    <text class="coluna-tipo" x="258" y="181.0" text-anchor="end">VARCHAR(500)</text>
+    <text class="coluna" x="10" y="194.5">not_dt_envio</text>
+    <text class="coluna-tipo" x="258" y="194.5" text-anchor="end">DATETIME</text>
+    <text class="coluna" x="10" y="208.0">not_dt_registro</text>
+    <text class="coluna-tipo" x="258" y="208.0" text-anchor="end">DATETIME ·</text>
+    <text class="coluna" x="10" y="221.5">not_log</text>
+    <text class="coluna-tipo" x="258" y="221.5" text-anchor="end">VARCHAR(255)</text>
+    <text class="coluna" x="10" y="235.0">not_status</text>
+    <text class="coluna-tipo" x="258" y="235.0" text-anchor="end">CHAR(1) ·</text>
+  </g>
+  <g transform="translate(360.0, 823.0)">
+    <rect width="268" height="190.5" rx="7" fill="#ffffff" stroke="#cfd8dc" stroke-width="1"/>
+    <path d="M 0 7 A 7 7 0 0 1 7 0 L 261 0 A 7 7 0 0 1 268 7 L 268 34 L 0 34 Z" fill="#0b3d6b"/>
+    <text class="modulo-tabela" x="10" y="13">MÓDULO SIS · SISTEMA</text>
+    <text class="titulo-tabela" x="10" y="27">sis_configuracoes</text>
+    <text class="coluna pk" x="10" y="46.0">PK cfg_id</text>
+    <text class="coluna-tipo" x="258" y="46.0" text-anchor="end">INT ·</text>
+    <text class="coluna" x="10" y="59.5">cfg_grupo</text>
+    <text class="coluna-tipo" x="258" y="59.5" text-anchor="end">VARCHAR(40) ·</text>
+    <text class="coluna" x="10" y="73.0">cfg_chave</text>
+    <text class="coluna-tipo" x="258" y="73.0" text-anchor="end">VARCHAR(60) ·</text>
+    <text class="coluna" x="10" y="86.5">cfg_valor</text>
+    <text class="coluna-tipo" x="258" y="86.5" text-anchor="end">TEXT</text>
+    <text class="coluna" x="10" y="100.0">cfg_tipo</text>
+    <text class="coluna-tipo" x="258" y="100.0" text-anchor="end">VARCHAR(20) ·</text>
+    <text class="coluna" x="10" y="113.5">cfg_descricao</text>
+    <text class="coluna-tipo" x="258" y="113.5" text-anchor="end">VARCHAR(255)</text>
+    <text class="coluna" x="10" y="127.0">cfg_sensivel</text>
+    <text class="coluna-tipo" x="258" y="127.0" text-anchor="end">CHAR(1) ·</text>
+    <text class="coluna" x="10" y="140.5">cfg_dt_registro</text>
+    <text class="coluna-tipo" x="258" y="140.5" text-anchor="end">DATETIME ·</text>
+    <text class="coluna" x="10" y="154.0">cfg_dt_alteracao</text>
+    <text class="coluna-tipo" x="258" y="154.0" text-anchor="end">DATETIME</text>
+    <text class="coluna" x="10" y="167.5">cfg_log</text>
+    <text class="coluna-tipo" x="258" y="167.5" text-anchor="end">VARCHAR(255)</text>
+    <text class="coluna" x="10" y="181.0">cfg_status</text>
+    <text class="coluna-tipo" x="258" y="181.0" text-anchor="end">CHAR(1) ·</text>
+  </g>
+  <g transform="translate(680.0, 40.0)">
+    <rect width="268" height="406.5" rx="7" fill="#ffffff" stroke="#cfd8dc" stroke-width="1"/>
+    <path d="M 0 7 A 7 7 0 0 1 7 0 L 261 0 A 7 7 0 0 1 268 7 L 268 34 L 0 34 Z" fill="#1a7f4b"/>
+    <text class="modulo-tabela" x="10" y="13">MÓDULO PRO · PRO-LINK</text>
+    <text class="titulo-tabela" x="10" y="27">pro_perfis</text>
+    <text class="coluna pk" x="10" y="46.0">PK prf_id</text>
+    <text class="coluna-tipo" x="258" y="46.0" text-anchor="end">INT ·</text>
+    <text class="coluna fk" x="10" y="59.5">FK prf_usu_id</text>
+    <text class="coluna-tipo" x="258" y="59.5" text-anchor="end">INT ·</text>
+    <text class="coluna" x="10" y="73.0">prf_titulo</text>
+    <text class="coluna-tipo" x="258" y="73.0" text-anchor="end">VARCHAR(150)</text>
+    <text class="coluna" x="10" y="86.5">prf_resumo</text>
+    <text class="coluna-tipo" x="258" y="86.5" text-anchor="end">TEXT</text>
+    <text class="coluna fk" x="10" y="100.0">FK prf_are_id</text>
+    <text class="coluna-tipo" x="258" y="100.0" text-anchor="end">SMALLINT</text>
+    <text class="coluna" x="10" y="113.5">prf_uf</text>
+    <text class="coluna-tipo" x="258" y="113.5" text-anchor="end">CHAR(2)</text>
+    <text class="coluna" x="10" y="127.0">prf_cidade</text>
+    <text class="coluna-tipo" x="258" y="127.0" text-anchor="end">VARCHAR(120)</text>
+    <text class="coluna" x="10" y="140.5">prf_raio_atuacao_km</text>
+    <text class="coluna-tipo" x="258" y="140.5" text-anchor="end">SMALLINT</text>
+    <text class="coluna" x="10" y="154.0">prf_atende_remoto</text>
+    <text class="coluna-tipo" x="258" y="154.0" text-anchor="end">CHAR(1) ·</text>
+    <text class="coluna" x="10" y="167.5">prf_disponibilidade</text>
+    <text class="coluna-tipo" x="258" y="167.5" text-anchor="end">VARCHAR(20) ·</text>
+    <text class="coluna" x="10" y="181.0">prf_anos_experiencia</text>
+    <text class="coluna-tipo" x="258" y="181.0" text-anchor="end">TINYINT</text>
+    <text class="coluna" x="10" y="194.5">prf_valor_hora</text>
+    <text class="coluna-tipo" x="258" y="194.5" text-anchor="end">DECIMAL(10,2)</text>
+    <text class="coluna" x="10" y="208.0">prf_site</text>
+    <text class="coluna-tipo" x="258" y="208.0" text-anchor="end">VARCHAR(190)</text>
+    <text class="coluna" x="10" y="221.5">prf_linkedin</text>
+    <text class="coluna-tipo" x="258" y="221.5" text-anchor="end">VARCHAR(190)</text>
+    <text class="coluna" x="10" y="235.0">prf_foto</text>
+    <text class="coluna-tipo" x="258" y="235.0" text-anchor="end">VARCHAR(255)</text>
+    <text class="coluna" x="10" y="248.5">prf_visibilidade</text>
+    <text class="coluna-tipo" x="258" y="248.5" text-anchor="end">VARCHAR(20) ·</text>
+    <text class="coluna" x="10" y="262.0">prf_exibe_contato</text>
+    <text class="coluna-tipo" x="258" y="262.0" text-anchor="end">CHAR(1) ·</text>
+    <text class="coluna" x="10" y="275.5">prf_exibe_documento</text>
+    <text class="coluna-tipo" x="258" y="275.5" text-anchor="end">CHAR(1) ·</text>
+    <text class="coluna" x="10" y="289.0">prf_exibe_rnp</text>
+    <text class="coluna-tipo" x="258" y="289.0" text-anchor="end">CHAR(1) ·</text>
+    <text class="coluna" x="10" y="302.5">prf_exibe_valor_hora</text>
+    <text class="coluna-tipo" x="258" y="302.5" text-anchor="end">CHAR(1) ·</text>
+    <text class="coluna" x="10" y="316.0">prf_aceita_contato</text>
+    <text class="coluna-tipo" x="258" y="316.0" text-anchor="end">CHAR(1) ·</text>
+    <text class="coluna" x="10" y="329.5">prf_moderacao</text>
+    <text class="coluna-tipo" x="258" y="329.5" text-anchor="end">VARCHAR(20) ·</text>
+    <text class="coluna" x="10" y="343.0">prf_moderacao_motivo</text>
+    <text class="coluna-tipo" x="258" y="343.0" text-anchor="end">VARCHAR(255)</text>
+    <text class="coluna" x="10" y="356.5">prf_dt_registro</text>
+    <text class="coluna-tipo" x="258" y="356.5" text-anchor="end">DATETIME ·</text>
+    <text class="coluna" x="10" y="370.0">prf_dt_alteracao</text>
+    <text class="coluna-tipo" x="258" y="370.0" text-anchor="end">DATETIME</text>
+    <text class="coluna" x="10" y="383.5">prf_log</text>
+    <text class="coluna-tipo" x="258" y="383.5" text-anchor="end">VARCHAR(255)</text>
+    <text class="coluna" x="10" y="397.0">prf_status</text>
+    <text class="coluna-tipo" x="258" y="397.0" text-anchor="end">CHAR(1) ·</text>
+  </g>
+  <g transform="translate(680.0, 476.5)">
+    <rect width="268" height="123.0" rx="7" fill="#ffffff" stroke="#cfd8dc" stroke-width="1"/>
+    <path d="M 0 7 A 7 7 0 0 1 7 0 L 261 0 A 7 7 0 0 1 268 7 L 268 34 L 0 34 Z" fill="#1a7f4b"/>
+    <text class="modulo-tabela" x="10" y="13">MÓDULO PRO · PRO-LINK</text>
+    <text class="titulo-tabela" x="10" y="27">pro_areas</text>
+    <text class="coluna pk" x="10" y="46.0">PK are_id</text>
+    <text class="coluna-tipo" x="258" y="46.0" text-anchor="end">SMALLINT ·</text>
+    <text class="coluna" x="10" y="59.5">are_nome</text>
+    <text class="coluna-tipo" x="258" y="59.5" text-anchor="end">VARCHAR(120) ·</text>
+    <text class="coluna" x="10" y="73.0">are_descricao</text>
+    <text class="coluna-tipo" x="258" y="73.0" text-anchor="end">VARCHAR(255)</text>
+    <text class="coluna" x="10" y="86.5">are_dt_registro</text>
+    <text class="coluna-tipo" x="258" y="86.5" text-anchor="end">DATETIME ·</text>
+    <text class="coluna" x="10" y="100.0">are_log</text>
+    <text class="coluna-tipo" x="258" y="100.0" text-anchor="end">VARCHAR(255)</text>
+    <text class="coluna" x="10" y="113.5">are_status</text>
+    <text class="coluna-tipo" x="258" y="113.5" text-anchor="end">CHAR(1) ·</text>
+  </g>
+  <g transform="translate(680.0, 629.5)">
+    <rect width="268" height="136.5" rx="7" fill="#ffffff" stroke="#cfd8dc" stroke-width="1"/>
+    <path d="M 0 7 A 7 7 0 0 1 7 0 L 261 0 A 7 7 0 0 1 268 7 L 268 34 L 0 34 Z" fill="#1a7f4b"/>
+    <text class="modulo-tabela" x="10" y="13">MÓDULO PRO · PRO-LINK</text>
+    <text class="titulo-tabela" x="10" y="27">pro_competencias</text>
+    <text class="coluna pk" x="10" y="46.0">PK cmp_id</text>
+    <text class="coluna-tipo" x="258" y="46.0" text-anchor="end">SMALLINT ·</text>
+    <text class="coluna fk" x="10" y="59.5">FK cmp_are_id</text>
+    <text class="coluna-tipo" x="258" y="59.5" text-anchor="end">SMALLINT ·</text>
+    <text class="coluna" x="10" y="73.0">cmp_nome</text>
+    <text class="coluna-tipo" x="258" y="73.0" text-anchor="end">VARCHAR(150) ·</text>
+    <text class="coluna" x="10" y="86.5">cmp_descricao</text>
+    <text class="coluna-tipo" x="258" y="86.5" text-anchor="end">VARCHAR(255)</text>
+    <text class="coluna" x="10" y="100.0">cmp_dt_registro</text>
+    <text class="coluna-tipo" x="258" y="100.0" text-anchor="end">DATETIME ·</text>
+    <text class="coluna" x="10" y="113.5">cmp_log</text>
+    <text class="coluna-tipo" x="258" y="113.5" text-anchor="end">VARCHAR(255)</text>
+    <text class="coluna" x="10" y="127.0">cmp_status</text>
+    <text class="coluna-tipo" x="258" y="127.0" text-anchor="end">CHAR(1) ·</text>
+  </g>
+  <g transform="translate(680.0, 796.0)">
+    <rect width="268" height="136.5" rx="7" fill="#ffffff" stroke="#cfd8dc" stroke-width="1"/>
+    <path d="M 0 7 A 7 7 0 0 1 7 0 L 261 0 A 7 7 0 0 1 268 7 L 268 34 L 0 34 Z" fill="#1a7f4b"/>
+    <text class="modulo-tabela" x="10" y="13">MÓDULO PRO · PRO-LINK</text>
+    <text class="titulo-tabela" x="10" y="27">pro_perfil_competencias</text>
+    <text class="coluna pk" x="10" y="46.0">PK pcp_id</text>
+    <text class="coluna-tipo" x="258" y="46.0" text-anchor="end">INT ·</text>
+    <text class="coluna fk" x="10" y="59.5">FK pcp_prf_id</text>
+    <text class="coluna-tipo" x="258" y="59.5" text-anchor="end">INT ·</text>
+    <text class="coluna fk" x="10" y="73.0">FK pcp_cmp_id</text>
+    <text class="coluna-tipo" x="258" y="73.0" text-anchor="end">SMALLINT ·</text>
+    <text class="coluna" x="10" y="86.5">pcp_nivel</text>
+    <text class="coluna-tipo" x="258" y="86.5" text-anchor="end">VARCHAR(20) ·</text>
+    <text class="coluna" x="10" y="100.0">pcp_dt_registro</text>
+    <text class="coluna-tipo" x="258" y="100.0" text-anchor="end">DATETIME ·</text>
+    <text class="coluna" x="10" y="113.5">pcp_log</text>
+    <text class="coluna-tipo" x="258" y="113.5" text-anchor="end">VARCHAR(255)</text>
+    <text class="coluna" x="10" y="127.0">pcp_status</text>
+    <text class="coluna-tipo" x="258" y="127.0" text-anchor="end">CHAR(1) ·</text>
+  </g>
+  <g transform="translate(1000.0, 40.0)">
+    <rect width="268" height="352.5" rx="7" fill="#ffffff" stroke="#cfd8dc" stroke-width="1"/>
+    <path d="M 0 7 A 7 7 0 0 1 7 0 L 261 0 A 7 7 0 0 1 268 7 L 268 34 L 0 34 Z" fill="#1a7f4b"/>
+    <text class="modulo-tabela" x="10" y="13">MÓDULO PRO · PRO-LINK</text>
+    <text class="titulo-tabela" x="10" y="27">pro_arts</text>
+    <text class="coluna pk" x="10" y="46.0">PK art_id</text>
+    <text class="coluna-tipo" x="258" y="46.0" text-anchor="end">INT ·</text>
+    <text class="coluna fk" x="10" y="59.5">FK art_prf_id</text>
+    <text class="coluna-tipo" x="258" y="59.5" text-anchor="end">INT ·</text>
+    <text class="coluna" x="10" y="73.0">art_numero</text>
+    <text class="coluna-tipo" x="258" y="73.0" text-anchor="end">VARCHAR(40) ·</text>
+    <text class="coluna" x="10" y="86.5">art_rnp</text>
+    <text class="coluna-tipo" x="258" y="86.5" text-anchor="end">VARCHAR(20) ·</text>
+    <text class="coluna" x="10" y="100.0">art_tipo</text>
+    <text class="coluna-tipo" x="258" y="100.0" text-anchor="end">VARCHAR(60)</text>
+    <text class="coluna" x="10" y="113.5">art_objeto</text>
+    <text class="coluna-tipo" x="258" y="113.5" text-anchor="end">TEXT</text>
+    <text class="coluna" x="10" y="127.0">art_contratante</text>
+    <text class="coluna-tipo" x="258" y="127.0" text-anchor="end">VARCHAR(190)</text>
+    <text class="coluna" x="10" y="140.5">art_valor_contrato</text>
+    <text class="coluna-tipo" x="258" y="140.5" text-anchor="end">DECIMAL(14,2)</text>
+    <text class="coluna" x="10" y="154.0">art_municipio</text>
+    <text class="coluna-tipo" x="258" y="154.0" text-anchor="end">VARCHAR(120)</text>
+    <text class="coluna" x="10" y="167.5">art_uf</text>
+    <text class="coluna-tipo" x="258" y="167.5" text-anchor="end">CHAR(2)</text>
+    <text class="coluna" x="10" y="181.0">art_dt_inicio</text>
+    <text class="coluna-tipo" x="258" y="181.0" text-anchor="end">DATE</text>
+    <text class="coluna" x="10" y="194.5">art_dt_fim</text>
+    <text class="coluna-tipo" x="258" y="194.5" text-anchor="end">DATE</text>
+    <text class="coluna" x="10" y="208.0">art_situacao</text>
+    <text class="coluna-tipo" x="258" y="208.0" text-anchor="end">VARCHAR(40)</text>
+    <text class="coluna" x="10" y="221.5">art_origem</text>
+    <text class="coluna-tipo" x="258" y="221.5" text-anchor="end">VARCHAR(20) ·</text>
+    <text class="coluna" x="10" y="235.0">art_validada</text>
+    <text class="coluna-tipo" x="258" y="235.0" text-anchor="end">CHAR(1) ·</text>
+    <text class="coluna" x="10" y="248.5">art_dt_validacao</text>
+    <text class="coluna-tipo" x="258" y="248.5" text-anchor="end">DATETIME</text>
+    <text class="coluna" x="10" y="262.0">art_payload</text>
+    <text class="coluna-tipo" x="258" y="262.0" text-anchor="end">LONGTEXT</text>
+    <text class="coluna" x="10" y="275.5">art_visivel</text>
+    <text class="coluna-tipo" x="258" y="275.5" text-anchor="end">CHAR(1) ·</text>
+    <text class="coluna" x="10" y="289.0">art_destaque</text>
+    <text class="coluna-tipo" x="258" y="289.0" text-anchor="end">CHAR(1) ·</text>
+    <text class="coluna" x="10" y="302.5">art_dt_registro</text>
+    <text class="coluna-tipo" x="258" y="302.5" text-anchor="end">DATETIME ·</text>
+    <text class="coluna" x="10" y="316.0">art_dt_alteracao</text>
+    <text class="coluna-tipo" x="258" y="316.0" text-anchor="end">DATETIME</text>
+    <text class="coluna" x="10" y="329.5">art_log</text>
+    <text class="coluna-tipo" x="258" y="329.5" text-anchor="end">VARCHAR(255)</text>
+    <text class="coluna" x="10" y="343.0">art_status</text>
+    <text class="coluna-tipo" x="258" y="343.0" text-anchor="end">CHAR(1) ·</text>
+  </g>
+  <g transform="translate(1000.0, 422.5)">
+    <rect width="268" height="285.0" rx="7" fill="#ffffff" stroke="#cfd8dc" stroke-width="1"/>
+    <path d="M 0 7 A 7 7 0 0 1 7 0 L 261 0 A 7 7 0 0 1 268 7 L 268 34 L 0 34 Z" fill="#1a7f4b"/>
+    <text class="modulo-tabela" x="10" y="13">MÓDULO PRO · PRO-LINK</text>
+    <text class="titulo-tabela" x="10" y="27">pro_cats</text>
+    <text class="coluna pk" x="10" y="46.0">PK cat_id</text>
+    <text class="coluna-tipo" x="258" y="46.0" text-anchor="end">INT ·</text>
+    <text class="coluna fk" x="10" y="59.5">FK cat_prf_id</text>
+    <text class="coluna-tipo" x="258" y="59.5" text-anchor="end">INT ·</text>
+    <text class="coluna" x="10" y="73.0">cat_numero</text>
+    <text class="coluna-tipo" x="258" y="73.0" text-anchor="end">VARCHAR(40) ·</text>
+    <text class="coluna" x="10" y="86.5">cat_rnp</text>
+    <text class="coluna-tipo" x="258" y="86.5" text-anchor="end">VARCHAR(20) ·</text>
+    <text class="coluna" x="10" y="100.0">cat_tipo</text>
+    <text class="coluna-tipo" x="258" y="100.0" text-anchor="end">VARCHAR(60)</text>
+    <text class="coluna" x="10" y="113.5">cat_objeto</text>
+    <text class="coluna-tipo" x="258" y="113.5" text-anchor="end">TEXT</text>
+    <text class="coluna" x="10" y="127.0">cat_dt_emissao</text>
+    <text class="coluna-tipo" x="258" y="127.0" text-anchor="end">DATE</text>
+    <text class="coluna" x="10" y="140.5">cat_dt_validade</text>
+    <text class="coluna-tipo" x="258" y="140.5" text-anchor="end">DATE</text>
+    <text class="coluna" x="10" y="154.0">cat_situacao</text>
+    <text class="coluna-tipo" x="258" y="154.0" text-anchor="end">VARCHAR(40)</text>
+    <text class="coluna" x="10" y="167.5">cat_origem</text>
+    <text class="coluna-tipo" x="258" y="167.5" text-anchor="end">VARCHAR(20) ·</text>
+    <text class="coluna" x="10" y="181.0">cat_validada</text>
+    <text class="coluna-tipo" x="258" y="181.0" text-anchor="end">CHAR(1) ·</text>
+    <text class="coluna" x="10" y="194.5">cat_dt_validacao</text>
+    <text class="coluna-tipo" x="258" y="194.5" text-anchor="end">DATETIME</text>
+    <text class="coluna" x="10" y="208.0">cat_payload</text>
+    <text class="coluna-tipo" x="258" y="208.0" text-anchor="end">LONGTEXT</text>
+    <text class="coluna" x="10" y="221.5">cat_visivel</text>
+    <text class="coluna-tipo" x="258" y="221.5" text-anchor="end">CHAR(1) ·</text>
+    <text class="coluna" x="10" y="235.0">cat_dt_registro</text>
+    <text class="coluna-tipo" x="258" y="235.0" text-anchor="end">DATETIME ·</text>
+    <text class="coluna" x="10" y="248.5">cat_dt_alteracao</text>
+    <text class="coluna-tipo" x="258" y="248.5" text-anchor="end">DATETIME</text>
+    <text class="coluna" x="10" y="262.0">cat_log</text>
+    <text class="coluna-tipo" x="258" y="262.0" text-anchor="end">VARCHAR(255)</text>
+    <text class="coluna" x="10" y="275.5">cat_status</text>
+    <text class="coluna-tipo" x="258" y="275.5" text-anchor="end">CHAR(1) ·</text>
+  </g>
+  <g transform="translate(1000.0, 737.5)">
+    <rect width="268" height="312.0" rx="7" fill="#ffffff" stroke="#cfd8dc" stroke-width="1"/>
+    <path d="M 0 7 A 7 7 0 0 1 7 0 L 261 0 A 7 7 0 0 1 268 7 L 268 34 L 0 34 Z" fill="#1a7f4b"/>
+    <text class="modulo-tabela" x="10" y="13">MÓDULO PRO · PRO-LINK</text>
+    <text class="titulo-tabela" x="10" y="27">pro_experiencias</text>
+    <text class="coluna pk" x="10" y="46.0">PK exp_id</text>
+    <text class="coluna-tipo" x="258" y="46.0" text-anchor="end">INT ·</text>
+    <text class="coluna fk" x="10" y="59.5">FK exp_prf_id</text>
+    <text class="coluna-tipo" x="258" y="59.5" text-anchor="end">INT ·</text>
+    <text class="coluna" x="10" y="73.0">exp_titulo</text>
+    <text class="coluna-tipo" x="258" y="73.0" text-anchor="end">VARCHAR(190) ·</text>
+    <text class="coluna" x="10" y="86.5">exp_descricao</text>
+    <text class="coluna-tipo" x="258" y="86.5" text-anchor="end">TEXT</text>
+    <text class="coluna" x="10" y="100.0">exp_organizacao</text>
+    <text class="coluna-tipo" x="258" y="100.0" text-anchor="end">VARCHAR(190)</text>
+    <text class="coluna" x="10" y="113.5">exp_papel</text>
+    <text class="coluna-tipo" x="258" y="113.5" text-anchor="end">VARCHAR(120)</text>
+    <text class="coluna" x="10" y="127.0">exp_municipio</text>
+    <text class="coluna-tipo" x="258" y="127.0" text-anchor="end">VARCHAR(120)</text>
+    <text class="coluna" x="10" y="140.5">exp_uf</text>
+    <text class="coluna-tipo" x="258" y="140.5" text-anchor="end">CHAR(2)</text>
+    <text class="coluna" x="10" y="154.0">exp_dt_inicio</text>
+    <text class="coluna-tipo" x="258" y="154.0" text-anchor="end">DATE</text>
+    <text class="coluna" x="10" y="167.5">exp_dt_fim</text>
+    <text class="coluna-tipo" x="258" y="167.5" text-anchor="end">DATE</text>
+    <text class="coluna" x="10" y="181.0">exp_atual</text>
+    <text class="coluna-tipo" x="258" y="181.0" text-anchor="end">CHAR(1) ·</text>
+    <text class="coluna fk" x="10" y="194.5">FK exp_art_id</text>
+    <text class="coluna-tipo" x="258" y="194.5" text-anchor="end">INT</text>
+    <text class="coluna fk" x="10" y="208.0">FK exp_cat_id</text>
+    <text class="coluna-tipo" x="258" y="208.0" text-anchor="end">INT</text>
+    <text class="coluna" x="10" y="221.5">exp_comprovada</text>
+    <text class="coluna-tipo" x="258" y="221.5" text-anchor="end">CHAR(1) ·</text>
+    <text class="coluna" x="10" y="235.0">exp_visivel</text>
+    <text class="coluna-tipo" x="258" y="235.0" text-anchor="end">CHAR(1) ·</text>
+    <text class="coluna" x="10" y="248.5">exp_moderacao</text>
+    <text class="coluna-tipo" x="258" y="248.5" text-anchor="end">VARCHAR(20) ·</text>
+    <text class="coluna" x="10" y="262.0">exp_dt_registro</text>
+    <text class="coluna-tipo" x="258" y="262.0" text-anchor="end">DATETIME ·</text>
+    <text class="coluna" x="10" y="275.5">exp_dt_alteracao</text>
+    <text class="coluna-tipo" x="258" y="275.5" text-anchor="end">DATETIME</text>
+    <text class="coluna" x="10" y="289.0">exp_log</text>
+    <text class="coluna-tipo" x="258" y="289.0" text-anchor="end">VARCHAR(255)</text>
+    <text class="coluna" x="10" y="302.5">exp_status</text>
+    <text class="coluna-tipo" x="258" y="302.5" text-anchor="end">CHAR(1) ·</text>
+  </g>
+  <g transform="translate(1000.0, 1079.5)">
+    <rect width="268" height="123.0" rx="7" fill="#ffffff" stroke="#cfd8dc" stroke-width="1"/>
+    <path d="M 0 7 A 7 7 0 0 1 7 0 L 261 0 A 7 7 0 0 1 268 7 L 268 34 L 0 34 Z" fill="#1a7f4b"/>
+    <text class="modulo-tabela" x="10" y="13">MÓDULO PRO · PRO-LINK</text>
+    <text class="titulo-tabela" x="10" y="27">pro_experiencia_competencias</text>
+    <text class="coluna pk" x="10" y="46.0">PK ecp_id</text>
+    <text class="coluna-tipo" x="258" y="46.0" text-anchor="end">INT ·</text>
+    <text class="coluna fk" x="10" y="59.5">FK ecp_exp_id</text>
+    <text class="coluna-tipo" x="258" y="59.5" text-anchor="end">INT ·</text>
+    <text class="coluna fk" x="10" y="73.0">FK ecp_cmp_id</text>
+    <text class="coluna-tipo" x="258" y="73.0" text-anchor="end">SMALLINT ·</text>
+    <text class="coluna" x="10" y="86.5">ecp_dt_registro</text>
+    <text class="coluna-tipo" x="258" y="86.5" text-anchor="end">DATETIME ·</text>
+    <text class="coluna" x="10" y="100.0">ecp_log</text>
+    <text class="coluna-tipo" x="258" y="100.0" text-anchor="end">VARCHAR(255)</text>
+    <text class="coluna" x="10" y="113.5">ecp_status</text>
+    <text class="coluna-tipo" x="258" y="113.5" text-anchor="end">CHAR(1) ·</text>
+  </g>
+  <g transform="translate(1320.0, 40.0)">
+    <rect width="268" height="420.0" rx="7" fill="#ffffff" stroke="#cfd8dc" stroke-width="1"/>
+    <path d="M 0 7 A 7 7 0 0 1 7 0 L 261 0 A 7 7 0 0 1 268 7 L 268 34 L 0 34 Z" fill="#1a7f4b"/>
+    <text class="modulo-tabela" x="10" y="13">MÓDULO PRO · PRO-LINK</text>
+    <text class="titulo-tabela" x="10" y="27">pro_demandas</text>
+    <text class="coluna pk" x="10" y="46.0">PK dem_id</text>
+    <text class="coluna-tipo" x="258" y="46.0" text-anchor="end">INT ·</text>
+    <text class="coluna fk" x="10" y="59.5">FK dem_usu_id</text>
+    <text class="coluna-tipo" x="258" y="59.5" text-anchor="end">INT ·</text>
+    <text class="coluna" x="10" y="73.0">dem_titulo</text>
+    <text class="coluna-tipo" x="258" y="73.0" text-anchor="end">VARCHAR(190) ·</text>
+    <text class="coluna" x="10" y="86.5">dem_escopo</text>
+    <text class="coluna-tipo" x="258" y="86.5" text-anchor="end">TEXT ·</text>
+    <text class="coluna fk" x="10" y="100.0">FK dem_are_id</text>
+    <text class="coluna-tipo" x="258" y="100.0" text-anchor="end">SMALLINT</text>
+    <text class="coluna" x="10" y="113.5">dem_uf</text>
+    <text class="coluna-tipo" x="258" y="113.5" text-anchor="end">CHAR(2)</text>
+    <text class="coluna" x="10" y="127.0">dem_cidade</text>
+    <text class="coluna-tipo" x="258" y="127.0" text-anchor="end">VARCHAR(120)</text>
+    <text class="coluna" x="10" y="140.5">dem_aceita_remoto</text>
+    <text class="coluna-tipo" x="258" y="140.5" text-anchor="end">CHAR(1) ·</text>
+    <text class="coluna" x="10" y="154.0">dem_modalidade</text>
+    <text class="coluna-tipo" x="258" y="154.0" text-anchor="end">VARCHAR(20) ·</text>
+    <text class="coluna" x="10" y="167.5">dem_exige_art</text>
+    <text class="coluna-tipo" x="258" y="167.5" text-anchor="end">CHAR(1) ·</text>
+    <text class="coluna" x="10" y="181.0">dem_exige_registro</text>
+    <text class="coluna-tipo" x="258" y="181.0" text-anchor="end">CHAR(1) ·</text>
+    <text class="coluna" x="10" y="194.5">dem_experiencia_min</text>
+    <text class="coluna-tipo" x="258" y="194.5" text-anchor="end">TINYINT</text>
+    <text class="coluna" x="10" y="208.0">dem_orcamento_min</text>
+    <text class="coluna-tipo" x="258" y="208.0" text-anchor="end">DECIMAL(14,2)</text>
+    <text class="coluna" x="10" y="221.5">dem_orcamento_max</text>
+    <text class="coluna-tipo" x="258" y="221.5" text-anchor="end">DECIMAL(14,2)</text>
+    <text class="coluna" x="10" y="235.0">dem_prazo_execucao</text>
+    <text class="coluna-tipo" x="258" y="235.0" text-anchor="end">VARCHAR(120)</text>
+    <text class="coluna" x="10" y="248.5">dem_dt_limite</text>
+    <text class="coluna-tipo" x="258" y="248.5" text-anchor="end">DATE</text>
+    <text class="coluna" x="10" y="262.0">dem_situacao</text>
+    <text class="coluna-tipo" x="258" y="262.0" text-anchor="end">VARCHAR(20) ·</text>
+    <text class="coluna" x="10" y="275.5">dem_dt_publicacao</text>
+    <text class="coluna-tipo" x="258" y="275.5" text-anchor="end">DATETIME</text>
+    <text class="coluna" x="10" y="289.0">dem_dt_encerramento</text>
+    <text class="coluna-tipo" x="258" y="289.0" text-anchor="end">DATETIME</text>
+    <text class="coluna" x="10" y="302.5">dem_motivo_encerramento</text>
+    <text class="coluna-tipo" x="258" y="302.5" text-anchor="end">VARCHAR(255)</text>
+    <text class="coluna" x="10" y="316.0">dem_visibilidade</text>
+    <text class="coluna-tipo" x="258" y="316.0" text-anchor="end">VARCHAR(20) ·</text>
+    <text class="coluna" x="10" y="329.5">dem_moderacao</text>
+    <text class="coluna-tipo" x="258" y="329.5" text-anchor="end">VARCHAR(20) ·</text>
+    <text class="coluna" x="10" y="343.0">dem_moderacao_motivo</text>
+    <text class="coluna-tipo" x="258" y="343.0" text-anchor="end">VARCHAR(255)</text>
+    <text class="coluna" x="10" y="356.5">dem_total_interesses</text>
+    <text class="coluna-tipo" x="258" y="356.5" text-anchor="end">SMALLINT ·</text>
+    <text class="coluna" x="10" y="370.0">dem_dt_registro</text>
+    <text class="coluna-tipo" x="258" y="370.0" text-anchor="end">DATETIME ·</text>
+    <text class="coluna" x="10" y="383.5">dem_dt_alteracao</text>
+    <text class="coluna-tipo" x="258" y="383.5" text-anchor="end">DATETIME</text>
+    <text class="coluna" x="10" y="397.0">dem_log</text>
+    <text class="coluna-tipo" x="258" y="397.0" text-anchor="end">VARCHAR(255)</text>
+    <text class="coluna" x="10" y="410.5">dem_status</text>
+    <text class="coluna-tipo" x="258" y="410.5" text-anchor="end">CHAR(1) ·</text>
+  </g>
+  <g transform="translate(1320.0, 490.0)">
+    <rect width="268" height="150.0" rx="7" fill="#ffffff" stroke="#cfd8dc" stroke-width="1"/>
+    <path d="M 0 7 A 7 7 0 0 1 7 0 L 261 0 A 7 7 0 0 1 268 7 L 268 34 L 0 34 Z" fill="#1a7f4b"/>
+    <text class="modulo-tabela" x="10" y="13">MÓDULO PRO · PRO-LINK</text>
+    <text class="titulo-tabela" x="10" y="27">pro_demanda_competencias</text>
+    <text class="coluna pk" x="10" y="46.0">PK dmc_id</text>
+    <text class="coluna-tipo" x="258" y="46.0" text-anchor="end">INT ·</text>
+    <text class="coluna fk" x="10" y="59.5">FK dmc_dem_id</text>
+    <text class="coluna-tipo" x="258" y="59.5" text-anchor="end">INT ·</text>
+    <text class="coluna fk" x="10" y="73.0">FK dmc_cmp_id</text>
+    <text class="coluna-tipo" x="258" y="73.0" text-anchor="end">SMALLINT ·</text>
+    <text class="coluna" x="10" y="86.5">dmc_obrigatoria</text>
+    <text class="coluna-tipo" x="258" y="86.5" text-anchor="end">CHAR(1) ·</text>
+    <text class="coluna" x="10" y="100.0">dmc_peso</text>
+    <text class="coluna-tipo" x="258" y="100.0" text-anchor="end">TINYINT ·</text>
+    <text class="coluna" x="10" y="113.5">dmc_dt_registro</text>
+    <text class="coluna-tipo" x="258" y="113.5" text-anchor="end">DATETIME ·</text>
+    <text class="coluna" x="10" y="127.0">dmc_log</text>
+    <text class="coluna-tipo" x="258" y="127.0" text-anchor="end">VARCHAR(255)</text>
+    <text class="coluna" x="10" y="140.5">dmc_status</text>
+    <text class="coluna-tipo" x="258" y="140.5" text-anchor="end">CHAR(1) ·</text>
+  </g>
+  <g transform="translate(1320.0, 670.0)">
+    <rect width="268" height="244.5" rx="7" fill="#ffffff" stroke="#cfd8dc" stroke-width="1"/>
+    <path d="M 0 7 A 7 7 0 0 1 7 0 L 261 0 A 7 7 0 0 1 268 7 L 268 34 L 0 34 Z" fill="#1a7f4b"/>
+    <text class="modulo-tabela" x="10" y="13">MÓDULO PRO · PRO-LINK</text>
+    <text class="titulo-tabela" x="10" y="27">pro_interesses</text>
+    <text class="coluna pk" x="10" y="46.0">PK int_id</text>
+    <text class="coluna-tipo" x="258" y="46.0" text-anchor="end">INT ·</text>
+    <text class="coluna fk" x="10" y="59.5">FK int_dem_id</text>
+    <text class="coluna-tipo" x="258" y="59.5" text-anchor="end">INT ·</text>
+    <text class="coluna fk" x="10" y="73.0">FK int_usu_id</text>
+    <text class="coluna-tipo" x="258" y="73.0" text-anchor="end">INT ·</text>
+    <text class="coluna" x="10" y="86.5">int_mensagem</text>
+    <text class="coluna-tipo" x="258" y="86.5" text-anchor="end">TEXT</text>
+    <text class="coluna" x="10" y="100.0">int_valor_proposto</text>
+    <text class="coluna-tipo" x="258" y="100.0" text-anchor="end">DECIMAL(14,2)</text>
+    <text class="coluna" x="10" y="113.5">int_prazo_proposto</text>
+    <text class="coluna-tipo" x="258" y="113.5" text-anchor="end">VARCHAR(120)</text>
+    <text class="coluna" x="10" y="127.0">int_aderencia</text>
+    <text class="coluna-tipo" x="258" y="127.0" text-anchor="end">DECIMAL(5,2)</text>
+    <text class="coluna" x="10" y="140.5">int_situacao</text>
+    <text class="coluna-tipo" x="258" y="140.5" text-anchor="end">VARCHAR(20) ·</text>
+    <text class="coluna" x="10" y="154.0">int_dt_visualizacao</text>
+    <text class="coluna-tipo" x="258" y="154.0" text-anchor="end">DATETIME</text>
+    <text class="coluna" x="10" y="167.5">int_resposta</text>
+    <text class="coluna-tipo" x="258" y="167.5" text-anchor="end">TEXT</text>
+    <text class="coluna" x="10" y="181.0">int_dt_resposta</text>
+    <text class="coluna-tipo" x="258" y="181.0" text-anchor="end">DATETIME</text>
+    <text class="coluna" x="10" y="194.5">int_dt_registro</text>
+    <text class="coluna-tipo" x="258" y="194.5" text-anchor="end">DATETIME ·</text>
+    <text class="coluna" x="10" y="208.0">int_dt_alteracao</text>
+    <text class="coluna-tipo" x="258" y="208.0" text-anchor="end">DATETIME</text>
+    <text class="coluna" x="10" y="221.5">int_log</text>
+    <text class="coluna-tipo" x="258" y="221.5" text-anchor="end">VARCHAR(255)</text>
+    <text class="coluna" x="10" y="235.0">int_status</text>
+    <text class="coluna-tipo" x="258" y="235.0" text-anchor="end">CHAR(1) ·</text>
+  </g>
+  <g transform="translate(1320.0, 944.5)">
+    <rect width="268" height="204.0" rx="7" fill="#ffffff" stroke="#cfd8dc" stroke-width="1"/>
+    <path d="M 0 7 A 7 7 0 0 1 7 0 L 261 0 A 7 7 0 0 1 268 7 L 268 34 L 0 34 Z" fill="#1a7f4b"/>
+    <text class="modulo-tabela" x="10" y="13">MÓDULO PRO · PRO-LINK</text>
+    <text class="titulo-tabela" x="10" y="27">pro_solicitacoes_lgpd</text>
+    <text class="coluna pk" x="10" y="46.0">PK slg_id</text>
+    <text class="coluna-tipo" x="258" y="46.0" text-anchor="end">INT ·</text>
+    <text class="coluna fk" x="10" y="59.5">FK slg_usu_id</text>
+    <text class="coluna-tipo" x="258" y="59.5" text-anchor="end">INT ·</text>
+    <text class="coluna" x="10" y="73.0">slg_tipo</text>
+    <text class="coluna-tipo" x="258" y="73.0" text-anchor="end">VARCHAR(30) ·</text>
+    <text class="coluna" x="10" y="86.5">slg_descricao</text>
+    <text class="coluna-tipo" x="258" y="86.5" text-anchor="end">TEXT</text>
+    <text class="coluna" x="10" y="100.0">slg_situacao</text>
+    <text class="coluna-tipo" x="258" y="100.0" text-anchor="end">VARCHAR(20) ·</text>
+    <text class="coluna" x="10" y="113.5">slg_resposta</text>
+    <text class="coluna-tipo" x="258" y="113.5" text-anchor="end">TEXT</text>
+    <text class="coluna fk" x="10" y="127.0">FK slg_usu_analista</text>
+    <text class="coluna-tipo" x="258" y="127.0" text-anchor="end">INT</text>
+    <text class="coluna" x="10" y="140.5">slg_dt_conclusao</text>
+    <text class="coluna-tipo" x="258" y="140.5" text-anchor="end">DATETIME</text>
+    <text class="coluna" x="10" y="154.0">slg_dt_registro</text>
+    <text class="coluna-tipo" x="258" y="154.0" text-anchor="end">DATETIME ·</text>
+    <text class="coluna" x="10" y="167.5">slg_dt_alteracao</text>
+    <text class="coluna-tipo" x="258" y="167.5" text-anchor="end">DATETIME</text>
+    <text class="coluna" x="10" y="181.0">slg_log</text>
+    <text class="coluna-tipo" x="258" y="181.0" text-anchor="end">VARCHAR(255)</text>
+    <text class="coluna" x="10" y="194.5">slg_status</text>
+    <text class="coluna-tipo" x="258" y="194.5" text-anchor="end">CHAR(1) ·</text>
+  </g>
+  <g transform="translate(1640.0, 40.0)">
+    <rect width="268" height="190.5" rx="7" fill="#ffffff" stroke="#cfd8dc" stroke-width="1"/>
+    <path d="M 0 7 A 7 7 0 0 1 7 0 L 261 0 A 7 7 0 0 1 268 7 L 268 34 L 0 34 Z" fill="#1a7f4b"/>
+    <text class="modulo-tabela" x="10" y="13">MÓDULO PRO · PRO-LINK</text>
+    <text class="titulo-tabela" x="10" y="27">pro_conversas</text>
+    <text class="coluna pk" x="10" y="46.0">PK cnv_id</text>
+    <text class="coluna-tipo" x="258" y="46.0" text-anchor="end">INT ·</text>
+    <text class="coluna fk" x="10" y="59.5">FK cnv_dem_id</text>
+    <text class="coluna-tipo" x="258" y="59.5" text-anchor="end">INT</text>
+    <text class="coluna fk" x="10" y="73.0">FK cnv_int_id</text>
+    <text class="coluna-tipo" x="258" y="73.0" text-anchor="end">INT</text>
+    <text class="coluna fk" x="10" y="86.5">FK cnv_usu_origem</text>
+    <text class="coluna-tipo" x="258" y="86.5" text-anchor="end">INT ·</text>
+    <text class="coluna fk" x="10" y="100.0">FK cnv_usu_destino</text>
+    <text class="coluna-tipo" x="258" y="100.0" text-anchor="end">INT ·</text>
+    <text class="coluna" x="10" y="113.5">cnv_assunto</text>
+    <text class="coluna-tipo" x="258" y="113.5" text-anchor="end">VARCHAR(190)</text>
+    <text class="coluna" x="10" y="127.0">cnv_dt_ultima_msg</text>
+    <text class="coluna-tipo" x="258" y="127.0" text-anchor="end">DATETIME</text>
+    <text class="coluna" x="10" y="140.5">cnv_bloqueada</text>
+    <text class="coluna-tipo" x="258" y="140.5" text-anchor="end">CHAR(1) ·</text>
+    <text class="coluna" x="10" y="154.0">cnv_dt_registro</text>
+    <text class="coluna-tipo" x="258" y="154.0" text-anchor="end">DATETIME ·</text>
+    <text class="coluna" x="10" y="167.5">cnv_log</text>
+    <text class="coluna-tipo" x="258" y="167.5" text-anchor="end">VARCHAR(255)</text>
+    <text class="coluna" x="10" y="181.0">cnv_status</text>
+    <text class="coluna-tipo" x="258" y="181.0" text-anchor="end">CHAR(1) ·</text>
+  </g>
+  <g transform="translate(1640.0, 260.5)">
+    <rect width="268" height="163.5" rx="7" fill="#ffffff" stroke="#cfd8dc" stroke-width="1"/>
+    <path d="M 0 7 A 7 7 0 0 1 7 0 L 261 0 A 7 7 0 0 1 268 7 L 268 34 L 0 34 Z" fill="#1a7f4b"/>
+    <text class="modulo-tabela" x="10" y="13">MÓDULO PRO · PRO-LINK</text>
+    <text class="titulo-tabela" x="10" y="27">pro_mensagens</text>
+    <text class="coluna pk" x="10" y="46.0">PK msg_id</text>
+    <text class="coluna-tipo" x="258" y="46.0" text-anchor="end">BIGINT ·</text>
+    <text class="coluna fk" x="10" y="59.5">FK msg_cnv_id</text>
+    <text class="coluna-tipo" x="258" y="59.5" text-anchor="end">INT ·</text>
+    <text class="coluna fk" x="10" y="73.0">FK msg_usu_id</text>
+    <text class="coluna-tipo" x="258" y="73.0" text-anchor="end">INT ·</text>
+    <text class="coluna" x="10" y="86.5">msg_conteudo</text>
+    <text class="coluna-tipo" x="258" y="86.5" text-anchor="end">TEXT ·</text>
+    <text class="coluna" x="10" y="100.0">msg_dt_leitura</text>
+    <text class="coluna-tipo" x="258" y="100.0" text-anchor="end">DATETIME</text>
+    <text class="coluna" x="10" y="113.5">msg_moderacao</text>
+    <text class="coluna-tipo" x="258" y="113.5" text-anchor="end">VARCHAR(20) ·</text>
+    <text class="coluna" x="10" y="127.0">msg_dt_registro</text>
+    <text class="coluna-tipo" x="258" y="127.0" text-anchor="end">DATETIME ·</text>
+    <text class="coluna" x="10" y="140.5">msg_log</text>
+    <text class="coluna-tipo" x="258" y="140.5" text-anchor="end">VARCHAR(255)</text>
+    <text class="coluna" x="10" y="154.0">msg_status</text>
+    <text class="coluna-tipo" x="258" y="154.0" text-anchor="end">CHAR(1) ·</text>
+  </g>
+  <g transform="translate(1640.0, 454.0)">
+    <rect width="268" height="244.5" rx="7" fill="#ffffff" stroke="#cfd8dc" stroke-width="1"/>
+    <path d="M 0 7 A 7 7 0 0 1 7 0 L 261 0 A 7 7 0 0 1 268 7 L 268 34 L 0 34 Z" fill="#1a7f4b"/>
+    <text class="modulo-tabela" x="10" y="13">MÓDULO PRO · PRO-LINK</text>
+    <text class="titulo-tabela" x="10" y="27">pro_denuncias</text>
+    <text class="coluna pk" x="10" y="46.0">PK den_id</text>
+    <text class="coluna-tipo" x="258" y="46.0" text-anchor="end">INT ·</text>
+    <text class="coluna fk" x="10" y="59.5">FK den_usu_id</text>
+    <text class="coluna-tipo" x="258" y="59.5" text-anchor="end">INT</text>
+    <text class="coluna" x="10" y="73.0">den_entidade</text>
+    <text class="coluna-tipo" x="258" y="73.0" text-anchor="end">VARCHAR(40) ·</text>
+    <text class="coluna" x="10" y="86.5">den_entidade_id</text>
+    <text class="coluna-tipo" x="258" y="86.5" text-anchor="end">INT ·</text>
+    <text class="coluna" x="10" y="100.0">den_motivo</text>
+    <text class="coluna-tipo" x="258" y="100.0" text-anchor="end">VARCHAR(40) ·</text>
+    <text class="coluna" x="10" y="113.5">den_descricao</text>
+    <text class="coluna-tipo" x="258" y="113.5" text-anchor="end">TEXT</text>
+    <text class="coluna" x="10" y="127.0">den_situacao</text>
+    <text class="coluna-tipo" x="258" y="127.0" text-anchor="end">VARCHAR(20) ·</text>
+    <text class="coluna fk" x="10" y="140.5">FK den_usu_analista</text>
+    <text class="coluna-tipo" x="258" y="140.5" text-anchor="end">INT</text>
+    <text class="coluna" x="10" y="154.0">den_parecer</text>
+    <text class="coluna-tipo" x="258" y="154.0" text-anchor="end">TEXT</text>
+    <text class="coluna" x="10" y="167.5">den_providencia</text>
+    <text class="coluna-tipo" x="258" y="167.5" text-anchor="end">VARCHAR(40)</text>
+    <text class="coluna" x="10" y="181.0">den_dt_analise</text>
+    <text class="coluna-tipo" x="258" y="181.0" text-anchor="end">DATETIME</text>
+    <text class="coluna" x="10" y="194.5">den_dt_registro</text>
+    <text class="coluna-tipo" x="258" y="194.5" text-anchor="end">DATETIME ·</text>
+    <text class="coluna" x="10" y="208.0">den_dt_alteracao</text>
+    <text class="coluna-tipo" x="258" y="208.0" text-anchor="end">DATETIME</text>
+    <text class="coluna" x="10" y="221.5">den_log</text>
+    <text class="coluna-tipo" x="258" y="221.5" text-anchor="end">VARCHAR(255)</text>
+    <text class="coluna" x="10" y="235.0">den_status</text>
+    <text class="coluna-tipo" x="258" y="235.0" text-anchor="end">CHAR(1) ·</text>
+  </g>
+  <text class="cabecalho-titulo" x="40" y="1314">CREA Pro-Link — Modelo Entidade-Relacionamento</text>
+  <text class="cabecalho-sub" x="40" y="1332">23 tabelas · 34 chaves estrangeiras · MariaDB 10.11 · utf8mb4_unicode_ci · gerado a partir de _arq/estrutura.sql</text>
+  <g transform="translate(40, 1348)">
+    <text class="legenda-titulo" x="0" y="0">Legenda</text>
+    <text class="legenda pk" x="78" y="0">PK</text>
+    <text class="legenda" x="102" y="0">chave primária</text>
+    <text class="legenda fk" x="198" y="0">FK</text>
+    <text class="legenda" x="222" y="0">chave estrangeira</text>
+    <text class="legenda" x="340" y="0">· ao lado do tipo = NOT NULL</text>
+    <text class="legenda" x="540" y="0">seta aponta para a tabela referenciada</text>
+    <text class="legenda" x="820" y="0">todas as tabelas possuem xxx_dt_registro, xxx_log e xxx_status (exclusão lógica)</text>
+  </g>
+</svg>
