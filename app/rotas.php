@@ -162,6 +162,10 @@ $roteador->post('/admin/moderacao/demandas/{id}',     'Admin\ControladorModeraca
 $roteador->get('/admin/moderacao/perfis',             'Admin\ControladorModeracao', 'perfis',        $SOMENTE_ADMIN);
 $roteador->post('/admin/moderacao/perfis/{id}',       'Admin\ControladorModeracao', 'moderarPerfil', $SOMENTE_ADMIN);
 
+$roteador->get('/admin/auditoria',          'Admin\ControladorAuditoria', 'consultar', $SOMENTE_ADMIN);
+$roteador->get('/admin/auditoria/exportar', 'Admin\ControladorAuditoria', 'exportar',  $SOMENTE_ADMIN);
+$roteador->get('/admin/auditoria/api',      'Admin\ControladorAuditoria', 'integracao', $SOMENTE_ADMIN);
+
 // -----------------------------------------------------------------------------
 // Endpoints JSON de apoio à interface
 // -----------------------------------------------------------------------------

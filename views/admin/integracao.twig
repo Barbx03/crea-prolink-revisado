@@ -1,0 +1,128 @@
+{% extends 'layout/base.twig' %}
+
+{% block titulo %}Integração CREA-AM | Administração | {{ app.nome }}{% endblock %}
+{% block robots %}noindex, nofollow{% endblock %}
+
+{% block conteudo %}
+    <h1 class="h4 mb-1">Consultas à API oficial do CREA-AM</h1>
+    <p class="text-muted small mb-4">
+        Registro de todas as chamadas à API oficial do desafio, com duração e resultado.
+        Identificadores consultados são mascarados: a trilha não guarda CPF nem CNPJ completo.
+    </p>
+
+    <div class="row g-4">
+        <div class="col-lg-3">
+            {% include 'admin/_menu.twig' with { secao: '/admin/auditoria/api' } only %}
+
+            {% if resumo is not empty %}
+                <div class="card">
+                    <div class="card-header card-cabecalho-simples">Por recurso</div>
+                    <ul class="list-group list-group-flush">
+                        {% for linha in resumo %}
+                            <li class="list-group-item small">
+                                <span class="fw-semibold d-block">{{ linha.apc_recurso|rotulo }}</span>
+                                <span class="text-muted">
+                                    {{ linha.total }} consulta(s) ·
+                                    {{ linha.sucessos }} ok ·
+                                    {{ linha.falhas }} falha(s)
+                                    <span class="d-block">média {{ linha.duracao_media }} ms</span>
+                                    <span class="d-block">última {{ linha.ultima_consulta|desde }}</span>
+                                </span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="col-lg-9">
+            <form method="get" class="card mb-3">
+                <div class="card-body d-flex flex-wrap gap-2 align-items-end">
+                    <div>
+                        <label class="form-label small mb-1" for="recurso">Recurso</label>
+                        <select class="form-select form-select-sm" id="recurso" name="recurso">
+                            <option value="">Todos</option>
+                            {% for recurso in recursos %}
+                                <option value="{{ recurso }}" {{ filtros.recurso == recurso ? 'selected' : '' }}>
+                                    {{ recurso|rotulo }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="form-label small mb-1" for="sucesso">Resultado</label>
+                        <select class="form-select form-select-sm" id="sucesso" name="sucesso">
+                            <option value="">Todos</option>
+                            <option value="S" {{ filtros.sucesso == 'S' ? 'selected' : '' }}>Sucesso</option>
+                            <option value="N" {{ filtros.sucesso == 'N' ? 'selected' : '' }}>Falha</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-sm">Filtrar</button>
+                    <a class="btn btn-outline-secondary btn-sm" href="{{ url('/admin/auditoria/api') }}">Limpar</a>
+                </div>
+            </form>
+
+            {% if itens is empty %}
+                {% include 'partials/lista-vazia.twig' with {
+                    icone: 'plug',
+                    titulo: 'Nenhuma consulta registrada',
+                    mensagem: 'Assim que a integração for configurada e a primeira consulta acontecer, ela aparece aqui com duração, resultado e recurso consultado.'
+                } only %}
+
+                <div class="text-center">
+                    <a class="btn btn-outline-primary" href="{{ url('/admin/configuracoes') }}">
+                        Configurar a integração
+                    </a>
+                </div>
+            {% else %}
+                <div class="card">
+                    <div class="table-responsive">
+                        <table class="table table-sm tabela-auditoria table-hover mb-0">
+                            <caption class="small px-3">
+                                {{ paginacao.total|numero }} consulta(s) registrada(s).
+                            </caption>
+                            <thead>
+                                <tr>
+                                    <th scope="col">Data e hora</th>
+                                    <th scope="col">Recurso</th>
+                                    <th scope="col">Parâmetros</th>
+                                    <th scope="col">Resultado</th>
+                                    <th scope="col">Duração</th>
+                                    <th scope="col">Solicitante</th>
+                                    <th scope="col">Mensagem</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for consulta in itens %}
+                                    <tr>
+                                        <td class="text-nowrap">{{ consulta.apc_dt_registro|data_hora }}</td>
+                                        <td><code>{{ consulta.apc_recurso }}</code></td>
+                                        <td class="small">{{ consulta.apc_parametros|default('—') }}</td>
+                                        <td>
+                                            {% if consulta.apc_sucesso == 'S' %}
+                                                <span class="text-success small fw-semibold">
+                                                    HTTP {{ consulta.apc_http_status }}
+                                                </span>
+                                            {% else %}
+                                                <span class="text-danger small fw-semibold">
+                                                    {{ consulta.apc_http_status ? 'HTTP ' ~ consulta.apc_http_status : 'sem resposta' }}
+                                                </span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="small text-nowrap">{{ consulta.apc_duracao_ms }} ms</td>
+                                        <td class="small">{{ consulta.usu_nome|default('sistema') }}</td>
+                                        <td class="small">{{ consulta.apc_mensagem|default('—')|slice(0, 90) }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                {% include 'partials/paginacao.twig' with { paginacao: paginacao } only %}
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

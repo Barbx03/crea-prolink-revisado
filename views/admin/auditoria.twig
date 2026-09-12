@@ -1,0 +1,215 @@
+{% extends 'layout/base.twig' %}
+
+{% block titulo %}Trilha de auditoria | Administração | {{ app.nome }}{% endblock %}
+{% block robots %}noindex, nofollow{% endblock %}
+
+{% block conteudo %}
+    <div class="d-flex flex-wrap justify-content-between align-items-end gap-2 mb-4">
+        <div>
+            <h1 class="h4 mb-1">Trilha de auditoria</h1>
+            <p class="text-muted small mb-0">
+                {{ paginacao.total|numero }} evento(s) registrado(s). A trilha é somente leitura:
+                a aplicação nunca altera nem remove registros de auditoria.
+            </p>
+        </div>
+
+        <a class="btn btn-outline-primary btn-sm" href="{{ url('/admin/auditoria/exportar') }}?{{ query_com({}) }}">
+            <i class="bi bi-download" aria-hidden="true"></i>
+            Exportar resultado em CSV
+        </a>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-3">
+            {% include 'admin/_menu.twig' with { secao: '/admin/auditoria' } only %}
+
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h2 class="h6">Panorama</h2>
+                    <ul class="list-unstyled small mb-0">
+                        <li class="d-flex justify-content-between border-bottom py-1">
+                            <span>Total de eventos</span><strong>{{ indicadores.total|numero }}</strong>
+                        </li>
+                        <li class="d-flex justify-content-between border-bottom py-1">
+                            <span>Hoje</span><strong>{{ indicadores.hoje|numero }}</strong>
+                        </li>
+                        <li class="d-flex justify-content-between border-bottom py-1">
+                            <span>Críticos</span>
+                            <strong class="severidade-CRITICO">{{ indicadores.criticos|numero }}</strong>
+                        </li>
+                        <li class="d-flex justify-content-between border-bottom py-1">
+                            <span>Alertas</span>
+                            <strong class="severidade-ALERTA">{{ indicadores.alertas|numero }}</strong>
+                        </li>
+                        <li class="d-flex justify-content-between py-1">
+                            <span>Falhas de acesso (24h)</span>
+                            <strong>{{ indicadores.falhas_login_24h|numero }}</strong>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            {% if resumo is not empty %}
+                <div class="card">
+                    <div class="card-header card-cabecalho-simples">Ações nos últimos 30 dias</div>
+                    <ul class="list-group list-group-flush">
+                        {% for linha in resumo|slice(0, 12) %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center small">
+                                <a href="{{ url('/admin/auditoria?acao=' ~ linha.aud_acao) }}">
+                                    <code>{{ linha.aud_acao }}</code>
+                                </a>
+                                <span class="badge text-bg-light border">{{ linha.total }}</span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="col-lg-9">
+            <form method="get" class="card mb-3">
+                <div class="card-body">
+                    <div class="row g-2 align-items-end">
+                        <div class="col-md-3">
+                            <label class="form-label small mb-1" for="acao">Ação</label>
+                            <select class="form-select form-select-sm" id="acao" name="acao">
+                                <option value="">Todas</option>
+                                {% for acao in acoes %}
+                                    <option value="{{ acao }}" {{ filtros.acao == acao ? 'selected' : '' }}>{{ acao }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label small mb-1" for="severidade">Severidade</label>
+                            <select class="form-select form-select-sm" id="severidade" name="severidade">
+                                <option value="">Todas</option>
+                                {% for valor in ['INFO', 'ALERTA', 'CRITICO'] %}
+                                    <option value="{{ valor }}" {{ filtros.severidade == valor ? 'selected' : '' }}>
+                                        {{ valor|capitalize }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label small mb-1" for="entidade">Entidade</label>
+                            <input type="text" class="form-control form-control-sm" id="entidade" name="entidade"
+                                   value="{{ filtros.entidade }}" placeholder="Ex.: pro_demandas">
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label small mb-1" for="entidade_id">Registro</label>
+                            <input type="text" class="form-control form-control-sm" id="entidade_id" name="entidade_id"
+                                   value="{{ filtros.entidade_id }}">
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label small mb-1" for="data_inicio">De</label>
+                            <input type="date" class="form-control form-control-sm" id="data_inicio" name="data_inicio"
+                                   value="{{ filtros.data_inicio }}">
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label small mb-1" for="data_fim">Até</label>
+                            <input type="date" class="form-control form-control-sm" id="data_fim" name="data_fim"
+                                   value="{{ filtros.data_fim }}">
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label small mb-1" for="termo">Descrição, rota ou IP</label>
+                            <input type="search" class="form-control form-control-sm" id="termo" name="termo"
+                                   value="{{ filtros.termo }}">
+                        </div>
+
+                        <div class="col-md-2">
+                            <label class="form-label small mb-1" for="usuario_id">Usuário</label>
+                            <input type="number" class="form-control form-control-sm" id="usuario_id" name="usuario_id"
+                                   value="{{ filtros.usuario_id ?: '' }}" min="1">
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-2 mt-3">
+                        <button type="submit" class="btn btn-primary btn-sm">Consultar</button>
+                        <a class="btn btn-outline-secondary btn-sm" href="{{ url('/admin/auditoria') }}">Limpar</a>
+                    </div>
+                </div>
+            </form>
+
+            {% if itens is empty %}
+                {% include 'partials/lista-vazia.twig' with {
+                    icone: 'clipboard-data',
+                    titulo: 'Nenhum evento encontrado',
+                    mensagem: 'Nenhum registro de auditoria corresponde aos filtros informados.'
+                } only %}
+            {% else %}
+                <div class="card">
+                    <div class="table-responsive">
+                        <table class="table table-sm tabela-auditoria table-hover mb-0">
+                            <caption class="small px-3">
+                                Eventos em ordem decrescente de data. Valores sensíveis são mascarados
+                                antes da gravação.
+                            </caption>
+                            <thead>
+                                <tr>
+                                    <th scope="col">Data e hora</th>
+                                    <th scope="col">Usuário</th>
+                                    <th scope="col">Ação</th>
+                                    <th scope="col">Registro</th>
+                                    <th scope="col">Descrição</th>
+                                    <th scope="col">Origem</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for evento in itens %}
+                                    <tr>
+                                        <td class="text-nowrap">{{ evento.aud_dt_registro|data_hora }}</td>
+                                        <td>
+                                            {% if evento.usu_nome %}
+                                                <a href="{{ url('/admin/usuarios/' ~ evento.aud_usu_id) }}">
+                                                    {{ evento.usu_nome }}
+                                                </a>
+                                                <span class="d-block text-muted">{{ evento.usu_perfil|rotulo }}</span>
+                                            {% else %}
+                                                <span class="text-muted">anônimo</span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="text-nowrap">
+                                            <code class="severidade-{{ evento.aud_severidade }}">{{ evento.aud_acao }}</code>
+                                        </td>
+                                        <td class="text-nowrap">
+                                            {% if evento.aud_entidade %}
+                                                <code>{{ evento.aud_entidade }}</code>
+                                                {{ evento.aud_entidade_id ? '#' ~ evento.aud_entidade_id : '' }}
+                                            {% else %}
+                                                —
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {{ evento.aud_descricao|default('—') }}
+                                            {% if evento.aud_dados_depois %}
+                                                <details class="mt-1">
+                                                    <summary class="small text-muted">estado alterado</summary>
+                                                    <pre class="mb-0 mt-1" style="font-size: 0.72rem; white-space: pre-wrap;">antes: {{ evento.aud_dados_antes|default('—') }}
+depois: {{ evento.aud_dados_depois }}</pre>
+                                                </details>
+                                            {% endif %}
+                                        </td>
+                                        <td class="text-nowrap small">
+                                            {{ evento.aud_ip_origem|default('—') }}
+                                            {% if evento.aud_rota %}
+                                                <span class="d-block text-muted">{{ evento.aud_rota|slice(0, 30) }}</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                {% include 'partials/paginacao.twig' with { paginacao: paginacao } only %}
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
