@@ -1,0 +1,165 @@
+{% extends 'layout/base.twig' %}
+
+{% block titulo %}Demandas | Administração | {{ app.nome }}{% endblock %}
+{% block robots %}noindex, nofollow{% endblock %}
+
+{% block conteudo %}
+    <h1 class="h4 mb-1">Moderação de demandas</h1>
+    <p class="text-muted small mb-4">{{ paginacao.total|numero }} demanda(s) na base.</p>
+
+    <div class="row g-4">
+        <div class="col-lg-3">
+            {% include 'admin/_menu.twig' with { secao: '/admin/moderacao' } only %}
+
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="h6">Situação geral</h2>
+                    <ul class="list-unstyled small mb-0">
+                        <li class="d-flex justify-content-between border-bottom py-1">
+                            <span>Publicadas</span><strong>{{ indicadores.publicadas }}</strong>
+                        </li>
+                        <li class="d-flex justify-content-between border-bottom py-1">
+                            <span>Rascunhos</span><strong>{{ indicadores.rascunhos }}</strong>
+                        </li>
+                        <li class="d-flex justify-content-between border-bottom py-1">
+                            <span>Encerradas</span><strong>{{ indicadores.encerradas }}</strong>
+                        </li>
+                        <li class="d-flex justify-content-between border-bottom py-1">
+                            <span>Em moderação</span><strong>{{ indicadores.em_moderacao }}</strong>
+                        </li>
+                        <li class="d-flex justify-content-between py-1">
+                            <span>Excluídas</span><strong>{{ indicadores.excluidas }}</strong>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-9">
+            <form method="get" class="card mb-3">
+                <div class="card-body">
+                    <div class="row g-2 align-items-end">
+                        <div class="col-md-4">
+                            <label class="form-label small mb-1" for="termo">Título</label>
+                            <input type="search" class="form-control form-control-sm" id="termo" name="termo"
+                                   value="{{ filtros.termo }}">
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label small mb-1" for="situacao">Situação</label>
+                            <select class="form-select form-select-sm" id="situacao" name="situacao">
+                                <option value="">Todas</option>
+                                {% for valor in ['RASCUNHO', 'PUBLICADA', 'ENCERRADA', 'CANCELADA'] %}
+                                    <option value="{{ valor }}" {{ filtros.situacao == valor ? 'selected' : '' }}>
+                                        {{ valor|rotulo }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label small mb-1" for="moderacao">Moderação</label>
+                            <select class="form-select form-select-sm" id="moderacao" name="moderacao">
+                                <option value="">Todas</option>
+                                {% for valor in ['APROVADO', 'EM_ANALISE', 'REPROVADO'] %}
+                                    <option value="{{ valor }}" {{ filtros.moderacao == valor ? 'selected' : '' }}>
+                                        {{ valor|rotulo }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="col-md-2">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="incluir_excluidas" value="1"
+                                       id="incluir_excluidas" {{ filtros.incluir_excluidas ? 'checked' : '' }}>
+                                <label class="form-check-label small" for="incluir_excluidas">
+                                    Incluir excluídas
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-2 mt-3">
+                        <button type="submit" class="btn btn-primary btn-sm">Filtrar</button>
+                        <a class="btn btn-outline-secondary btn-sm" href="{{ url('/admin/moderacao/demandas') }}">Limpar</a>
+                    </div>
+                </div>
+            </form>
+
+            {% if itens is empty %}
+                {% include 'partials/lista-vazia.twig' with {
+                    icone: 'clipboard',
+                    titulo: 'Nenhuma demanda encontrada',
+                    mensagem: 'Não há demandas que atendam aos filtros aplicados.'
+                } only %}
+            {% else %}
+                {% for demanda in itens %}
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <div class="d-flex flex-wrap justify-content-between gap-2 mb-2">
+                                <div class="min-w-0">
+                                    <h2 class="h6 mb-1">
+                                        <a href="{{ url('/demandas/' ~ demanda.dem_id) }}">{{ demanda.dem_titulo }}</a>
+                                    </h2>
+                                    <p class="small text-muted mb-0">
+                                        {{ demanda.autor_nome }} ({{ demanda.autor_email }}) ·
+                                        {{ demanda.dem_modalidade|rotulo }} ·
+                                        {{ demanda.dem_cidade }}{{ demanda.dem_cidade and demanda.dem_uf ? '/' : '' }}{{ demanda.dem_uf }} ·
+                                        {{ demanda.dem_total_interesses }} interessado(s)
+                                    </p>
+                                </div>
+
+                                <div class="text-end">
+                                    <span class="badge text-bg-light border">{{ demanda.dem_situacao|rotulo }}</span>
+                                    <span class="badge {{ demanda.dem_moderacao == 'APROVADO' ? 'text-bg-success' : 'text-bg-warning' }}">
+                                        {{ demanda.dem_moderacao|rotulo }}
+                                    </span>
+                                    {% if demanda.dem_status == 'X' %}
+                                        <span class="badge text-bg-secondary">excluída</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <p class="small mb-3">{{ demanda.dem_escopo|slice(0, 260) }}{{ demanda.dem_escopo|length > 260 ? '…' : '' }}</p>
+
+                            {% if demanda.dem_moderacao_motivo %}
+                                <p class="small text-warning mb-3">
+                                    Motivo registrado: {{ demanda.dem_moderacao_motivo }}
+                                </p>
+                            {% endif %}
+
+                            <form method="post" action="{{ url('/admin/moderacao/demandas/' ~ demanda.dem_id) }}">
+                                {{ campo_csrf() }}
+                                <div class="row g-2 align-items-end">
+                                    <div class="col-md-3">
+                                        <label class="form-label small mb-1" for="mod-{{ demanda.dem_id }}">Moderação</label>
+                                        <select class="form-select form-select-sm" id="mod-{{ demanda.dem_id }}" name="moderacao">
+                                            {% for valor in ['APROVADO', 'EM_ANALISE', 'REPROVADO'] %}
+                                                <option value="{{ valor }}" {{ demanda.dem_moderacao == valor ? 'selected' : '' }}>
+                                                    {{ valor|rotulo }}
+                                                </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="col-md-7">
+                                        <label class="form-label small mb-1" for="mot-{{ demanda.dem_id }}">
+                                            Motivo (obrigatório ao reprovar)
+                                        </label>
+                                        <input type="text" class="form-control form-control-sm"
+                                               id="mot-{{ demanda.dem_id }}" name="motivo" maxlength="255">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <button type="submit" class="btn btn-sm btn-primary w-100">Aplicar</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                {% endfor %}
+
+                {% include 'partials/paginacao.twig' with { paginacao: paginacao } only %}
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

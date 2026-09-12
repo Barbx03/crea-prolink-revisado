@@ -153,6 +153,15 @@ $roteador->post('/admin/usuarios/{id}/desbloquear', 'Admin\ControladorUsuarios',
 $roteador->post('/admin/usuarios/{id}/perfil',     'Admin\ControladorUsuarios', 'alterarPerfil', $SOMENTE_ADMIN);
 $roteador->post('/admin/usuarios/{id}/excluir',    'Admin\ControladorUsuarios', 'excluir',     $SOMENTE_ADMIN);
 
+$roteador->get('/admin/moderacao',                    'Admin\ControladorModeracao', 'painel',        $SOMENTE_ADMIN);
+$roteador->get('/admin/moderacao/denuncias',          'Admin\ControladorModeracao', 'denuncias',     $SOMENTE_ADMIN);
+$roteador->get('/admin/moderacao/denuncias/{id}',     'Admin\ControladorModeracao', 'verDenuncia',   $SOMENTE_ADMIN);
+$roteador->post('/admin/moderacao/denuncias/{id}',    'Admin\ControladorModeracao', 'julgarDenuncia', $SOMENTE_ADMIN);
+$roteador->get('/admin/moderacao/demandas',           'Admin\ControladorModeracao', 'demandas',      $SOMENTE_ADMIN);
+$roteador->post('/admin/moderacao/demandas/{id}',     'Admin\ControladorModeracao', 'moderarDemanda', $SOMENTE_ADMIN);
+$roteador->get('/admin/moderacao/perfis',             'Admin\ControladorModeracao', 'perfis',        $SOMENTE_ADMIN);
+$roteador->post('/admin/moderacao/perfis/{id}',       'Admin\ControladorModeracao', 'moderarPerfil', $SOMENTE_ADMIN);
+
 // -----------------------------------------------------------------------------
 // Endpoints JSON de apoio à interface
 // -----------------------------------------------------------------------------

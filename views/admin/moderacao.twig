@@ -1,0 +1,161 @@
+{% extends 'layout/base.twig' %}
+
+{% block titulo %}Moderação | Administração | {{ app.nome }}{% endblock %}
+{% block robots %}noindex, nofollow{% endblock %}
+
+{% block conteudo %}
+    <h1 class="h4 mb-1">Moderação</h1>
+    <p class="text-muted small mb-4">
+        Denúncias em aberto, conteúdo em análise e histórico das providências tomadas.
+    </p>
+
+    <div class="row g-4">
+        <div class="col-lg-3">
+            {% include 'admin/_menu.twig' with { secao: '/admin/moderacao' } only %}
+        </div>
+
+        <div class="col-lg-9">
+            <div class="row g-2 mb-4">
+                {% set blocos = [
+                    { valor: denuncias.abertas, rotulo: 'Abertas' },
+                    { valor: denuncias.em_analise, rotulo: 'Em análise' },
+                    { valor: denuncias.procedentes, rotulo: 'Procedentes' },
+                    { valor: denuncias.improcedentes, rotulo: 'Improcedentes' }
+                ] %}
+                {% for bloco in blocos %}
+                    <div class="col-6 col-md-3">
+                        <div class="indicador text-center">
+                            <div class="valor">{{ bloco.valor|default(0) }}</div>
+                            <div class="rotulo">{{ bloco.rotulo }}</div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header card-cabecalho-simples d-flex justify-content-between align-items-center">
+                    <span>Denúncias aguardando análise</span>
+                    <a class="small" href="{{ url('/admin/moderacao/denuncias') }}">Ver todas</a>
+                </div>
+                <div class="card-body">
+                    {% if abertas is empty %}
+                        <p class="small text-muted mb-0">Nenhuma denúncia em aberto.</p>
+                    {% else %}
+                        <div class="table-responsive">
+                            <table class="table table-sm align-middle mb-0">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Conteúdo</th>
+                                        <th scope="col">Motivo</th>
+                                        <th scope="col">Registrada</th>
+                                        <th scope="col"><span class="visually-hidden">Ações</span></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for denuncia in abertas %}
+                                        <tr>
+                                            <td>
+                                                {{ denuncia.den_entidade|rotulo }} #{{ denuncia.den_entidade_id }}
+                                                <span class="d-block small text-muted">
+                                                    por {{ denuncia.denunciante_nome|default('anônimo') }}
+                                                </span>
+                                            </td>
+                                            <td class="small">{{ denuncia.den_motivo|rotulo }}</td>
+                                            <td class="small text-muted text-nowrap">{{ denuncia.den_dt_registro|desde }}</td>
+                                            <td class="text-end">
+                                                <a class="btn btn-sm btn-primary"
+                                                   href="{{ url('/admin/moderacao/denuncias/' ~ denuncia.den_id) }}">
+                                                    Analisar
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row g-4 mb-4">
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <div class="card-header card-cabecalho-simples d-flex justify-content-between align-items-center">
+                            <span>Demandas em análise</span>
+                            <a class="small" href="{{ url('/admin/moderacao/demandas') }}">Gerenciar</a>
+                        </div>
+                        <div class="card-body">
+                            {% if demandas_analise is empty %}
+                                <p class="small text-muted mb-0">Nenhuma demanda em análise.</p>
+                            {% else %}
+                                <ul class="list-unstyled small mb-0">
+                                    {% for demanda in demandas_analise %}
+                                        <li class="border-bottom py-1">
+                                            <a href="{{ url('/demandas/' ~ demanda.dem_id) }}">{{ demanda.dem_titulo|slice(0, 60) }}</a>
+                                            <span class="d-block text-muted">por {{ demanda.autor_nome }}</span>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <div class="card-header card-cabecalho-simples d-flex justify-content-between align-items-center">
+                            <span>Perfis em análise</span>
+                            <a class="small" href="{{ url('/admin/moderacao/perfis') }}">Gerenciar</a>
+                        </div>
+                        <div class="card-body">
+                            {% if perfis_analise is empty %}
+                                <p class="small text-muted mb-0">Nenhum perfil em análise.</p>
+                            {% else %}
+                                <ul class="list-unstyled small mb-0">
+                                    {% for perfil in perfis_analise %}
+                                        <li class="border-bottom py-1">
+                                            <a href="{{ url('/profissionais/' ~ perfil.prf_id) }}">{{ perfil.usu_nome }}</a>
+                                            <span class="d-block text-muted">{{ perfil.prf_moderacao|rotulo }}</span>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header card-cabecalho-simples">Últimas providências de moderação</div>
+                <div class="table-responsive">
+                    <table class="table table-sm tabela-auditoria mb-0">
+                        <caption class="small px-3">
+                            Toda ação de moderação é registrada em trilha de auditoria, com autor e horário.
+                        </caption>
+                        <thead>
+                            <tr>
+                                <th scope="col">Quando</th>
+                                <th scope="col">Moderador</th>
+                                <th scope="col">Registro afetado</th>
+                                <th scope="col">Descrição</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for acao in ultimas_acoes %}
+                                <tr>
+                                    <td class="text-nowrap">{{ acao.aud_dt_registro|data_hora }}</td>
+                                    <td>{{ acao.usu_nome|default('sistema') }}</td>
+                                    <td class="small">
+                                        <code>{{ acao.aud_entidade }}</code>
+                                        {{ acao.aud_entidade_id ? '#' ~ acao.aud_entidade_id : '' }}
+                                    </td>
+                                    <td class="small">{{ acao.aud_descricao|default('—')|slice(0, 90) }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

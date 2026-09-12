@@ -1,0 +1,122 @@
+{% extends 'layout/base.twig' %}
+
+{% block titulo %}Denúncias | Administração | {{ app.nome }}{% endblock %}
+{% block robots %}noindex, nofollow{% endblock %}
+
+{% block conteudo %}
+    <h1 class="h4 mb-1">Denúncias</h1>
+    <p class="text-muted small mb-4">{{ paginacao.total|numero }} denúncia(s) registrada(s).</p>
+
+    <div class="row g-4">
+        <div class="col-lg-3">
+            {% include 'admin/_menu.twig' with { secao: '/admin/moderacao/denuncias' } only %}
+        </div>
+
+        <div class="col-lg-9">
+            <form method="get" class="card mb-3">
+                <div class="card-body">
+                    <div class="row g-2 align-items-end">
+                        <div class="col-md-4">
+                            <label class="form-label small mb-1" for="situacao">Situação</label>
+                            <select class="form-select form-select-sm" id="situacao" name="situacao">
+                                <option value="">Todas</option>
+                                {% for valor in ['ABERTA', 'EM_ANALISE', 'PROCEDENTE', 'IMPROCEDENTE'] %}
+                                    <option value="{{ valor }}" {{ filtros.situacao == valor ? 'selected' : '' }}>
+                                        {{ valor|rotulo }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label small mb-1" for="entidade">Tipo de conteúdo</label>
+                            <select class="form-select form-select-sm" id="entidade" name="entidade">
+                                <option value="">Todos</option>
+                                {% for valor in entidades %}
+                                    <option value="{{ valor }}" {{ filtros.entidade == valor ? 'selected' : '' }}>
+                                        {{ valor|rotulo }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label small mb-1" for="motivo">Motivo</label>
+                            <select class="form-select form-select-sm" id="motivo" name="motivo">
+                                <option value="">Todos</option>
+                                {% for valor in motivos %}
+                                    <option value="{{ valor }}" {{ filtros.motivo == valor ? 'selected' : '' }}>
+                                        {{ valor|rotulo }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-2 mt-3">
+                        <button type="submit" class="btn btn-primary btn-sm">Filtrar</button>
+                        <a class="btn btn-outline-secondary btn-sm" href="{{ url('/admin/moderacao/denuncias') }}">Limpar</a>
+                    </div>
+                </div>
+            </form>
+
+            {% if itens is empty %}
+                {% include 'partials/lista-vazia.twig' with {
+                    icone: 'flag',
+                    titulo: 'Nenhuma denúncia encontrada',
+                    mensagem: 'Não há denúncias que atendam aos filtros aplicados.'
+                } only %}
+            {% else %}
+                <div class="card">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Conteúdo</th>
+                                    <th scope="col">Motivo</th>
+                                    <th scope="col">Situação</th>
+                                    <th scope="col">Providência</th>
+                                    <th scope="col">Registrada</th>
+                                    <th scope="col"><span class="visually-hidden">Ações</span></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for denuncia in itens %}
+                                    <tr>
+                                        <td>
+                                            <span class="fw-semibold">
+                                                {{ denuncia.den_entidade|rotulo }} #{{ denuncia.den_entidade_id }}
+                                            </span>
+                                            <span class="d-block small text-muted">
+                                                por {{ denuncia.denunciante_nome|default('anônimo') }}
+                                                {% if denuncia.analista_nome %}
+                                                    · analista: {{ denuncia.analista_nome }}
+                                                {% endif %}
+                                            </span>
+                                        </td>
+                                        <td class="small">{{ denuncia.den_motivo|rotulo }}</td>
+                                        <td>
+                                            <span class="badge {{ denuncia.den_situacao == 'ABERTA' ? 'text-bg-danger' : (denuncia.den_situacao == 'EM_ANALISE' ? 'text-bg-warning' : 'text-bg-light border') }}">
+                                                {{ denuncia.den_situacao|rotulo }}
+                                            </span>
+                                        </td>
+                                        <td class="small">{{ denuncia.den_providencia ? denuncia.den_providencia|rotulo : '—' }}</td>
+                                        <td class="small text-muted text-nowrap">{{ denuncia.den_dt_registro|data }}</td>
+                                        <td class="text-end">
+                                            <a class="btn btn-sm btn-outline-primary"
+                                               href="{{ url('/admin/moderacao/denuncias/' ~ denuncia.den_id) }}">
+                                                {{ denuncia.den_situacao in ['ABERTA', 'EM_ANALISE'] ? 'Analisar' : 'Ver' }}
+                                            </a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                {% include 'partials/paginacao.twig' with { paginacao: paginacao } only %}
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

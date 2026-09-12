@@ -1,0 +1,216 @@
+{% extends 'layout/base.twig' %}
+
+{% block titulo %}Denúncia {{ denuncia.den_id }} | Administração | {{ app.nome }}{% endblock %}
+{% block robots %}noindex, nofollow{% endblock %}
+
+{% block conteudo %}
+    <nav aria-label="Trilha de navegação">
+        <ol class="breadcrumb small">
+            <li class="breadcrumb-item"><a href="{{ url('/admin') }}">Administração</a></li>
+            <li class="breadcrumb-item"><a href="{{ url('/admin/moderacao/denuncias') }}">Denúncias</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Denúncia {{ denuncia.den_id }}</li>
+        </ol>
+    </nav>
+
+    <h1 class="h4 mb-1">Análise de denúncia</h1>
+    <p class="text-muted small mb-4">
+        Registrada em {{ denuncia.den_dt_registro|data_hora }} ·
+        situação atual <strong>{{ denuncia.den_situacao|rotulo }}</strong>
+    </p>
+
+    <div class="row g-4">
+        <div class="col-lg-7">
+            <div class="card mb-4">
+                <div class="card-header card-cabecalho-simples">O que foi denunciado</div>
+                <div class="card-body">
+                    <dl class="row small mb-3">
+                        <dt class="col-sm-3">Motivo</dt>
+                        <dd class="col-sm-9">{{ denuncia.den_motivo|rotulo }}</dd>
+
+                        <dt class="col-sm-3">Tipo de conteúdo</dt>
+                        <dd class="col-sm-9">
+                            {{ denuncia.den_entidade|rotulo }} #{{ denuncia.den_entidade_id }}
+                            {% if alvo.link %}
+                                · <a href="{{ url(alvo.link) }}" target="_blank" rel="noopener">abrir</a>
+                            {% endif %}
+                        </dd>
+
+                        <dt class="col-sm-3">Denunciante</dt>
+                        <dd class="col-sm-9">
+                            {% if denunciante %}
+                                <a href="{{ url('/admin/usuarios/' ~ denunciante.usu_id) }}">{{ denunciante.usu_nome }}</a>
+                                <span class="text-muted">({{ denunciante.usu_email }})</span>
+                            {% else %}
+                                anônimo
+                            {% endif %}
+                        </dd>
+                    </dl>
+
+                    <h3 class="h6">Relato do denunciante</h3>
+                    <p class="small" style="white-space: pre-line;">{{ denuncia.den_descricao|default('Sem descrição.') }}</p>
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header card-cabecalho-simples">Conteúdo em questão</div>
+                <div class="card-body">
+                    <p class="fw-semibold mb-1">{{ alvo.titulo }}</p>
+                    <p class="small text-muted mb-0" style="white-space: pre-line;">
+                        {{ alvo.detalhe|default('Sem conteúdo textual associado.')|slice(0, 1500) }}
+                    </p>
+                </div>
+            </div>
+
+            {% if denuncia.den_situacao in ['ABERTA', 'EM_ANALISE'] %}
+                <form method="post" action="{{ url('/admin/moderacao/denuncias/' ~ denuncia.den_id) }}" class="card">
+                    {{ campo_csrf() }}
+                    <div class="card-body">
+                        <h2 class="h6">Decisão da moderação</h2>
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label obrigatorio" for="situacao">Julgamento</label>
+                                <select class="form-select {{ erros.situacao is defined ? 'is-invalid' : '' }}"
+                                        id="situacao" name="situacao" required>
+                                    <option value="">Selecione</option>
+                                    <option value="PROCEDENTE">Procedente</option>
+                                    <option value="IMPROCEDENTE">Improcedente</option>
+                                </select>
+                                {% include 'partials/campo-erro.twig' with { campo: 'situacao', erros: erros } only %}
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label" for="providencia">Providência</label>
+                                <select class="form-select {{ erros.providencia is defined ? 'is-invalid' : '' }}"
+                                        id="providencia" name="providencia">
+                                    {% for providencia in providencias %}
+                                        <option value="{{ providencia }}">{{ providencia|rotulo }}</option>
+                                    {% endfor %}
+                                </select>
+                                <div class="form-text">
+                                    Denúncia improcedente admite apenas "nenhuma providência".
+                                </div>
+                                {% include 'partials/campo-erro.twig' with { campo: 'providencia', erros: erros } only %}
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label obrigatorio" for="parecer">Parecer</label>
+                                <textarea class="form-control {{ erros.parecer is defined ? 'is-invalid' : '' }}"
+                                          id="parecer" name="parecer" rows="5" maxlength="4000" required data-contador
+                                          placeholder="Fundamente a decisão: o que foi verificado e por que a providência escolhida é adequada."></textarea>
+                                <div class="form-text">
+                                    Mínimo de 20 caracteres. O parecer é informado ao usuário afetado
+                                    e fica registrado na trilha de auditoria.
+                                </div>
+                                {% include 'partials/campo-erro.twig' with { campo: 'parecer', erros: erros } only %}
+                            </div>
+                        </div>
+
+                        <div class="alert alert-warning small mt-3">
+                            Providências de remoção aplicam exclusão lógica ao conteúdo: ele sai das
+                            telas operacionais, permanece na base e pode ser restaurado pela lixeira.
+                            Bloqueio de usuário impede novo acesso até desbloqueio administrativo.
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Registrar decisão</button>
+                    </div>
+                </form>
+            {% else %}
+                <div class="card">
+                    <div class="card-header card-cabecalho-simples">Decisão registrada</div>
+                    <div class="card-body">
+                        <dl class="row small mb-0">
+                            <dt class="col-sm-3">Julgamento</dt>
+                            <dd class="col-sm-9">{{ denuncia.den_situacao|rotulo }}</dd>
+
+                            <dt class="col-sm-3">Providência</dt>
+                            <dd class="col-sm-9">{{ denuncia.den_providencia|rotulo|default('—') }}</dd>
+
+                            <dt class="col-sm-3">Analisada em</dt>
+                            <dd class="col-sm-9">{{ denuncia.den_dt_analise|data_hora }}</dd>
+
+                            <dt class="col-sm-3">Parecer</dt>
+                            <dd class="col-sm-9" style="white-space: pre-line;">{{ denuncia.den_parecer }}</dd>
+                        </dl>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="col-lg-5">
+            {% if denunciado %}
+                <div class="card mb-4">
+                    <div class="card-header card-cabecalho-simples">Usuário responsável pelo conteúdo</div>
+                    <div class="card-body">
+                        <p class="fw-semibold mb-1">
+                            <a href="{{ url('/admin/usuarios/' ~ denunciado.usu_id) }}">{{ denunciado.usu_nome }}</a>
+                        </p>
+                        <dl class="small mb-0">
+                            <dt>E-mail</dt>
+                            <dd>{{ denunciado.usu_email }}</dd>
+                            <dt>Perfil</dt>
+                            <dd>{{ denunciado.usu_perfil|rotulo }}</dd>
+                            <dt>Situação da conta</dt>
+                            <dd>
+                                {% if denunciado.usu_status == 'A' %}Ativa
+                                {% elseif denunciado.usu_status == 'B' %}
+                                    <span class="text-danger">Bloqueada</span>
+                                {% elseif denunciado.usu_status == 'X' %}Excluída
+                                {% else %}Pendente{% endif %}
+                            </dd>
+                            <dt>Registro no CREA-AM</dt>
+                            <dd>{{ denunciado.usu_registrado_crea == 'S' ? 'validado' : 'não validado' }}</dd>
+                            <dt>Cadastro em</dt>
+                            <dd>{{ denunciado.usu_dt_registro|data }}</dd>
+                        </dl>
+                    </div>
+                </div>
+            {% endif %}
+
+            {% if outras_denuncias is not empty %}
+                <div class="card mb-4">
+                    <div class="card-header card-cabecalho-simples">
+                        Outras denúncias sobre este usuário
+                        <span class="badge text-bg-warning">{{ outras_denuncias|length }}</span>
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        {% for outra in outras_denuncias %}
+                            <li class="list-group-item small">
+                                <a href="{{ url('/admin/moderacao/denuncias/' ~ outra.den_id) }}">
+                                    {{ outra.den_entidade|rotulo }} — {{ outra.den_motivo|rotulo }}
+                                </a>
+                                <span class="d-block text-muted">
+                                    {{ outra.den_situacao|rotulo }}
+                                    {% if outra.den_providencia and outra.den_providencia != 'NENHUMA' %}
+                                        · {{ outra.den_providencia|rotulo }}
+                                    {% endif %}
+                                    · {{ outra.den_dt_registro|data }}
+                                </span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+
+            {% if historico is not empty %}
+                <div class="card">
+                    <div class="card-header card-cabecalho-simples">Trilha desta denúncia</div>
+                    <ul class="list-group list-group-flush">
+                        {% for evento in historico %}
+                            <li class="list-group-item small">
+                                <code class="severidade-{{ evento.aud_severidade }}">{{ evento.aud_acao }}</code>
+                                <span class="d-block text-muted">
+                                    {{ evento.aud_dt_registro|data_hora }} ·
+                                    {{ evento.usu_nome|default('sistema') }}
+                                </span>
+                                {% if evento.aud_descricao %}
+                                    <span class="d-block">{{ evento.aud_descricao }}</span>
+                                {% endif %}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
