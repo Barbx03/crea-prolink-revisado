@@ -529,19 +529,39 @@ final class ServicoCompatibilizacao
             default      => 'Aderência marginal',
         };
 
-        // Destaca o criterio de maior peso que mais contribuiu e o que menos
-        $ordenados = $criterios;
+        // O que mais contribuiu e o que mais custou pontos. Sao medidas
+        // distintas: um criterio de peso baixo, ainda que integralmente
+        // atendido, nao pesa contra - simplesmente contribui pouco.
+        $porContribuicao = $criterios;
         usort(
-            $ordenados,
+            $porContribuicao,
             static fn (array $a, array $b): int
                 => ($b['percentual'] * $b['peso']) <=> ($a['percentual'] * $a['peso'])
         );
 
-        $melhor = $ordenados[0]['rotulo'] ?? '';
-        $pior   = end($ordenados)['rotulo'] ?? '';
+        $porPerda = array_values(array_filter(
+            $criterios,
+            static fn (array $c): bool => $c['percentual'] < 100
+        ));
+        usort(
+            $porPerda,
+            static fn (array $a, array $b): int
+                => ((100 - $b['percentual']) * $b['peso']) <=> ((100 - $a['percentual']) * $a['peso'])
+        );
 
-        if ($melhor === $pior) {
-            return sprintf('%s (%d de 100).', $qualificacao, $score);
+        $melhor = $porContribuicao[0]['rotulo'] ?? '';
+        $pior   = $porPerda[0]['rotulo'] ?? '';
+
+        // Nada ficou por atender: nao ha o que apontar como desfavoravel.
+        if ($pior === '' || $melhor === $pior) {
+            return $melhor === ''
+                ? sprintf('%s (%d de 100).', $qualificacao, $score)
+                : sprintf(
+                    '%s (%d de 100). Pesou a favor: %s.',
+                    $qualificacao,
+                    $score,
+                    mb_strtolower($melhor)
+                );
         }
 
         return sprintf(
