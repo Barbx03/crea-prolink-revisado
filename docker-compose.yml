@@ -5,10 +5,12 @@
 # o banco de dados e a carga estrutural inicial sobem de forma padronizada,
 # reproduzível e automatizada, com um único comando:
 #
-#     cp .env.docker.example .env.docker && docker compose up -d
+#     cp .env.docker.example .env.docker
+#     docker compose --env-file .env.docker up -d --build
 #
-# Nenhuma credencial real consta deste arquivo: os valores vêm de
-# .env.docker, que não é versionado.
+# O --env-file é necessário: sem ele o Compose leria o .env da instalação
+# local, que aponta para outro banco. Nenhuma credencial real consta deste
+# arquivo: os valores vêm de .env.docker, que não é versionado.
 # =============================================================================
 
 services:
@@ -38,8 +40,14 @@ services:
       DB_SENHA: "${DB_SENHA:?defina DB_SENHA em .env.docker}"
       # Integração com a API oficial do desafio: token individual da equipe,
       # obtido em https://desafio-prolink.crea-am.org.br
-      CREA_API_URL: "${CREA_API_URL:-}"
+      # As rotas da API nao aparecem aqui de proposito: seus valores ja vao
+      # no .env.example embutido na imagem, no formato do contrato real da v1
+      # (roteamento por querystring). So o token precisa ser informado, e sem
+      # ele a aplicacao sobe normalmente, recusando apenas as consultas ao
+      # Conselho; ele tambem pode ser colado depois no painel administrativo.
+      CREA_API_URL: "${CREA_API_URL:-https://desafio-prolink.crea-am.org.br/api/v1}"
       CREA_API_TOKEN: "${CREA_API_TOKEN:-}"
+      CREA_API_TIMEOUT: "${CREA_API_TIMEOUT:-15}"
       CREA_API_DRIVER: "${CREA_API_DRIVER:-http}"
       # SMTP: por padrão aponta para o Mailpit deste mesmo ambiente
       MAIL_ATIVO: "${MAIL_ATIVO:-true}"
