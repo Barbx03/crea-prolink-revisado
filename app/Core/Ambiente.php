@@ -40,14 +40,14 @@ final class Ambiente
         return trim((string) $valor, " \t\n\r\0\x0B\"'");
     }
 
-    public static function inteiro(string $chave, int $padrão = 0): int
+    public static function inteiro(string $chave, int $padrao = 0): int
     {
         $valor = self::texto($chave);
 
-        return $valor === '' ? $padrão : (int) $valor;
+        return $valor === '' ? $padrao : (int) $valor;
     }
 
-    public static function booleano(string $chave, bool $padrão = false): bool
+    public static function booleano(string $chave, bool $padrao = false): bool
     {
         $valor = strtolower(self::texto($chave));
 

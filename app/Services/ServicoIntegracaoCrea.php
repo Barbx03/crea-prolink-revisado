@@ -181,7 +181,7 @@ final class ServicoIntegracaoCrea
             'validado' => true,
             'mensagem' => sprintf(
                 'Registro confirmado na API oficial do CREA-AM%s.',
-                !empty($dados['situacao']) ? ' (situacao: ' . $dados['situacao'] . ')' : ''
+                !empty($dados['situacao']) ? ' (situação: ' . $dados['situacao'] . ')' : ''
             ),
             'dados'    => $dados,
         ];
@@ -215,7 +215,7 @@ final class ServicoIntegracaoCrea
             'validado' => true,
             'mensagem' => sprintf(
                 'Empresa confirmada na API oficial do CREA-AM%s.',
-                !empty($dados['situacao']) ? ' (situacao: ' . $dados['situacao'] . ')' : ''
+                !empty($dados['situacao']) ? ' (situação: ' . $dados['situacao'] . ')' : ''
             ),
             'dados'    => $dados,
         ];
@@ -320,7 +320,7 @@ final class ServicoIntegracaoCrea
 
         return [
             'ok'       => true,
-            'mensagem' => sprintf('%d certidão(oes) de acervo técnico obtida(s) da API oficial.', $total),
+            'mensagem' => sprintf('%d certidão(ões) de acervo técnico obtida(s) da API oficial.', $total),
             'total'    => $total,
         ];
     }
