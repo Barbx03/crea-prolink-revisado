@@ -28,12 +28,18 @@ if [ ! -f /var/www/html/.env ]; then
     [ -n "${APP_URL}" ]    && sed -i "s|^APP_URL=.*|APP_URL=${APP_URL}|" /var/www/html/.env
 fi
 
-# --- Espera o banco aceitar conexões ---------------------------------------
+# --- Espera o banco aceitar conexões ----------------------------------------
+# O cliente MariaDB 11 exige TLS por padrão e o servidor 10.11 desta composição
+# não o oferece. A conversa acontece dentro da rede privada do Compose, nunca
+# exposta ao host, então a verificação é dispensada de propósito.
+SEM_TLS="--skip-ssl"
+mariadb --help 2>/dev/null | grep -q -- '--skip-ssl' || SEM_TLS="--ssl=0"
+
 TENTATIVAS=40
 echo "[prolink] aguardando o banco em ${DB_HOST:-mariadb}..."
 
-until mariadb -h "${DB_HOST:-mariadb}" -u "${DB_USUARIO:-prolink}" -p"${DB_SENHA}" -e "SELECT 1" > /dev/null 2>&1 \
-   || mysql -h "${DB_HOST:-mariadb}" -u "${DB_USUARIO:-prolink}" -p"${DB_SENHA}" -e "SELECT 1" > /dev/null 2>&1; do
+until mariadb $SEM_TLS -h "${DB_HOST:-mariadb}" -u "${DB_USUARIO:-prolink}" -p"${DB_SENHA}" -e "SELECT 1" > /dev/null 2>&1 \
+   || mysql $SEM_TLS -h "${DB_HOST:-mariadb}" -u "${DB_USUARIO:-prolink}" -p"${DB_SENHA}" -e "SELECT 1" > /dev/null 2>&1; do
     TENTATIVAS=$((TENTATIVAS - 1))
 
     if [ "$TENTATIVAS" -le 0 ]; then
@@ -50,15 +56,15 @@ echo "[prolink] banco disponível."
 CLIENTE=mariadb
 command -v mariadb > /dev/null 2>&1 || CLIENTE=mysql
 
-TABELAS=$($CLIENTE -h "${DB_HOST:-mariadb}" -u "${DB_USUARIO:-prolink}" -p"${DB_SENHA}" -N -B \
+TABELAS=$($CLIENTE $SEM_TLS -h "${DB_HOST:-mariadb}" -u "${DB_USUARIO:-prolink}" -p"${DB_SENHA}" -N -B \
     -e "SELECT COUNT(*) FROM information_schema.TABLES WHERE TABLE_SCHEMA = '${DB_NOME:-crea_prolink}'" 2>/dev/null || echo 0)
 
 if [ "${TABELAS:-0}" -lt 20 ]; then
     echo "[prolink] aplicando estrutura do banco (_arq/estrutura.sql)..."
-    $CLIENTE -h "${DB_HOST:-mariadb}" -u "${DB_USUARIO:-prolink}" -p"${DB_SENHA}" < /var/www/html/_arq/estrutura.sql
+    $CLIENTE $SEM_TLS -h "${DB_HOST:-mariadb}" -u "${DB_USUARIO:-prolink}" -p"${DB_SENHA}" < /var/www/html/_arq/estrutura.sql
 
     echo "[prolink] aplicando carga inicial (_arq/dados-iniciais.sql)..."
-    $CLIENTE -h "${DB_HOST:-mariadb}" -u "${DB_USUARIO:-prolink}" -p"${DB_SENHA}" < /var/www/html/_arq/dados-iniciais.sql
+    $CLIENTE $SEM_TLS -h "${DB_HOST:-mariadb}" -u "${DB_USUARIO:-prolink}" -p"${DB_SENHA}" < /var/www/html/_arq/dados-iniciais.sql
 
     echo "[prolink] banco preparado."
 else

@@ -15,13 +15,14 @@ LABEL org.opencontainers.image.title="CREA Pro-Link" \
 # -----------------------------------------------------------------------------
 # Extensões PHP necessárias
 #   pdo_mysql : acesso ao MariaDB
-#   mbstring  : tratamento de texto em UTF-8
+#   mbstring  : tratamento de texto em UTF-8 (exige libonig-dev)
 #   intl      : comparação e formatação sensíveis a idioma
 #   gd        : validação e manipulação das imagens de perfil
 #   zip       : usada pelo Composer
 # -----------------------------------------------------------------------------
 RUN apt-get update && apt-get install -y --no-install-recommends \
         libicu-dev \
+        libonig-dev \
         libzip-dev \
         libpng-dev \
         libjpeg62-turbo-dev \
