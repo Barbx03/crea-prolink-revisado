@@ -1,116 +1,116 @@
 -- =============================================================================
--- CREA Pro-Link | Carga inicial (item 8.8.c do Termo de Referencia)
+-- CREA Pro-Link | Carga inicial (item 8.8.c do Termo de Referência)
 --
--- Contem apenas dados proprios da aplicacao: catalogos controlados, termos,
--- parametros de configuracao, um usuario administrador e contratantes de
--- demonstracao (pessoas nao registradas no CREA-AM).
+-- Contém apenas dados proprios da aplicação: catálogos controlados, termos,
+-- parâmetros de configuração, um usuário administrador e contratantes de
+-- demonstração (pessoas não registradas no CREA-AM).
 --
--- IMPORTANTE: nao ha aqui nenhum dado de profissional registrado, empresa
+-- IMPORTANTE: não há aqui nenhum dado de profissional registrado, empresa
 -- registrada, ART ou CAT. Esses dados vem exclusivamente da API oficial do
--- desafio, conforme item 8.4 do Termo de Referencia, que veda a criacao de
--- base propria para simula-los. Profissionais e empresas registrados sao
--- cadastrados pela propria interface, com validacao em tempo real na API.
+-- desafio, conforme item 8.4 do Termo de Referência, que veda a criação de
+-- base própria para simulá-los. Profissionais e empresas registrados são
+-- cadastrados pela própria interface, com validação em tempo real na API.
 -- =============================================================================
 
 SET NAMES utf8mb4;
 USE `crea_prolink`;
 
 -- -----------------------------------------------------------------------------
--- Areas de atuacao do Sistema Confea/Crea
+-- Áreas de atuação do Sistema Confea/Crea
 -- -----------------------------------------------------------------------------
 INSERT INTO `pro_areas` (`are_id`, `are_nome`, `are_descricao`) VALUES
   (1, 'Engenharia',  'Modalidades de engenharia abrangidas pelo Sistema Confea/Crea'),
-  (2, 'Agronomia',   'Agronomia, engenharia agronomica e areas correlatas'),
-  (3, 'Geociencias', 'Geologia, engenharia de minas e areas correlatas')
+  (2, 'Agronomia',   'Agronomia, engenharia agronômica e áreas correlatas'),
+  (3, 'Geociências', 'Geologia, engenharia de minas e áreas correlatas')
 ON DUPLICATE KEY UPDATE `are_descricao` = VALUES(`are_descricao`);
 
 -- -----------------------------------------------------------------------------
--- Catalogo de competencias tecnicas
+-- Catálogo de competências técnicas
 -- -----------------------------------------------------------------------------
 INSERT INTO `pro_competencias` (`cmp_id`, `cmp_are_id`, `cmp_nome`, `cmp_descricao`) VALUES
   -- Engenharia
   ( 1, 1, 'Projeto estrutural em concreto armado',   'Dimensionamento e detalhamento de estruturas de concreto'),
-  ( 2, 1, 'Projeto estrutural metalico',             'Estruturas em aco e sistemas mistos'),
-  ( 3, 1, 'Projeto estrutural em madeira',           'Estruturas de madeira e sistemas hibridos'),
-  ( 4, 1, 'Execucao e fiscalizacao de obras civis',  'Acompanhamento e fiscalizacao de execucao'),
-  ( 5, 1, 'Orcamento e planejamento de obras',       'Composicao de custos, cronogramas e curva S'),
-  ( 6, 1, 'Laudo e pericia de edificacoes',          'Vistorias, laudos tecnicos e pericias'),
-  ( 7, 1, 'Instalacoes eletricas prediais',          'Projeto e execucao de instalacoes eletricas de baixa tensao'),
-  ( 8, 1, 'Instalacoes eletricas industriais',       'Sistemas de media tensao, subestacoes e acionamentos'),
-  ( 9, 1, 'Sistemas fotovoltaicos',                  'Projeto e homologacao de geracao distribuida'),
-  (10, 1, 'Instalacoes hidrossanitarias',            'Agua fria, agua quente, esgoto e aguas pluviais'),
+  ( 2, 1, 'Projeto estrutural metálico',             'Estruturas em aço e sistemas mistos'),
+  ( 3, 1, 'Projeto estrutural em madeira',           'Estruturas de madeira e sistemas híbridos'),
+  ( 4, 1, 'Execução e fiscalização de obras civis',  'Acompanhamento e fiscalização de execução'),
+  ( 5, 1, 'Orçamento e planejamento de obras',       'Composição de custos, cronogramas e curva S'),
+  ( 6, 1, 'Laudo e perícia de edificações',          'Vistorias, laudos técnicos e perícias'),
+  ( 7, 1, 'Instalações elétricas prediais',          'Projeto e execução de instalações elétricas de baixa tensão'),
+  ( 8, 1, 'Instalações elétricas industriais',       'Sistemas de média tensão, subestações e acionamentos'),
+  ( 9, 1, 'Sistemas fotovoltaicos',                  'Projeto e homologação de geração distribuída'),
+  (10, 1, 'Instalações hidrossanitárias',            'Água fria, água quente, esgoto e águas pluviais'),
   (11, 1, 'Saneamento e tratamento de efluentes',    'Sistemas de abastecimento, esgotamento e ETEs'),
   (12, 1, 'Drenagem urbana',                         'Microdrenagem e macrodrenagem'),
-  (13, 1, 'Geotecnia e fundacoes',                   'Investigacao geotecnica, contencoes e fundacoes'),
-  (14, 1, 'Pavimentacao e terraplenagem',            'Projeto e execucao de pavimentos'),
-  (15, 1, 'Topografia e geoprocessamento',           'Levantamentos topograficos, georreferenciamento e SIG'),
-  (16, 1, 'Climatizacao e refrigeracao (AVAC-R)',    'Projeto e manutencao de sistemas de climatizacao'),
-  (17, 1, 'Seguranca do trabalho',                   'PGR, PCMSO, laudos de insalubridade e periculosidade'),
-  (18, 1, 'Prevencao e combate a incendio',          'Projetos de PPCI e sistemas de deteccao'),
-  (19, 1, 'Automacao e controle industrial',          'PLCs, SCADA e instrumentacao'),
-  (20, 1, 'Manutencao industrial',                   'Planos de manutencao preventiva e preditiva'),
+  (13, 1, 'Geotecnia e fundações',                   'Investigação geotécnica, contenções e fundações'),
+  (14, 1, 'Pavimentação e terraplenagem',            'Projeto e execução de pavimentos'),
+  (15, 1, 'Topografia e geoprocessamento',           'Levantamentos topográficos, georreferenciamento e SIG'),
+  (16, 1, 'Climatização e refrigeração (AVAC-R)',    'Projeto e manutenção de sistemas de climatização'),
+  (17, 1, 'Segurança do trabalho',                   'PGR, PCMSO, laudos de insalubridade e periculosidade'),
+  (18, 1, 'Prevenção e combate a incêndio',          'Projetos de PPCI e sistemas de detecção'),
+  (19, 1, 'Automação e controle industrial',          'PLCs, SCADA e instrumentação'),
+  (20, 1, 'Manutenção industrial',                   'Planos de manutenção preventiva e preditiva'),
   (21, 1, 'Licenciamento e estudos ambientais',      'EIA/RIMA, PCA, PRAD e licenciamento'),
-  (22, 1, 'Gestao de residuos solidos',              'PGRS, PGRCC e logistica reversa'),
-  (23, 1, 'Engenharia de producao e processos',      'Otimizacao de processos e produtividade'),
-  (24, 1, 'BIM e modelagem 3D',                      'Modelagem, coordenacao e compatibilizacao BIM'),
-  (25, 1, 'Avaliacao de imoveis',                    'Laudos de avaliacao conforme NBR 14653'),
+  (22, 1, 'Gestão de resíduos sólidos',              'PGRS, PGRCC e logística reversa'),
+  (23, 1, 'Engenharia de produção e processos',      'Otimização de processos e produtividade'),
+  (24, 1, 'BIM e modelagem 3D',                      'Modelagem, coordenação e compatibilização BIM'),
+  (25, 1, 'Avaliação de imóveis',                    'Laudos de avaliação conforme NBR 14653'),
   -- Agronomia
-  (26, 2, 'Projeto de irrigacao',                    'Dimensionamento de sistemas de irrigacao'),
-  (27, 2, 'Manejo e fertilidade do solo',            'Analise, correcao e recomendacao de adubacao'),
-  (28, 2, 'Assistencia tecnica em culturas',         'Acompanhamento agronomico de lavouras'),
-  (29, 2, 'Regularizacao ambiental rural',           'CAR, PRA e adequacao de propriedades rurais'),
-  (30, 2, 'Projetos de credito rural',               'Elaboracao e acompanhamento de projetos de financiamento'),
-  (31, 2, 'Manejo florestal sustentavel',            'Planos de manejo e inventario florestal'),
-  (32, 2, 'Piscicultura e aquicultura',              'Projeto e manejo de sistemas aquicolas'),
-  -- Geociencias
-  (33, 3, 'Mapeamento geologico',                    'Levantamento e mapeamento geologico'),
-  (34, 3, 'Hidrogeologia e pocos tubulares',         'Locacao, projeto e outorga de pocos'),
-  (35, 3, 'Pesquisa mineral',                        'Prospeccao e pesquisa de bens minerais'),
-  (36, 3, 'Plano de aproveitamento economico',       'PAE e projetos de lavra'),
-  (37, 3, 'Geotecnia aplicada a mineracao',          'Estabilidade de taludes e barragens de rejeito')
+  (26, 2, 'Projeto de irrigação',                    'Dimensionamento de sistemas de irrigação'),
+  (27, 2, 'Manejo e fertilidade do solo',            'Análise, correção e recomendação de adubação'),
+  (28, 2, 'Assistência técnica em culturas',         'Acompanhamento agronômico de lavouras'),
+  (29, 2, 'Regularização ambiental rural',           'CAR, PRA e adequação de propriedades rurais'),
+  (30, 2, 'Projetos de crédito rural',               'Elaboração e acompanhamento de projetos de financiamento'),
+  (31, 2, 'Manejo florestal sustentável',            'Planos de manejo e inventário florestal'),
+  (32, 2, 'Piscicultura e aquicultura',              'Projeto e manejo de sistemas aquícolas'),
+  -- Geociências
+  (33, 3, 'Mapeamento geológico',                    'Levantamento e mapeamento geológico'),
+  (34, 3, 'Hidrogeologia e poços tubulares',         'Locação, projeto e outorga de poços'),
+  (35, 3, 'Pesquisa mineral',                        'Prospecção e pesquisa de bens minerais'),
+  (36, 3, 'Plano de aproveitamento econômico',       'PAE e projetos de lavra'),
+  (37, 3, 'Geotecnia aplicada à mineração',          'Estabilidade de taludes e barragens de rejeito')
 ON DUPLICATE KEY UPDATE `cmp_descricao` = VALUES(`cmp_descricao`);
 
 -- -----------------------------------------------------------------------------
--- Termos de Uso e Politica de Privacidade (versao inicial)
+-- Termos de Uso e Política de Privacidade (versão inicial)
 -- -----------------------------------------------------------------------------
 INSERT INTO `sis_termos` (`ter_id`, `ter_tipo`, `ter_versao`, `ter_titulo`, `ter_dt_vigencia`, `ter_conteudo`) VALUES
   (1, 'TERMOS_USO', '1.0', 'Termos de Uso da plataforma CREA Pro-Link', '2026-01-01',
-   '<h5>1. Objeto</h5><p>O CREA Pro-Link e uma plataforma digital destinada a aproximar profissionais registrados no Sistema Confea/Crea, empresas, instituicoes e demais interessados na contratacao ou oferta de servicos tecnicos especializados em engenharia, agronomia e geociencias.</p><h5>2. Cadastro</h5><p>O usuario declara que as informacoes fornecidas sao verdadeiras e se responsabiliza por mante-las atualizadas. Informacoes de registro profissional, ARTs e CATs sao validadas junto a base oficial do CREA-AM e nao podem ser alteradas manualmente pelo usuario.</p><h5>3. Responsabilidades</h5><p>A plataforma atua exclusivamente como meio de aproximacao. A contratacao, execucao e pagamento dos servicos tecnicos ocorrem diretamente entre as partes, que respondem integralmente por suas obrigacoes contratuais, tecnicas e legais.</p><h5>4. Conduta</h5><p>E vedada a publicacao de conteudo falso, ofensivo, discriminatorio, que exponha dados pessoais de terceiros sem autorizacao ou que caracterize exercicio ilegal da profissao. O descumprimento sujeita o usuario a moderacao, suspensao ou bloqueio da conta.</p><h5>5. Moderacao</h5><p>Perfis, demandas, experiencias e mensagens podem ser moderados a partir de denuncias ou verificacao de rotina. Toda acao de moderacao e registrada em trilha de auditoria.</p><h5>6. Vigencia</h5><p>Estes termos vigem por prazo indeterminado. Alteracoes materiais serao comunicadas e exigirao novo aceite.</p>'),
-  (2, 'POLITICA_PRIVACIDADE', '1.0', 'Politica de Privacidade e Protecao de Dados', '2026-01-01',
-   '<h5>1. Controlador</h5><p>O tratamento de dados pessoais nesta plataforma observa a Lei n. 13.709/2018 (LGPD).</p><h5>2. Dados tratados</h5><p>Sao tratados dados de identificacao (nome, e-mail, telefone, CPF ou CNPJ), dados profissionais (RNP, competencias, experiencias, ARTs e CATs obtidas da base oficial do CREA-AM), dados de localizacao aproximada (municipio e UF) e registros de acesso (endereco IP, data e hora, agente de usuario).</p><h5>3. Finalidades</h5><p>Os dados sao utilizados para autenticar o usuario, compor o perfil profissional, viabilizar a compatibilizacao entre demandas e profissionais, permitir a comunicacao entre as partes, cumprir obrigacoes legais e regulatorias e garantir a seguranca da plataforma.</p><h5>4. Base legal</h5><p>O tratamento fundamenta-se no consentimento do titular, na execucao de contrato, no cumprimento de obrigacao legal e no exercicio regular de direitos.</p><h5>5. Compartilhamento</h5><p>Dados do perfil sao exibidos publicamente apenas conforme as opcoes de visibilidade escolhidas pelo proprio titular. Dados de contato e documentos permanecem ocultos por padrao. Nao ha compartilhamento com terceiros para finalidade publicitaria.</p><h5>6. Direitos do titular</h5><p>O titular pode, a qualquer momento, solicitar confirmacao de tratamento, acesso, correcao, portabilidade, anonimizacao ou eliminacao de seus dados, bem como revogar consentimentos, pelo painel de privacidade da propria plataforma.</p><h5>7. Retencao</h5><p>Registros de auditoria e consentimento sao preservados pelo prazo necessario ao cumprimento de obrigacoes legais. A exclusao de conta e realizada por exclusao logica, preservando a rastreabilidade exigida, com anonimizacao dos dados pessoais quando solicitada.</p><h5>8. Seguranca</h5><p>Sao adotados controle de acesso por perfil, armazenamento de senhas com funcao de hash, protecao contra injecao de SQL, XSS e CSRF, transporte cifrado e registro de auditoria das operacoes sensiveis.</p>')
+   '<h5>1. Objeto</h5><p>O CREA Pro-Link é uma plataforma digital destinada a aproximar profissionais registrados no Sistema Confea/Crea, empresas, instituições e demais interessados na contratação ou oferta de serviços técnicos especializados em engenharia, agronomia e geociências.</p><h5>2. Cadastro</h5><p>O usuário declara que as informações fornecidas são verdadeiras e se responsabiliza por mantê-las atualizadas. Informações de registro profissional, ARTs e CATs são validadas junto à base oficial do CREA-AM e não podem ser alteradas manualmente pelo usuário.</p><h5>3. Responsabilidades</h5><p>A plataforma atua exclusivamente como meio de aproximação. A contratação, execução e pagamento dos serviços técnicos ocorrem diretamente entre as partes, que respondem integralmente por suas obrigações contratuais, técnicas e legais.</p><h5>4. Conduta</h5><p>É vedada a publicação de conteúdo falso, ofensivo, discriminatório, que exponha dados pessoais de terceiros sem autorização ou que caracterize exercício ilegal da profissão. O descumprimento sujeita o usuário a moderação, suspensão ou bloqueio da conta.</p><h5>5. Moderação</h5><p>Perfis, demandas, experiências e mensagens podem ser moderados a partir de denúncias ou verificação de rotina. Toda ação de moderação é registrada em trilha de auditoria.</p><h5>6. Vigência</h5><p>Estes termos vigem por prazo indeterminado. Alterações materiais serão comunicadas e exigirão novo aceite.</p>'),
+  (2, 'POLITICA_PRIVACIDADE', '1.0', 'Política de Privacidade e Proteção de Dados', '2026-01-01',
+   '<h5>1. Controlador</h5><p>O tratamento de dados pessoais nesta plataforma observa a Lei n. 13.709/2018 (LGPD).</p><h5>2. Dados tratados</h5><p>São tratados dados de identificação (nome, e-mail, telefone, CPF ou CNPJ), dados profissionais (RNP, competências, experiências, ARTs e CATs obtidas da base oficial do CREA-AM), dados de localização aproximada (município e UF) e registros de acesso (endereço IP, data e hora, agente de usuário).</p><h5>3. Finalidades</h5><p>Os dados são utilizados para autenticar o usuário, compor o perfil profissional, viabilizar a compatibilização entre demandas e profissionais, permitir a comunicação entre as partes, cumprir obrigações legais e regulatórias e garantir a segurança da plataforma.</p><h5>4. Base legal</h5><p>O tratamento fundamenta-se no consentimento do titular, na execução de contrato, no cumprimento de obrigação legal e no exercício regular de direitos.</p><h5>5. Compartilhamento</h5><p>Dados do perfil são exibidos publicamente apenas conforme as opções de visibilidade escolhidas pelo próprio titular. Dados de contato e documentos permanecem ocultos por padrão. Não há compartilhamento com terceiros para finalidade publicitária.</p><h5>6. Direitos do titular</h5><p>O titular pode, a qualquer momento, solicitar confirmação de tratamento, acesso, correção, portabilidade, anonimização ou eliminação de seus dados, bem como revogar consentimentos, pelo painel de privacidade da própria plataforma.</p><h5>7. Retenção</h5><p>Registros de auditoria e consentimento são preservados pelo prazo necessário ao cumprimento de obrigações legais. A exclusão de conta é realizada por exclusão lógica, preservando a rastreabilidade exigida, com anonimização dos dados pessoais quando solicitada.</p><h5>8. Segurança</h5><p>São adotados controle de acesso por perfil, armazenamento de senhas com função de hash, proteção contra injeção de SQL, XSS e CSRF, transporte cifrado e registro de auditoria das operações sensíveis.</p>')
 ON DUPLICATE KEY UPDATE `ter_titulo` = VALUES(`ter_titulo`);
 
 -- -----------------------------------------------------------------------------
--- Parametros de configuracao (editaveis no painel administrativo)
--- Valores sensiveis ficam vazios: devem ser preenchidos pelo painel ou .ENV
+-- Parâmetros de configuração (editáveis no painel administrativo)
+-- Valores sensíveis ficam vazios: devem ser preenchidos pelo painel ou .ENV
 -- -----------------------------------------------------------------------------
 INSERT INTO `sis_configuracoes` (`cfg_grupo`, `cfg_chave`, `cfg_valor`, `cfg_tipo`, `cfg_sensivel`, `cfg_descricao`) VALUES
   ('PLATAFORMA', 'nome_plataforma',      'CREA Pro-Link',            'TEXTO',    'N', 'Nome exibido na interface'),
   ('PLATAFORMA', 'email_contato',        'contato@prolink.local',    'TEXTO',    'N', 'E-mail institucional de contato'),
-  ('PLATAFORMA', 'itens_por_pagina',     '12',                       'INTEIRO',  'N', 'Quantidade de itens por pagina nas listagens'),
+  ('PLATAFORMA', 'itens_por_pagina',     '12',                       'INTEIRO',  'N', 'Quantidade de itens por página nas listagens'),
   ('PLATAFORMA', 'cadastro_aberto',      '1',                        'BOOLEANO', 'N', 'Permite novos cadastros na plataforma'),
-  ('SMTP',       'smtp_ativo',           '0',                        'BOOLEANO', 'N', 'Quando desativado, as notificacoes ficam registradas na fila sem envio'),
+  ('SMTP',       'smtp_ativo',           '0',                        'BOOLEANO', 'N', 'Quando desativado, as notificações ficam registradas na fila sem envio'),
   ('SMTP',       'smtp_host',            '',                         'TEXTO',    'N', 'Servidor SMTP'),
   ('SMTP',       'smtp_porta',           '587',                      'INTEIRO',  'N', 'Porta do servidor SMTP'),
   ('SMTP',       'smtp_seguranca',       'tls',                      'TEXTO',    'N', 'tls, ssl ou vazio'),
-  ('SMTP',       'smtp_usuario',         '',                         'TEXTO',    'N', 'Usuario de autenticacao SMTP'),
-  ('SMTP',       'smtp_senha',           '',                         'SENHA',    'S', 'Senha de autenticacao SMTP'),
+  ('SMTP',       'smtp_usuario',         '',                         'TEXTO',    'N', 'Usuário de autenticação SMTP'),
+  ('SMTP',       'smtp_senha',           '',                         'SENHA',    'S', 'Senha de autenticação SMTP'),
   ('SMTP',       'smtp_remetente_email', 'nao-responda@prolink.local','TEXTO',   'N', 'E-mail remetente'),
   ('SMTP',       'smtp_remetente_nome',  'CREA Pro-Link',            'TEXTO',    'N', 'Nome do remetente'),
   ('API_CREA',   'api_base_url',         '',                         'TEXTO',    'N', 'URL base da API oficial do desafio (preferir .ENV)'),
   ('API_CREA',   'api_token',            '',                         'SENHA',    'S', 'Token de acesso individual (preferir .ENV)'),
   ('API_CREA',   'api_timeout',          '15',                       'INTEIRO',  'N', 'Timeout das chamadas em segundos'),
   ('API_CREA',   'api_cache_minutos',    '60',                       'INTEIRO',  'N', 'Tempo de cache das respostas de consulta'),
-  ('MATCHING',   'peso_competencias',    '45',                       'INTEIRO',  'N', 'Peso das competencias no score de aderencia'),
-  ('MATCHING',   'peso_localizacao',     '20',                       'INTEIRO',  'N', 'Peso da localizacao no score de aderencia'),
-  ('MATCHING',   'peso_acervo',          '20',                       'INTEIRO',  'N', 'Peso do acervo tecnico (ART/CAT) no score'),
-  ('MATCHING',   'peso_experiencia',     '10',                       'INTEIRO',  'N', 'Peso do tempo de experiencia no score'),
+  ('MATCHING',   'peso_competencias',    '45',                       'INTEIRO',  'N', 'Peso das competências no score de aderência'),
+  ('MATCHING',   'peso_localizacao',     '20',                       'INTEIRO',  'N', 'Peso da localização no score de aderência'),
+  ('MATCHING',   'peso_acervo',          '20',                       'INTEIRO',  'N', 'Peso do acervo técnico (ART/CAT) no score'),
+  ('MATCHING',   'peso_experiencia',     '10',                       'INTEIRO',  'N', 'Peso do tempo de experiência no score'),
   ('MATCHING',   'peso_disponibilidade', '5',                        'INTEIRO',  'N', 'Peso da disponibilidade declarada no score'),
-  ('MATCHING',   'score_minimo',         '20',                       'INTEIRO',  'N', 'Score minimo para aparecer entre as correspondencias')
+  ('MATCHING',   'score_minimo',         '20',                       'INTEIRO',  'N', 'Score mínimo para aparecer entre as correspondências')
 ON DUPLICATE KEY UPDATE `cfg_descricao` = VALUES(`cfg_descricao`);
 
 -- -----------------------------------------------------------------------------
--- Usuario administrador inicial
+-- Usuário administrador inicial
 -- Senha: Admin@2026  (trocar no primeiro acesso)
 -- -----------------------------------------------------------------------------
 INSERT INTO `sis_usuarios`
@@ -123,7 +123,7 @@ VALUES
 ON DUPLICATE KEY UPDATE `usu_nome` = VALUES(`usu_nome`);
 
 -- -----------------------------------------------------------------------------
--- Contratantes de demonstracao (terceiros nao registrados no CREA-AM)
+-- Contratantes de demonstração (terceiros não registrados no CREA-AM)
 -- Senha de ambos: Senha@123
 -- -----------------------------------------------------------------------------
 INSERT INTO `sis_usuarios`
@@ -133,15 +133,15 @@ VALUES
   (2, 'Construtora Rio Negro Ltda', 'contratante@prolink.local',
    '$2y$12$zZb9XOhr537/DiQ3erPZKusTsoKG3JPzNINd.tzQDJ7L/ZpJguWni',
    'PJ', 'TERCEIRO', '12345678000199', NULL, 'S', '(92) 3000-0000', 'AM', 'Manaus',
-   'Contratante de demonstracao', 'A'),
-  (3, 'Instituto Amazonia Sustentavel', 'instituicao@prolink.local',
+   'Contratante de demonstração', 'A'),
+  (3, 'Instituto Amazônia Sustentável', 'instituição@prolink.local',
    '$2y$12$zZb9XOhr537/DiQ3erPZKusTsoKG3JPzNINd.tzQDJ7L/ZpJguWni',
    'PJ', 'TERCEIRO', '98765432000155', NULL, 'S', '(92) 3111-1111', 'AM', 'Manaus',
-   'Contratante de demonstracao', 'A')
+   'Contratante de demonstração', 'A')
 ON DUPLICATE KEY UPDATE `usu_nome` = VALUES(`usu_nome`);
 
 -- -----------------------------------------------------------------------------
--- Demandas de demonstracao (cenario 7.2 do Termo de Referencia)
+-- Demandas de demonstração (cenário 7.2 do Termo de Referência)
 -- -----------------------------------------------------------------------------
 INSERT INTO `pro_demandas`
   (`dem_id`, `dem_usu_id`, `dem_titulo`, `dem_escopo`, `dem_are_id`, `dem_uf`, `dem_cidade`,
@@ -149,21 +149,21 @@ INSERT INTO `pro_demandas`
    `dem_experiencia_min`, `dem_orcamento_min`, `dem_orcamento_max`, `dem_prazo_execucao`,
    `dem_dt_limite`, `dem_situacao`, `dem_dt_publicacao`, `dem_log`)
 VALUES
-  (1, 2, 'Projeto estrutural de edificio residencial de 12 pavimentos',
-   'Elaboracao de projeto estrutural completo em concreto armado para edificio residencial de 12 pavimentos, com dois subsolos, no bairro Ponta Negra. Escopo: concepcao estrutural, dimensionamento, detalhamento de armaduras, memorial de calculo, quantitativos e compatibilizacao com os projetos de arquitetura e instalacoes. Sondagem SPT disponivel. Entrega em formato editavel e PDF assinado, com ART registrada.',
+  (1, 2, 'Projeto estrutural de edifício residencial de 12 pavimentos',
+   'Elaboração de projeto estrutural completo em concreto armado para edifício residencial de 12 pavimentos, com dois subsolos, no bairro Ponta Negra. Escopo: concepção estrutural, dimensionamento, detalhamento de armaduras, memorial de cálculo, quantitativos e compatibilização com os projetos de arquitetura e instalações. Sondagem SPT disponível. Entrega em formato editável e PDF assinado, com ART registrada.',
    1, 'AM', 'Manaus', 'N', 'PROJETO', 'S', 'S', 5, 80000.00, 140000.00,
    '90 dias corridos', DATE_ADD(CURDATE(), INTERVAL 25 DAY), 'PUBLICADA', NOW(),
-   'Demanda de demonstracao'),
-  (2, 3, 'Laudo tecnico e adequacao de sistema de tratamento de efluentes',
-   'Avaliacao do sistema de tratamento de efluentes de unidade de pesquisa na zona rural de Iranduba, com emissao de laudo tecnico, diagnostico de conformidade ambiental e projeto de adequacao. Inclui coleta de amostras, analise dos resultados, dimensionamento da adequacao e acompanhamento do processo de licenciamento junto ao orgao ambiental.',
+   'Demanda de demonstração'),
+  (2, 3, 'Laudo técnico e adequação de sistema de tratamento de efluentes',
+   'Avaliação do sistema de tratamento de efluentes de unidade de pesquisa na zona rural de Iranduba, com emissão de laudo técnico, diagnóstico de conformidade ambiental e projeto de adequação. Inclui coleta de amostras, análise dos resultados, dimensionamento da adequação e acompanhamento do processo de licenciamento junto ao órgão ambiental.',
    1, 'AM', 'Iranduba', 'N', 'LAUDO', 'N', 'S', 3, 25000.00, 45000.00,
    '60 dias corridos', DATE_ADD(CURDATE(), INTERVAL 18 DAY), 'PUBLICADA', NOW(),
-   'Demanda de demonstracao'),
-  (3, 2, 'Consultoria em coordenacao BIM para carteira de obras',
-   'Consultoria para implantacao de fluxo de coordenacao BIM em carteira de quatro obras em andamento, contemplando definicao de padrao de modelagem, plano de execucao BIM, rotinas de compatibilizacao e capacitacao da equipe tecnica interna. Atendimento hibrido, com reunioes presenciais mensais em Manaus.',
+   'Demanda de demonstração'),
+  (3, 2, 'Consultoria em coordenação BIM para carteira de obras',
+   'Consultoria para implantação de fluxo de coordenação BIM em carteira de quatro obras em andamento, contemplando definição de padrão de modelagem, plano de execução BIM, rotinas de compatibilização e capacitação da equipe técnica interna. Atendimento híbrido, com reuniões presenciais mensais em Manaus.',
    1, 'AM', 'Manaus', 'S', 'CONSULTORIA', 'N', 'S', 4, 40000.00, 70000.00,
    '6 meses', DATE_ADD(CURDATE(), INTERVAL 30 DAY), 'PUBLICADA', NOW(),
-   'Demanda de demonstracao')
+   'Demanda de demonstração')
 ON DUPLICATE KEY UPDATE `dem_titulo` = VALUES(`dem_titulo`);
 
 INSERT INTO `pro_demanda_competencias` (`dmc_dem_id`, `dmc_cmp_id`, `dmc_obrigatoria`, `dmc_peso`) VALUES
