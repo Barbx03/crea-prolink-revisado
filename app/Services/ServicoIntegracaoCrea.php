@@ -9,6 +9,7 @@ use App\Core\Configuracao;
 use App\Core\Formatador;
 use App\Repositories\RepositorioArt;
 use App\Repositories\RepositorioCat;
+use App\Repositories\RepositorioModalidade;
 use App\Repositories\RepositorioPerfil;
 use App\Repositories\RepositorioUsuario;
 
@@ -157,6 +158,10 @@ final class ServicoIntegracaoCrea
 
         $perfilId = RepositorioPerfil::garantirExistencia($usuarioId);
 
+        // As modalidades habilitadas acompanham a consulta do registro. Nao sao
+        // declaraveis, e por isso substituem integralmente o que houver.
+        RepositorioModalidade::sincronizar($perfilId, $dados['modalidades'] ?? []);
+
         // Preenche o que a API confirma, sem sobrescrever o que o titular editou
         $perfil = RepositorioPerfil::porId($perfilId);
 
@@ -272,6 +277,12 @@ final class ServicoIntegracaoCrea
             ];
         }
 
+        // A consulta por numero confirma a veracidade da ART (RF03), mas responde
+        // um subconjunto dos campos: nao traz o local nem as atividades da
+        // Tabela de Obras e Servicos. Quem as traz e a listagem do RNP, entao o
+        // registro validado e completado a partir dela, pelo mesmo numero.
+        $art = $this->completarComListagem($rnp, $art);
+
         $perfilId = RepositorioPerfil::garantirExistencia($usuarioId);
         $artId    = RepositorioArt::registrarValidada($perfilId, $art, $consulta['bruto']);
 
@@ -373,5 +384,48 @@ final class ServicoIntegracaoCrea
         }
 
         return mb_substr($rnp, 0, 2) . str_repeat('*', mb_strlen($rnp) - 4) . mb_substr($rnp, -2);
+    }
+
+    /**
+     * Completa uma ART validada por numero com os campos que so a listagem do
+     * RNP devolve — local de execucao e atividades da TOS.
+     *
+     * Nada aqui substitui o que a validacao ja afirmou: os campos existentes
+     * sao preservados, e os ausentes sao preenchidos apenas quando a listagem
+     * traz o mesmo numero de ART.
+     *
+     * @param array<string, mixed> $art
+     * @return array<string, mixed>
+     */
+    private function completarComListagem(string $rnp, array $art): array
+    {
+        $numero = (string) ($art['numero'] ?? '');
+
+        if ($numero === '') {
+            return $art;
+        }
+
+        try {
+            $listagem = NormalizadorApiCrea::arts($this->cliente->artsPorRnp($rnp), $rnp);
+        } catch (ExcecaoApiCrea) {
+            // A ART ja foi validada; a listagem e complemento, nao requisito.
+            return $art;
+        }
+
+        foreach ($listagem as $candidata) {
+            if (Formatador::normalizar((string) ($candidata['numero'] ?? '')) !== Formatador::normalizar($numero)) {
+                continue;
+            }
+
+            foreach ($candidata as $campo => $valor) {
+                if (($art[$campo] ?? null) === null || $art[$campo] === '' || $art[$campo] === []) {
+                    $art[$campo] = $valor;
+                }
+            }
+
+            break;
+        }
+
+        return $art;
     }
 }

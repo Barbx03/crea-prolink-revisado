@@ -371,6 +371,58 @@ CREATE TABLE IF NOT EXISTS `pro_arts` (
 -- -----------------------------------------------------------------------------
 -- pro_cats : Certidoes de Acervo Tecnico consultadas na API oficial
 -- -----------------------------------------------------------------------------
+-- -----------------------------------------------------------------------------
+-- Modalidades do profissional, conforme a base oficial do CREA-AM.
+-- Vêm na consulta do registro e não são declaráveis pelo titular: são a
+-- habilitação que o Conselho reconhece, e por isso valem como dado verificado.
+-- -----------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `pro_modalidades` (
+  `mod_id`            INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `mod_prf_id`        INT UNSIGNED NOT NULL,
+  `mod_codigo`        VARCHAR(20)  NOT NULL COMMENT 'Sigla da modalidade na API oficial',
+  `mod_nome`          VARCHAR(190) NOT NULL,
+  `mod_origem`        VARCHAR(20)  NOT NULL DEFAULT 'API_CREA' COMMENT 'API_CREA e a unica origem valida',
+  `mod_dt_validacao`  DATETIME     NULL,
+  `mod_dt_registro`   DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `mod_dt_alteracao`  DATETIME     NULL ON UPDATE CURRENT_TIMESTAMP,
+  `mod_log`           VARCHAR(255) NULL,
+  `mod_status`        CHAR(1)      NOT NULL DEFAULT 'A',
+  CONSTRAINT `pk_mod_id` PRIMARY KEY (`mod_id`),
+  CONSTRAINT `uk_mod_prf_codigo` UNIQUE KEY (`mod_prf_id`, `mod_codigo`),
+  CONSTRAINT `fk_mod_prf_id` FOREIGN KEY (`mod_prf_id`)
+    REFERENCES `pro_perfis` (`prf_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  KEY `idx_mod_status` (`mod_status`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+  COMMENT='Modalidades habilitadas do profissional, obtidas da API oficial';
+
+-- -----------------------------------------------------------------------------
+-- Atividades de uma ART, na Tabela de Obras e Serviços (TOS) do Confea.
+-- É o que o profissional efetivamente executou, com código oficial: uma
+-- competência comprovada, em vez de declarada.
+-- -----------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `pro_art_atividades` (
+  `ata_id`            INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `ata_art_id`        INT UNSIGNED NOT NULL,
+  `ata_tos_codigo`    VARCHAR(40)  NOT NULL COMMENT 'Codigo na Tabela de Obras e Servicos',
+  `ata_descricao`     TEXT         NULL,
+  `ata_grupo`         VARCHAR(190) NULL,
+  `ata_subgrupo`      VARCHAR(190) NULL,
+  `ata_obra_servico`  VARCHAR(190) NULL,
+  `ata_complementar`  VARCHAR(190) NULL,
+  `ata_atividade`     VARCHAR(190) NULL COMMENT 'Natureza da participacao (execucao, projeto...)',
+  `ata_dt_registro`   DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `ata_dt_alteracao`  DATETIME     NULL ON UPDATE CURRENT_TIMESTAMP,
+  `ata_log`           VARCHAR(255) NULL,
+  `ata_status`        CHAR(1)      NOT NULL DEFAULT 'A',
+  CONSTRAINT `pk_ata_id` PRIMARY KEY (`ata_id`),
+  CONSTRAINT `uk_ata_art_codigo` UNIQUE KEY (`ata_art_id`, `ata_tos_codigo`),
+  CONSTRAINT `fk_ata_art_id` FOREIGN KEY (`ata_art_id`)
+    REFERENCES `pro_arts` (`art_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  KEY `idx_ata_tos`    (`ata_tos_codigo`),
+  KEY `idx_ata_status` (`ata_status`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+  COMMENT='Atividades TOS de cada ART, obtidas da API oficial';
+
 CREATE TABLE IF NOT EXISTS `pro_cats` (
   `cat_id`           INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `cat_prf_id`       INT UNSIGNED NOT NULL,

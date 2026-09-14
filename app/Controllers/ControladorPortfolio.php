@@ -12,6 +12,7 @@ use App\Core\Validador;
 use App\Repositories\RepositorioArt;
 use App\Repositories\RepositorioCat;
 use App\Repositories\RepositorioLgpd;
+use App\Repositories\RepositorioModalidade;
 use App\Repositories\RepositorioPerfil;
 use App\Services\ExcecaoApiCrea;
 use App\Services\ServicoIntegracaoCrea;
@@ -34,7 +35,8 @@ final class ControladorPortfolio extends Controlador
         $this->visao('perfil/integracao.twig', [
             'usuario'           => $usuario,
             'perfil'            => RepositorioPerfil::porUsuario($this->usuarioId()),
-            'arts'              => RepositorioArt::doPerfil($perfilId),
+            'arts'              => self::comAtividades(RepositorioArt::doPerfil($perfilId)),
+            'modalidades'       => RepositorioModalidade::doPerfil($perfilId),
             'cats'              => RepositorioCat::doPerfil($perfilId),
             'integracao_ativa'  => $integracao->integracaoDisponivel(),
             'consentimento_crea' => RepositorioLgpd::temConsentimento($this->usuarioId(), 'DADOS_CREA'),
@@ -290,5 +292,20 @@ final class ControladorPortfolio extends Controlador
         $this->exigirPropriedade((int) $art['prf_usu_id']);
 
         return $art;
+    }
+
+    /**
+     * Acrescenta a cada ART as atividades TOS que a API informou.
+     *
+     * @param list<array<string, mixed>> $arts
+     * @return list<array<string, mixed>>
+     */
+    private static function comAtividades(array $arts): array
+    {
+        foreach ($arts as $i => $art) {
+            $arts[$i]['atividades'] = RepositorioArt::atividades((int) $art['art_id']);
+        }
+
+        return $arts;
     }
 }

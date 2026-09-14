@@ -55,6 +55,22 @@
                             <dd>{{ (usuario.usu_cpf ?: usuario.usu_cnpj)|documento }}</dd>
                             <dt>Validado em</dt>
                             <dd>{{ usuario.usu_dt_validacao|data_hora|default('—') }}</dd>
+                            {% if modalidades is not empty %}
+                                <dt>Modalidades habilitadas</dt>
+                                <dd>
+                                    {% for modalidade in modalidades %}
+                                        <span class="badge text-bg-light border me-1">
+                                            {{ modalidade.mod_nome }}
+                                            {% if modalidade.mod_codigo != modalidade.mod_nome %}
+                                                <span class="text-muted">({{ modalidade.mod_codigo }})</span>
+                                            {% endif %}
+                                        </span>
+                                    {% endfor %}
+                                    <span class="d-block text-muted mt-1">
+                                        Reconhecidas pelo CREA-AM. Não são editáveis: vêm da base oficial.
+                                    </span>
+                                </dd>
+                            {% endif %}
                         </dl>
                     {% else %}
                         <p class="mb-2"><span class="selo-nao-registrado">Registro ainda não validado</span></p>
@@ -193,6 +209,29 @@
                                     {% if art.art_contratante %}
                                         <dt class="col-sm-3">Contratante</dt>
                                         <dd class="col-sm-9">{{ art.art_contratante }}</dd>
+                                    {% endif %}
+                                    {% if art.atividades is not empty %}
+                                        <dt class="col-sm-3">Atividades</dt>
+                                        <dd class="col-sm-9">
+                                            <ul class="list-unstyled mb-0">
+                                                {% for atividade in art.atividades %}
+                                                    <li class="{{ not loop.first ? 'mt-2' : '' }}">
+                                                        <span class="badge text-bg-light border font-monospace">{{ atividade.ata_tos_codigo }}</span>
+                                                        {% if atividade.ata_atividade %}
+                                                            <span class="ms-1">{{ atividade.ata_atividade }}</span>
+                                                        {% endif %}
+                                                        {% if atividade.ata_grupo %}
+                                                            <span class="d-block text-muted">
+                                                                {{ atividade.ata_grupo }}{% if atividade.ata_subgrupo %} · {{ atividade.ata_subgrupo }}{% endif %}
+                                                            </span>
+                                                        {% endif %}
+                                                    </li>
+                                                {% endfor %}
+                                            </ul>
+                                            <span class="d-block text-muted mt-1">
+                                                Códigos da Tabela de Obras e Serviços do Confea, conforme registrado na ART.
+                                            </span>
+                                        </dd>
                                     {% endif %}
                                     {% if art.art_municipio or art.art_uf %}
                                         <dt class="col-sm-3">Local</dt>

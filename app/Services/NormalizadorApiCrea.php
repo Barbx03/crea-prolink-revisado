@@ -42,7 +42,84 @@ final class NormalizadorApiCrea
             'email'           => self::campo($dados, ['email', 'emailProfissional']),
             'telefone'        => self::campo($dados, ['telefone', 'celular', 'fone']),
             'ativo'           => self::situacaoAtiva((string) self::campo($dados, ['pro_status', 'situacao', 'situacaoRegistro', 'status'])),
+            'modalidades'     => self::modalidades($dados),
         ];
+    }
+
+    /**
+     * Modalidades habilitadas do profissional na base oficial.
+     *
+     * Nao sao declaraveis pelo titular: o Conselho e quem as reconhece.
+     *
+     * @param array<string, mixed> $dados
+     * @return list<array{codigo: string, nome: string}>
+     */
+    private static function modalidades(array $dados): array
+    {
+        $normalizadas = [];
+
+        foreach (self::lista($dados, ['modalidades', 'modalidade']) as $item) {
+
+            if (!is_array($item)) {
+                continue;
+            }
+
+            $codigo = trim((string) self::campo($item, ['mod_codigo', 'codigo', 'sigla']));
+            $nome   = trim((string) self::campo($item, ['mod_nome', 'nome', 'descricao']));
+
+            if ($codigo === '' && $nome === '') {
+                continue;
+            }
+
+            $normalizadas[$codigo !== '' ? $codigo : $nome] = [
+                'codigo' => $codigo !== '' ? $codigo : $nome,
+                'nome'   => $nome !== '' ? $nome : $codigo,
+            ];
+        }
+
+        return array_values($normalizadas);
+    }
+
+    /**
+     * Atividades de uma ART na Tabela de Obras e Servicos (TOS) do Confea.
+     *
+     * @param array<string, mixed> $item
+     * @return list<array<string, string|null>>
+     */
+    private static function atividades(array $item): array
+    {
+        $normalizadas = [];
+
+        foreach (self::lista($item, ['atividades', 'atividade', 'servicos']) as $atividade) {
+            if (!is_array($atividade)) {
+                continue;
+            }
+
+            $codigo = trim((string) self::campo($atividade, ['tos_codigo', 'codigo']));
+
+            if ($codigo === '') {
+                continue;
+            }
+
+            $normalizadas[$codigo] = [
+                'tos_codigo'    => $codigo,
+                'descricao'     => self::textoOuNulo(self::campo($atividade, ['tos_descricao', 'descricao'])),
+                'grupo'         => self::textoOuNulo(self::campo($atividade, ['tos_grupo', 'grupo'])),
+                'subgrupo'      => self::textoOuNulo(self::campo($atividade, ['tos_subgrupo', 'subgrupo'])),
+                'obra_servico'  => self::textoOuNulo(self::campo($atividade, ['tos_obra_servico', 'obra_servico'])),
+                'complementar'  => self::textoOuNulo(self::campo($atividade, ['tos_complementar', 'complementar'])),
+                'atividade'     => self::textoOuNulo(self::campo($atividade, ['aat_descricao', 'atividade'])),
+            ];
+        }
+
+        return array_values($normalizadas);
+    }
+
+    private static function textoOuNulo(mixed $valor): ?string
+    {
+        $texto = trim((string) (is_scalar($valor) ? $valor : ''));
+
+        return $texto === '' ? null : $texto;
     }
 
     /**
@@ -104,6 +181,7 @@ final class NormalizadorApiCrea
                 'dt_inicio'      => self::data(self::campo($item, ['dataInicio', 'dtInicio', 'inicio', 'dataRegistro'])),
                 'dt_fim'         => self::data(self::campo($item, ['dataFim', 'dtFim', 'fim', 'dataConclusao', 'dataBaixa'])),
                 'situacao'       => self::campo($item, ['art_situacao', 'situacao', 'status', 'situacaoArt']),
+                'atividades'     => self::atividades($item),
             ];
         }
 
@@ -207,6 +285,31 @@ final class NormalizadorApiCrea
      * @param array<string, mixed> $dados
      * @param list<string> $nomes
      */
+    /**
+     * Busca uma lista aninhada na resposta.
+     *
+     * campo() ignora de proposito tudo que nao e escalar, para nunca devolver
+     * estrutura onde se espera texto. As colecoes que a API aninha — as
+     * modalidades do profissional, as atividades de uma ART — precisam deste
+     * acessor proprio.
+     *
+     * @param array<string, mixed> $dados
+     * @param list<string> $nomes
+     * @return list<mixed>
+     */
+    private static function lista(array $dados, array $nomes): array
+    {
+        foreach ($nomes as $nome) {
+            foreach ($dados as $chave => $valor) {
+                if (is_array($valor) && self::mesmaChave((string) $chave, $nome)) {
+                    return array_values($valor);
+                }
+            }
+        }
+
+        return [];
+    }
+
     private static function campo(array $dados, array $nomes): mixed
     {
         foreach ($nomes as $nome) {
@@ -324,11 +427,18 @@ final class NormalizadorApiCrea
         return in_array($uf, \App\Core\Validador::UNIDADES_FEDERATIVAS, true) ? $uf : null;
     }
 
-    private static function situacaoAtiva(string $situacao): bool
+    /**
+     * Situacao do registro na base oficial.
+     *
+     * Devolve null quando a API nao informa situacao — caso das empresas, cuja
+     * resposta traz CNPJ, razao social, fantasia, registro e data, e nenhum
+     * campo de situacao. Responder false ali seria afirmar que o registro esta
+     * inativo, que e coisa diferente de nao saber.
+     */
+    private static function situacaoAtiva(string $situacao): ?bool
     {
         if ($situacao === '') {
-            // Sem informacao de situacao, nao se afirma nada
-            return false;
+            return null;
         }
 
         $normalizada = Formatador::normalizar($situacao);

@@ -128,6 +128,10 @@ final class RepositorioArt extends Repositorio
             $id = (int) ($existente['art_id'] ?? 0);
         }
 
+        if ($id > 0) {
+            self::sincronizarAtividades($id, $dados['atividades'] ?? []);
+        }
+
         Auditoria::registrar('ART_ASSOCIADA', [
             'entidade'    => 'pro_arts',
             'entidade_id' => $id,
@@ -187,6 +191,93 @@ final class RepositorioArt extends Repositorio
         return (int) BancoDados::valor(
             'SELECT COUNT(*) FROM pro_arts WHERE art_prf_id = :perfil AND art_status = :ativo',
             ['perfil' => $perfilId, 'ativo' => STATUS_ATIVO]
+        );
+    }
+
+    /**
+     * Regrava as atividades TOS da ART a partir do retorno da API.
+     *
+     * Sao o que o profissional efetivamente executou, com codigo oficial do
+     * Confea. Como toda a copia local, nao ha caminho manual de entrada: o
+     * conjunto e substituido pelo que a API responder na revalidacao, para que
+     * uma atividade retirada na origem nao sobreviva aqui.
+     *
+     * @param list<array<string, mixed>> $atividades
+     */
+    public static function sincronizarAtividades(int $artId, array $atividades): void
+    {
+        $codigos = [];
+
+        foreach ($atividades as $atividade) {
+            $codigo = trim((string) ($atividade['tos_codigo'] ?? ''));
+
+            if ($codigo === '') {
+                continue;
+            }
+
+            $codigos[] = $codigo;
+
+            BancoDados::executar(
+                'INSERT INTO pro_art_atividades
+                    (ata_art_id, ata_tos_codigo, ata_descricao, ata_grupo, ata_subgrupo,
+                     ata_obra_servico, ata_complementar, ata_atividade, ata_status)
+                 VALUES
+                    (:art, :codigo, :descricao, :grupo, :subgrupo,
+                     :obra, :complementar, :atividade, :ativo)
+                 ON DUPLICATE KEY UPDATE
+                    ata_descricao = VALUES(ata_descricao),
+                    ata_grupo = VALUES(ata_grupo),
+                    ata_subgrupo = VALUES(ata_subgrupo),
+                    ata_obra_servico = VALUES(ata_obra_servico),
+                    ata_complementar = VALUES(ata_complementar),
+                    ata_atividade = VALUES(ata_atividade),
+                    ata_status = VALUES(ata_status)',
+                [
+                    'art'          => $artId,
+                    'codigo'       => $codigo,
+                    'descricao'    => $atividade['descricao'] ?? null,
+                    'grupo'        => $atividade['grupo'] ?? null,
+                    'subgrupo'     => $atividade['subgrupo'] ?? null,
+                    'obra'         => $atividade['obra_servico'] ?? null,
+                    'complementar' => $atividade['complementar'] ?? null,
+                    'atividade'    => $atividade['atividade'] ?? null,
+                    'ativo'        => STATUS_ATIVO,
+                ]
+            );
+        }
+
+        // Exclusao logica do que deixou de constar na origem
+        if ($codigos === []) {
+            BancoDados::executar(
+                'UPDATE pro_art_atividades SET ata_status = :excluido
+                  WHERE ata_art_id = :art AND ata_status = :ativo',
+                ['excluido' => STATUS_EXCLUIDO, 'art' => $artId, 'ativo' => STATUS_ATIVO]
+            );
+
+            return;
+        }
+
+        $marcadores = implode(',', array_fill(0, count($codigos), '?'));
+
+        BancoDados::executar(
+            "UPDATE pro_art_atividades SET ata_status = ?
+              WHERE ata_art_id = ? AND ata_status = ? AND ata_tos_codigo NOT IN ($marcadores)",
+            array_merge([STATUS_EXCLUIDO, $artId, STATUS_ATIVO], $codigos)
+        );
+    }
+
+    /**
+     * Atividades TOS de uma ART, em ordem de codigo.
+     *
+     * @return list<array<string, mixed>>
+     */
+    public static function atividades(int $artId): array
+    {
+        return BancoDados::buscarTodos(
+            'SELECT * FROM pro_art_atividades
+              WHERE ata_art_id = :art AND ata_status = :ativo
+              ORDER BY ata_tos_codigo',
+            ['art' => $artId, 'ativo' => STATUS_ATIVO]
         );
     }
 }
