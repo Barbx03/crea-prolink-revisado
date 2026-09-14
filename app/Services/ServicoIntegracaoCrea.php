@@ -364,7 +364,12 @@ final class ServicoIntegracaoCrea
                 $consulta = $this->consultarArts((string) $usuario['usu_rnp'], (string) $artLocal['art_numero']);
 
                 if ($consulta['dados'] !== []) {
-                    RepositorioArt::registrarValidada($perfilId, $consulta['dados'][0], $consulta['bruto']);
+                    // Mesma limitação da associação: a consulta por número não
+                    // devolve local nem atividades, e regravar sem elas apagaria
+                    // o que já estava correto.
+                    $art = $this->completarComListagem((string) $usuario['usu_rnp'], $consulta['dados'][0]);
+
+                    RepositorioArt::registrarValidada($perfilId, $art, $consulta['bruto']);
                     $atualizadas++;
                 } else {
                     $falhas++;
