@@ -86,9 +86,11 @@ services:
       - "127.0.0.1:${DB_PORTA_HOST:-3307}:3306"
     volumes:
       - prolink_banco:/var/lib/mysql
-      # Estrutura e carga aplicadas na primeira subida do volume
-      - ./_arq/estrutura.sql:/docker-entrypoint-initdb.d/01-estrutura.sql:ro
-      - ./_arq/dados-iniciais.sql:/docker-entrypoint-initdb.d/02-dados-iniciais.sql:ro
+      # A estrutura e a carga não entram por aqui de propósito. Os scripts
+      # nomeiam crea_prolink ao criar o banco, e aplicá-los neste ponto
+      # ignoraria um DB_NOME diferente, deixando a aplicação apontada para um
+      # banco vazio. Quem os aplica é o entrada.sh da aplicação, já dentro do
+      # banco configurado.
     healthcheck:
       test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
       interval: 10s

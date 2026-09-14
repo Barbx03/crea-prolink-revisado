@@ -60,13 +60,24 @@ TABELAS=$($CLIENTE $SEM_TLS -h "${DB_HOST:-mariadb}" -u "${DB_USUARIO:-prolink}"
     -e "SELECT COUNT(*) FROM information_schema.TABLES WHERE TABLE_SCHEMA = '${DB_NOME:-crea_prolink}'" 2>/dev/null || echo 0)
 
 if [ "${TABELAS:-0}" -lt 20 ]; then
+    # Os scripts nomeiam crea_prolink ao criar e selecionar o banco, o que
+    # serve à instalação manual. Aqui o banco já existe, criado pelo serviço
+    # do MariaDB com o nome de DB_NOME, e o usuário da aplicação não tem
+    # privilégio para criar outro: as duas linhas saem e o cliente entra
+    # diretamente no banco configurado, seja qual for o nome.
+    aplicar() {
+        sed -e '/^CREATE DATABASE /,/;$/d' -e '/^USE /d' "$1" \
+            | $CLIENTE $SEM_TLS -h "${DB_HOST:-mariadb}" -u "${DB_USUARIO:-prolink}" \
+                       -p"${DB_SENHA}" -D "${DB_NOME:-crea_prolink}"
+    }
+
     echo "[prolink] aplicando estrutura do banco (_arq/estrutura.sql)..."
-    $CLIENTE $SEM_TLS -h "${DB_HOST:-mariadb}" -u "${DB_USUARIO:-prolink}" -p"${DB_SENHA}" < /var/www/html/_arq/estrutura.sql
+    aplicar /var/www/html/_arq/estrutura.sql
 
     echo "[prolink] aplicando carga inicial (_arq/dados-iniciais.sql)..."
-    $CLIENTE $SEM_TLS -h "${DB_HOST:-mariadb}" -u "${DB_USUARIO:-prolink}" -p"${DB_SENHA}" < /var/www/html/_arq/dados-iniciais.sql
+    aplicar /var/www/html/_arq/dados-iniciais.sql
 
-    echo "[prolink] banco preparado."
+    echo "[prolink] banco preparado em '${DB_NOME:-crea_prolink}'."
 else
     echo "[prolink] banco já contém ${TABELAS} tabelas: estrutura preservada."
 fi
