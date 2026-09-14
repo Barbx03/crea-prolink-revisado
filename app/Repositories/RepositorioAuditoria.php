@@ -59,7 +59,7 @@ final class RepositorioAuditoria
         }
 
         if (!empty($filtros['termo'])) {
-            $condicoes[] = '(a.aud_descrição LIKE :termo OR a.aud_rota LIKE :termo OR a.aud_ip_origem LIKE :termo)';
+            $condicoes[] = '(a.aud_descricao LIKE :termo OR a.aud_rota LIKE :termo OR a.aud_ip_origem LIKE :termo)';
             $parametros['termo'] = '%' . $filtros['termo'] . '%';
         }
 

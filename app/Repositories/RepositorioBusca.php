@@ -76,7 +76,7 @@ final class RepositorioBusca
         }
 
         if (!empty($filtros['experiencia_min'])) {
-            $condicoes[] = 'COALESCE(p.prf_anos_experiência, 0) >= :experiência';
+            $condicoes[] = 'COALESCE(p.prf_anos_experiencia, 0) >= :experiencia';
             $parametros['experiencia'] = (int) $filtros['experiencia_min'];
         }
 
