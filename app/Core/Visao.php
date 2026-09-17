@@ -58,7 +58,11 @@ final class Visao
     {
         $twig->addGlobal('app', [
             'nome'     => APP_NOME,
+            // Absoluta: serve aos e-mails, que sao lidos fora do navegador.
             'url'      => APP_URL,
+            // Relativa a raiz: serve a pagina, que precisa acompanhar o host
+            // pelo qual o visitante chegou para a politica de conteudo bater.
+            'base'     => URL_BASE,
             'versao'   => APP_VERSAO,
             'ambiente' => APP_AMBIENTE,
             'debug'    => APP_DEBUG,
