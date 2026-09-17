@@ -47,7 +47,7 @@ apresentação em Twig e interface em Bootstrap 5 com jQuery.
              │
    ┌─────────▼──────────┐        ┌────────────────────────────────────────┐
    │  MariaDB 10.11     │        │  API oficial do CREA-AM (REST)         │
-   │  23 tabelas        │        │  profissionais · empresas · ARTs · CATs│
+   │  25 tabelas        │        │  profissionais · empresas · ARTs · CATs│
    └────────────────────┘        └────────────────────────────────────────┘
 ```
 

@@ -284,7 +284,7 @@ docker compose --env-file .env.docker up -d --build
 # Sintaxe de todos os arquivos PHP
 composer lint
 
-# Estrutura aplicada: 23 tabelas esperadas
+# Estrutura aplicada: 25 tabelas esperadas
 docker compose exec mariadb mariadb -u root -p -N -e \
   "SELECT COUNT(*) FROM information_schema.TABLES WHERE TABLE_SCHEMA='crea_prolink'"
 
@@ -296,7 +296,7 @@ docker compose exec mariadb mariadb -u root -p crea_prolink -e \
    UNION ALL SELECT 'configuracoes', COUNT(*) FROM sis_configuracoes"
 ```
 
-Resultado esperado: 23 tabelas, 3 áreas, 37 competências, 2 termos e 22
+Resultado esperado: 25 tabelas, 3 áreas, 37 competências, 2 termos e 22
 parâmetros de configuração.
 
 ---
