@@ -134,7 +134,7 @@ VALUES
    '$2y$12$zZb9XOhr537/DiQ3erPZKusTsoKG3JPzNINd.tzQDJ7L/ZpJguWni',
    'PJ', 'TERCEIRO', '12345678000199', NULL, 'S', '(92) 3000-0000', 'AM', 'Manaus',
    'Contratante de demonstração', 'A'),
-  (3, 'Instituto Amazônia Sustentável', 'instituição@prolink.local',
+  (3, 'Instituto Amazônia Sustentável', 'instituicao@prolink.local',
    '$2y$12$zZb9XOhr537/DiQ3erPZKusTsoKG3JPzNINd.tzQDJ7L/ZpJguWni',
    'PJ', 'TERCEIRO', '98765432000155', NULL, 'S', '(92) 3111-1111', 'AM', 'Manaus',
    'Contratante de demonstração', 'A')
