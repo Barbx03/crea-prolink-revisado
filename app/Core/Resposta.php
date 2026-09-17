@@ -60,12 +60,23 @@ final class Resposta
 
     public static function redirecionar(string $caminho, int $codigo = 302): void
     {
-        $destino = str_starts_with($caminho, 'http') ? $caminho : APP_URL . '/' . ltrim($caminho, '/');
+        // Impede open redirect: destino externo, protocolo-relativo ou com
+        // barra invertida e descartado em favor da raiz da aplicacao.
+        $externo = str_starts_with($caminho, 'http')
+            || str_starts_with($caminho, '//')
+            || str_starts_with($caminho, '\\');
 
-        // Impede open redirect: apenas destinos da propria aplicacao
-        if (!str_starts_with($destino, APP_URL)) {
-            $destino = APP_URL . '/';
+        if ($externo && !str_starts_with($caminho, APP_URL)) {
+            $caminho = '';
         }
+
+        if (str_starts_with($caminho, APP_URL)) {
+            $caminho = substr($caminho, strlen(APP_URL));
+        }
+
+        // Relativo a raiz de proposito: preserva o host pelo qual o visitante
+        // chegou e, com ele, o cookie de sessao.
+        $destino = URL_BASE . '/' . ltrim($caminho, '/');
 
         http_response_code($codigo);
         header('Location: ' . $destino);

@@ -69,7 +69,7 @@ final class Visao
     private static function registrarFuncoes(Environment $twig): void
     {
         $twig->addFunction(new TwigFunction('url', static function (string $caminho = ''): string {
-            return APP_URL . '/' . ltrim($caminho, '/');
+            return URL_BASE . '/' . ltrim($caminho, '/');
         }));
 
         $twig->addFunction(new TwigFunction('asset', static function (string $caminho): string {

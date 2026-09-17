@@ -57,9 +57,16 @@ use App\Core\Ambiente as Env;
 // e) URLs da aplicacao (item 8.3.1.a)
 // -----------------------------------------------------------------------------
 define('APP_URL',    rtrim(Env::texto('APP_URL', 'http://localhost:8080'), '/'));
-define('URL_ASSETS', APP_URL . '/assets');
+
+// Caminho da aplicacao dentro do host, sem o esquema nem o dominio. As URLs
+// internas usam este prefixo para que a pagina funcione seja qual for o
+// endereco pelo qual o visitante chegou -- localhost, 127.0.0.1 ou o IP da
+// maquina. Com host fixo, a politica de conteudo ('self') trataria o mesmo
+// servidor como origem estranha e recusaria as folhas de estilo e os scripts.
+define('URL_BASE',   rtrim((string) (parse_url(APP_URL, PHP_URL_PATH) ?? ''), '/'));
+define('URL_ASSETS', URL_BASE . '/assets');
 define('URL_IMG',    URL_ASSETS . '/img');
-define('URL_UPLOAD', APP_URL . '/uploads');
+define('URL_UPLOAD', URL_BASE . '/uploads');
 
 // -----------------------------------------------------------------------------
 // f) Configuracoes de ambiente (item 8.3.1.f)
