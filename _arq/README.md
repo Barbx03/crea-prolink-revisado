@@ -1,11 +1,11 @@
 # CREA Pro-Link — Instalação, configuração e execução
 
-Protótipo desenvolvido para o **Desafio CREA Pro-Link** (CREA-AM), conforme o
-Anexo I — Termo de Referência para Desenvolvimento e Arquitetura de Software.
+O CREA Pro-Link conecta profissionais, empresas e instituições que procuram
+serviços de engenharia, agronomia e geociências. O projeto faz parte do
+Desafio CREA Pro-Link do CREA-AM.
 
-Plataforma de aproximação entre profissionais registrados no Sistema
-Confea/Crea, empresas, instituições e contratantes de serviços técnicos em
-engenharia, agronomia e geociências.
+Este guia explica como instalar a aplicação, configurar o acesso à API do
+CREA e usar as contas de demonstração.
 
 ---
 
@@ -18,8 +18,8 @@ engenharia, agronomia e geociências.
 | Docker Engine | 24.0 |
 | Docker Compose | v2.20 |
 
-Nada mais precisa estar instalado no host: PHP, MariaDB, Composer e o servidor
-de e-mail de teste sobem em contêineres.
+Com Docker, PHP, MariaDB, Composer e o servidor de e-mail de teste ficam
+nos contêineres.
 
 ### Execução direta no host (alternativa)
 
@@ -36,7 +36,7 @@ de e-mail de teste sobem em contêineres.
 
 ```bash
 # 1. Clonar o repositório
-git clone <endereco-do-repositorio> crea-prolink
+git clone https://github.com/Barbx03/crea-prolink-revisado.git crea-prolink
 cd crea-prolink
 
 # 2. Criar o arquivo de ambiente a partir do modelo
@@ -89,10 +89,9 @@ percorrer os cenários do item 7 do Termo de Referência:
 | Construtora (PJ, sem registro no CREA) | `contratante@prolink.local` | `Senha@123` |
 | Instituição de pesquisa (PJ, sem registro) | `instituicao@prolink.local` | `Senha@123` |
 
-Não há profissional pré-cadastrado na carga inicial, e isso é deliberado: o
-perfil de profissional registrado depende de validação na API oficial do
-CREA-AM, e o item 8.4 do Termo de Referência veda a criação de base própria
-para simular esses dados.
+Para testar um perfil de profissional registrado, faça o cadastro e valide
+o registro pela API oficial do CREA-AM. A carga inicial não inclui esse
+tipo de conta, pois os dados de registro precisam vir da API (item 8.4).
 
 ---
 

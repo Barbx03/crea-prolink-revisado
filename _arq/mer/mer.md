@@ -4,17 +4,14 @@ Versão textual do modelo, para leitura e controle de versão. Os arquivos
 `mer.svg`, `mer.png` e `mer.pdf` neste mesmo diretório trazem o diagrama
 completo, com todos os atributos e tipos.
 
-Todos os três são **gerados a partir do banco criado por
-`_arq/estrutura.sql`**, de modo que não podem divergir do schema.
+Os diagramas usam como referência o banco criado por `_arq/estrutura.sql`.
+Revise esses arquivos quando houver mudanças nas tabelas ou nos relacionamentos.
 
 ## Sobre o formato `.mwb`
 
-O item 8.3.2.b admite o MER em **PDF, PNG e/ou arquivo editável `.mwb`**. A
-entrega usa as três primeiras formas: PDF e PNG para leitura, e SVG como
-formato vetorial editável, aberto e versionável — legível em qualquer navegador
-ou editor gráfico, o que o `.mwb` (binário e específico do MySQL Workbench)
-não é. O script gerador está preservado na documentação de arquitetura, de modo
-que o diagrama pode ser regerado a qualquer momento a partir do banco.
+O item 8.3.2.b prevê a entrega do MER em PDF, PNG e/ou `.mwb`.
+Este projeto inclui PDF e PNG para consulta, além de uma versão SVG.
+Não há arquivo `.mwb` nesta entrega.
 
 ## Diagrama
 

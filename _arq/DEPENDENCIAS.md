@@ -1,7 +1,7 @@
 # CREA Pro-Link — Bibliotecas, frameworks e dependências
 
-Atende ao item 8.3.2.e do Termo de Referência: relação das bibliotecas,
-frameworks e dependências de terceiros utilizadas, com versões e licenças.
+Bibliotecas usadas no projeto, com suas versões e licenças. Esta relação
+corresponde ao item 8.3.2.e do Termo de Referência.
 
 Todas as licenças relacionadas são compatíveis com uso institucional (item
 8.1.3, parágrafo final): permitem uso, modificação e redistribuição em
@@ -69,10 +69,9 @@ fixadas em `composer.lock`, de modo que a instalação é reprodutível.
 
 ## 3. Bibliotecas de interface
 
-Exigidas no item 8.1.3 e **servidas localmente**, em
-`public/assets/vendor/`. A política de conteúdo da aplicação só admite
-recursos da própria origem, o que neutraliza a exploração de XSS refletido;
-além disso, o ambiente funciona sem acesso à internet.
+As bibliotecas de interface exigidas no item 8.1.3 ficam em
+`public/assets/vendor/`. Esses arquivos são servidos pela própria aplicação,
+sem depender de uma CDN. A integração com o CREA-AM precisa de acesso à API.
 
 | Biblioteca | Versão | Licença | Arquivo |
 |---|---|---|---|

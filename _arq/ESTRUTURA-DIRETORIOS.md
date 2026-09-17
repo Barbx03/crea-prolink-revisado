@@ -1,7 +1,7 @@
 # CREA Pro-Link — Estrutura de diretórios
 
-Atende ao item 8.3.2.f do Termo de Referência: descrição da estrutura de
-diretórios do projeto e a finalidade de cada pasta principal.
+Veja abaixo onde ficam o código, os arquivos públicos e a documentação.
+A estrutura está descrita conforme o item 8.3.2.f do Termo de Referência.
 
 ---
 

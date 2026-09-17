@@ -1,8 +1,8 @@
 # CREA Pro-Link — Documentação de arquitetura
 
-Atende ao item 8.3.2.d do Termo de Referência: informações necessárias ao
-entendimento da arquitetura, estrutura de diretórios, componentes, módulos,
-integrações e principais regras de negócio implementadas.
+Este documento apresenta as camadas da aplicação, a integração com o CREA-AM
+e as principais regras de negócio. É a documentação de arquitetura prevista
+no item 8.3.2.d do Termo de Referência.
 
 ---
 
@@ -141,8 +141,8 @@ de controle `xxx_dt_registro`, `xxx_log` e `xxx_status`.
 | `pro_denuncias` | denúncias e tratamento pela moderação |
 | `pro_solicitacoes_lgpd` | requisições de direitos do titular |
 
-O Modelo Entidade-Relacionamento está em `_arq/mer/` (SVG, PNG e PDF) e é
-**gerado a partir do banco**, de modo que não pode divergir do schema.
+O Modelo Entidade-Relacionamento está em `_arq/mer/`, nos formatos SVG, PNG
+e PDF. Ao mudar o banco, revise também o diagrama.
 
 ---
 
@@ -303,29 +303,24 @@ nenhum.
 
 ## 7. Escolhas técnicas e seus motivos
 
-**MVC próprio em vez de framework completo.** O Termo de Referência exige
-`_config.php` na raiz, a pasta `_arq/`, nomenclatura de tabelas com prefixo de
-módulo e campos com prefixo de três letras. Um framework de convenções fortes
-brigaria com cada um desses pontos. O núcleo autoral tem 18 classes com
-responsabilidade única, é auditável em uma leitura e adere ao pedido sem
-adaptação forçada.
+**MVC próprio.** O projeto organiza o núcleo em `app/Core/`, com controladores,
+serviços e repositórios em pastas separadas. A configuração fica em
+`_config.php` e a documentação em `_arq/`, conforme o Termo de Referência.
 
-**Twig como mecanismo de templates.** Atende ao item 8.2, que veda PHP dentro
-das páginas HTML, e o escape automático elimina a classe mais comum de XSS.
+**Twig.** Os templates ficam separados do PHP, conforme o item 8.2.
+O escape automático ajuda a proteger a saída HTML.
 
-**Repositórios em vez de ORM.** O item 8.1.1.b pede separação da persistência
-por repositório, DAO ou padrão equivalente. Repositórios com SQL explícito
-mantêm as consultas legíveis e auditáveis, o que importa em uma solução que
-será avaliada tabela por tabela.
+**Repositórios.** As consultas SQL ficam em classes próprias, separadas dos
+controladores, seguindo o item 8.1.1.b. Isso facilita localizar e revisar
+as operações no banco.
 
 **Bootstrap 5 e jQuery.** Exigidos no item 8.1.3. A interface funciona
 integralmente sem JavaScript: o script apenas melhora o uso — contadores de
 caracteres, filtro de competências, consulta prévia à API e confirmações.
 
-**Assets servidos localmente.** A política de conteúdo da aplicação só admite
-recursos da própria origem, o que neutraliza a exploração de XSS refletido. Por
-isso Bootstrap, jQuery e os ícones ficam em `public/assets/vendor/`, e não em
-CDN. O ambiente também funciona sem acesso externo.
+**Arquivos de interface locais.** Bootstrap, jQuery e os ícones ficam em
+`public/assets/vendor/`. A interface não depende de uma CDN; as consultas ao
+CREA-AM ainda precisam de acesso à API.
 
 ---
 
@@ -346,7 +341,7 @@ CDN. O ambiente também funciona sem acesso externo.
 
 ## 9. Limites conhecidos do protótipo
 
-Registrados por honestidade técnica, com o encaminhamento de cada um:
+Alguns recursos ainda precisam de ajustes para uso em produção:
 
 1. **Fila de notificações processada de forma síncrona.** O envio ocorre na
    requisição, com reprocessamento manual pelo painel. Em produção, chamar

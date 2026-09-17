@@ -1,8 +1,8 @@
 # CREA Pro-Link — Segurança e tratamento de dados pessoais
 
-Detalha como cada controle exigido no item 8.5 do Termo de Referência foi
-implementado, e como a plataforma trata dados pessoais à luz da Lei
-n. 13.709/2018.
+Este documento reúne os controles de acesso, as proteções dos formulários
+e o tratamento de dados pessoais implementados no projeto. As seções seguem
+os controles do item 8.5 do Termo de Referência.
 
 ---
 
@@ -64,7 +64,7 @@ conteúdo de usuário.
 **Política de conteúdo.** `Content-Security-Policy` com `default-src 'self'`,
 sem `unsafe-inline` para script. Não há atributo `onclick` nem `<script>`
 inline em nenhuma view: todo o comportamento está em `public/assets/js/app.js`.
-Assim, mesmo que um payload chegue à página, não há como executá-lo.
+Essa configuração restringe a execução de scripts na página.
 
 **Limpeza na entrada.** `Core\Requisicao` remove bytes nulos e caracteres de
 controle de tudo o que chega, o que impede a quebra de contexto por caractere
@@ -82,9 +82,8 @@ e o diretório de uploads tem execução desligada no Apache.
 
 Token de 32 bytes por sessão, comparado com `hash_equals()` em tempo constante.
 
-A validação acontece **no roteador**, antes de o controlador existir, para toda
-requisição `POST`, `PUT`, `PATCH` ou `DELETE`. Uma rota nova está protegida por
-ser declarada; nenhuma proteção depende de o programador se lembrar dela.
+A validação acontece no roteador, antes de chamar o controlador, nas
+requisições `POST`, `PUT`, `PATCH` e `DELETE`.
 Requisição sem token válido é recusada com HTTP 419, registrada na auditoria
 com severidade de alerta.
 

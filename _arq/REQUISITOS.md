@@ -1,7 +1,7 @@
 # CREA Pro-Link — Rastreamento de requisitos
 
-Onde cada requisito do Anexo I — Termo de Referência foi implementado. Serve
-para conferência item a item, sem precisar procurar no código.
+As tabelas relacionam os requisitos do Termo de Referência com as telas e
+classes do projeto. Use os caminhos indicados para conferir cada recurso.
 
 ---
 
