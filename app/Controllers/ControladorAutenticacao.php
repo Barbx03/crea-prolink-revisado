@@ -128,6 +128,15 @@ final class ControladorAutenticacao extends Controlador
 
                 $consulta = $integracao->consultarProfissional($documento);
 
+                if (!self::identificou($consulta['dados'], ['rnp', 'nome'])) {
+                    $this->json([
+                        'sucesso'  => false,
+                        'mensagem' => 'Nenhum registro encontrado na base oficial do CREA-AM para este CPF.',
+                    ], 404);
+
+                    return;
+                }
+
                 $this->json([
                     'sucesso' => true,
                     'tipo'    => 'PROFISSIONAL',
@@ -152,6 +161,15 @@ final class ControladorAutenticacao extends Controlador
 
             $consulta = $integracao->consultarEmpresa($documento);
 
+            if (!self::identificou($consulta['dados'], ['registro', 'razao_social'])) {
+                $this->json([
+                    'sucesso'  => false,
+                    'mensagem' => 'Nenhum registro encontrado na base oficial do CREA-AM para este CNPJ.',
+                ], 404);
+
+                return;
+            }
+
             $this->json([
                 'sucesso' => true,
                 'tipo'    => 'EMPRESA',
@@ -170,6 +188,26 @@ final class ControladorAutenticacao extends Controlador
                 'mensagem' => $e->getMessage(),
             ], $e->naoEncontrado ? 404 : 502);
         }
+    }
+
+    /**
+     * A API responde com lista vazia quando nao ha registro, e o normalizador
+     * a converte em campos nulos. Sem nenhum campo identificador, a consulta
+     * nao encontrou nada -- e dizer o contrario faria a tela sugerir um
+     * registro conferido que a base nao confirma.
+     *
+     * @param array<string, mixed> $dados
+     * @param list<string>         $identificadores
+     */
+    private static function identificou(array $dados, array $identificadores): bool
+    {
+        foreach ($identificadores as $campo) {
+            if (trim((string) ($dados[$campo] ?? '')) !== '') {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public function cadastrar(): void
