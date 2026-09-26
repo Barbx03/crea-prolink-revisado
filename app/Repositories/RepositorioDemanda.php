@@ -509,31 +509,66 @@ final class RepositorioDemanda extends Repositorio
     }
 
     /**
-     * Demandas por unidade da federação, desconsiderando as excluídas.
+     * Demandas por unidade da federação, para o mapa dos painéis.
      *
-     * @return list<array{uf: string, total: int, abertas: int, interesses: int}>
+     * Com `$somenteVisiveis`, conta apenas as demandas que a pesquisa pública
+     * exibe a um usuário autenticado; sem ele, considera todas as não excluídas
+     * (visão administrativa). O nível de cor (0 a 4) é relativo ao estado com
+     * mais demandas abertas.
+     *
+     * @return array{estados: array<string, array<string, int|string>>, ranking: list<array<string, int|string>>, maximo: int}
      */
-    public static function porUf(): array
+    public static function mapaPorUf(bool $somenteVisiveis): array
     {
+        $condicoes  = ["dem_uf IS NOT NULL", "dem_uf <> ''"];
+        $parametros = [];
+
+        if ($somenteVisiveis) {
+            $condicoes[] = 'dem_status = :ativo';
+            $condicoes[] = "dem_moderacao = 'APROVADO'";
+            $condicoes[] = "dem_situacao = 'PUBLICADA'";
+            $parametros['ativo'] = STATUS_ATIVO;
+        } else {
+            $condicoes[] = 'dem_status <> :excluido';
+            $parametros['excluido'] = STATUS_EXCLUIDO;
+        }
+
         $linhas = BancoDados::buscarTodos(
             "SELECT dem_uf AS uf,
                     COUNT(*) AS total,
                     SUM(dem_situacao = 'PUBLICADA') AS abertas,
                     SUM(dem_total_interesses) AS interesses
                FROM pro_demandas
-              WHERE dem_status <> :excluido
-                AND dem_uf IS NOT NULL AND dem_uf <> ''
+              WHERE " . implode(' AND ', $condicoes) . "
               GROUP BY dem_uf
               ORDER BY abertas DESC, total DESC",
-            ['excluido' => STATUS_EXCLUIDO]
+            $parametros
         );
 
-        return array_map(static fn (array $linha): array => [
-            'uf'         => strtoupper((string) $linha['uf']),
-            'total'      => (int) $linha['total'],
-            'abertas'    => (int) $linha['abertas'],
-            'interesses' => (int) $linha['interesses'],
-        ], $linhas);
+        $maximo = max(array_merge([0], array_map(static fn (array $l): int => (int) $l['abertas'], $linhas)));
+
+        $estados = [];
+
+        foreach ($linhas as $linha) {
+            $abertas = (int) $linha['abertas'];
+
+            $estados[strtoupper((string) $linha['uf'])] = [
+                'uf'         => strtoupper((string) $linha['uf']),
+                'total'      => (int) $linha['total'],
+                'abertas'    => $abertas,
+                'interesses' => (int) $linha['interesses'],
+                'nivel'      => $abertas > 0 && $maximo > 0 ? (int) ceil($abertas / $maximo * 4) : 0,
+            ];
+        }
+
+        return [
+            'estados' => $estados,
+            'ranking' => array_slice(array_values(array_filter(
+                $estados,
+                static fn (array $estado): bool => $estado['abertas'] > 0
+            )), 0, 6),
+            'maximo'  => $maximo,
+        ];
     }
 
     /**

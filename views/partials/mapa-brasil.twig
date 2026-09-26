@@ -1,6 +1,7 @@
 {#
     Mapa do Brasil com as demandas por unidade da federação.
-    Espera `estados`: hash UF => { abertas, total, interesses, nivel } (nível de 0 a 4).
+    Espera `estados`: hash UF => { abertas, total, interesses, nivel } (nível de 0 a 4)
+    e `detalhado`, que acrescenta total e manifestações à dica de cada estado.
     Contornos: @svg-maps/brazil (CC BY 4.0, https://github.com/VictorCazanave/svg-maps).
 #}
 {% set contornos = {
@@ -38,8 +39,8 @@
     {% for uf, contorno in contornos %}
         {% set dados = estados[uf]|default({ abertas: 0, total: 0, interesses: 0, nivel: 0 }) %}
         <a href="{{ url('/demandas?uf=' ~ uf) }}" class="mapa-estado mapa-nivel-{{ dados.nivel }}"
-           aria-label="{{ contorno.nome }}: {{ dados.abertas }} demanda(s) aberta(s) de {{ dados.total }} cadastrada(s)">
-            <title>{{ contorno.nome }} ({{ uf }}): {{ dados.abertas }} aberta(s), {{ dados.total }} no total, {{ dados.interesses }} manifestação(ões)</title>
+           aria-label="{{ contorno.nome }}: {{ dados.abertas }} demanda(s) aberta(s)">
+            <title>{{ contorno.nome }} ({{ uf }}): {{ dados.abertas }} aberta(s){% if detalhado|default(false) %}, {{ dados.total }} no total, {{ dados.interesses }} manifestação(ões){% endif %}</title>
             <path d="{{ contorno.caminho }}"/>
         </a>
     {% endfor %}

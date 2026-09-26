@@ -44,7 +44,7 @@ final class ControladorPainelAdmin extends Controlador
             'smtp_ativo'    => $servicoEmail->smtpAtivo(),
             'ultimos_eventos' => RepositorioAuditoria::consultar([], 1, 12)['itens'],
             'pendencias'    => $this->pendencias(),
-            'demandas_uf'   => $this->demandasPorUf(),
+            'demandas_uf'   => RepositorioDemanda::mapaPorUf(false),
         ]);
     }
 
@@ -122,37 +122,6 @@ final class ControladorPainelAdmin extends Controlador
             $pendencias,
             static fn (array $pendencia): bool => $pendencia['total'] > 0
         ));
-    }
-
-    /**
-     * Demandas por UF para o mapa, com o nível de cor (0 a 4) relativo ao
-     * estado com mais demandas abertas.
-     *
-     * @return array{estados: array<string, array<string, int>>, ranking: list<array<string, int|string>>, maximo: int}
-     */
-    private function demandasPorUf(): array
-    {
-        $linhas = RepositorioDemanda::porUf();
-        $maximo = max(array_merge([0], array_column($linhas, 'abertas')));
-
-        $estados = [];
-
-        foreach ($linhas as $linha) {
-            $linha['nivel'] = $linha['abertas'] > 0 && $maximo > 0
-                ? (int) ceil($linha['abertas'] / $maximo * 4)
-                : 0;
-
-            $estados[$linha['uf']] = $linha;
-        }
-
-        return [
-            'estados' => $estados,
-            'ranking' => array_slice(array_values(array_filter(
-                $estados,
-                static fn (array $estado): bool => $estado['abertas'] > 0
-            )), 0, 6),
-            'maximo'  => $maximo,
-        ];
     }
 
     /**
