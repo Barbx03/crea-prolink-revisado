@@ -24,6 +24,7 @@ final class ControladorInicio extends Controlador
             'areas'              => RepositorioCompetencia::areas(),
             'mais_demandadas'    => RepositorioCompetencia::maisDemandadas(8),
             'demandas_uf'        => RepositorioDemanda::mapaPorUf(true, Autenticacao::autenticado()),
+            'demandas_am'        => RepositorioDemanda::mapaPorMunicipio('AM', true, Autenticacao::autenticado()),
         ]);
     }
 }

@@ -45,6 +45,7 @@ final class ControladorPainelAdmin extends Controlador
             'ultimos_eventos' => RepositorioAuditoria::consultar([], 1, 12)['itens'],
             'pendencias'    => $this->pendencias(),
             'demandas_uf'   => RepositorioDemanda::mapaPorUf(false),
+            'demandas_am'   => RepositorioDemanda::mapaPorMunicipio('AM', false),
         ]);
     }
 

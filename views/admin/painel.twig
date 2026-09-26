@@ -135,7 +135,7 @@
             </div>
 
             {# --- Demandas por estado --------------------------------- #}
-            {% include 'partials/card-mapa-demandas.twig' with { mapa: demandas_uf, administrativo: true } only %}
+            {% include 'partials/card-mapa-demandas.twig' with { mapa: demandas_uf, mapa_am: demandas_am, administrativo: true } only %}
 
             {# --- Últimos eventos ------------------------------------- #}
             <div class="card">

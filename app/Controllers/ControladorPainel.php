@@ -42,6 +42,7 @@ final class ControladorPainel extends Controlador
             'notificacoes'  => array_slice(RepositorioNotificacao::doUsuario($this->usuarioId(), 5), 0, 5),
             'conversas'     => array_slice(RepositorioConversa::doUsuario($this->usuarioId()), 0, 4),
             'demandas_uf'   => RepositorioDemanda::mapaPorUf(true),
+            'demandas_am'   => RepositorioDemanda::mapaPorMunicipio('AM', true),
         ];
 
         if (in_array($perfil, [PERFIL_PROFISSIONAL, PERFIL_EMPRESA], true)) {

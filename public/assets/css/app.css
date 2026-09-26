@@ -395,7 +395,12 @@ textarea:focus-visible,
 }
 
 .mapa-ranking-uf {
-    width: 2rem;
+    flex: 0 0 auto;
+    min-width: 2rem;
+    max-width: 55%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
     font-weight: 700;
     text-decoration: none;
 }
@@ -408,4 +413,20 @@ textarea:focus-visible,
 
 .mapa-credito {
     font-size: 0.7rem;
+}
+
+.mapa-amazonas .mapa-estado path {
+    stroke-width: 1.5;
+}
+
+.mapa-amazonas .mapa-estado:focus-visible path {
+    stroke-width: 4;
+}
+
+.nav-pills-mapa .nav-link {
+    padding: 0.2rem 0.7rem;
+}
+
+.mapa-ranking-uf.mapa-ranking-largo {
+    flex-basis: 8rem;
 }

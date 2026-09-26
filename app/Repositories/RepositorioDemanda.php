@@ -6,6 +6,7 @@ namespace App\Repositories;
 
 use App\Core\Auditoria;
 use App\Core\BancoDados;
+use App\Core\Formatador;
 use App\Core\Repositorio;
 
 /**
@@ -520,22 +521,10 @@ final class RepositorioDemanda extends Repositorio
      */
     public static function mapaPorUf(bool $somenteVisiveis, bool $autenticado = true): array
     {
-        $condicoes  = ["dem_uf IS NOT NULL", "dem_uf <> ''"];
-        $parametros = [];
+        [$condicoes, $parametros] = self::condicoesDoMapa($somenteVisiveis, $autenticado);
 
-        if ($somenteVisiveis) {
-            $condicoes[] = 'dem_status = :ativo';
-            $condicoes[] = "dem_moderacao = 'APROVADO'";
-            $condicoes[] = "dem_situacao = 'PUBLICADA'";
-            $parametros['ativo'] = STATUS_ATIVO;
-
-            if (!$autenticado) {
-                $condicoes[] = "dem_visibilidade = 'PUBLICO'";
-            }
-        } else {
-            $condicoes[] = 'dem_status <> :excluido';
-            $parametros['excluido'] = STATUS_EXCLUIDO;
-        }
+        $condicoes[] = "dem_uf IS NOT NULL";
+        $condicoes[] = "dem_uf <> ''";
 
         $linhas = BancoDados::buscarTodos(
             "SELECT dem_uf AS uf,
@@ -573,6 +562,88 @@ final class RepositorioDemanda extends Repositorio
             )), 0, 6),
             'maximo'  => $maximo,
         ];
+    }
+
+    /**
+     * Demandas por município de uma UF, para o mapa municipal. Os nomes são
+     * digitados livremente, então o agrupamento usa o nome normalizado (sem
+     * acentos e em minúsculas) para casar com os contornos do IBGE.
+     *
+     * @return array{municipios: array<string, array<string, int|string>>, ranking: list<array<string, int|string>>, maximo: int}
+     */
+    public static function mapaPorMunicipio(string $uf, bool $somenteVisiveis, bool $autenticado = true): array
+    {
+        [$condicoes, $parametros] = self::condicoesDoMapa($somenteVisiveis, $autenticado);
+
+        $condicoes[] = 'dem_uf = :uf';
+        $condicoes[] = "dem_cidade IS NOT NULL";
+        $condicoes[] = "dem_cidade <> ''";
+        $parametros['uf'] = strtoupper($uf);
+
+        $linhas = BancoDados::buscarTodos(
+            "SELECT dem_cidade AS cidade,
+                    COUNT(*) AS total,
+                    SUM(dem_situacao = 'PUBLICADA') AS abertas
+               FROM pro_demandas
+              WHERE " . implode(' AND ', $condicoes) . "
+              GROUP BY dem_cidade",
+            $parametros
+        );
+
+        $municipios = [];
+
+        foreach ($linhas as $linha) {
+            $chave = Formatador::normalizar((string) $linha['cidade']);
+
+            $municipios[$chave] ??= ['cidade' => trim((string) $linha['cidade']), 'total' => 0, 'abertas' => 0];
+            $municipios[$chave]['total']   += (int) $linha['total'];
+            $municipios[$chave]['abertas'] += (int) $linha['abertas'];
+        }
+
+        uasort($municipios, static fn (array $a, array $b): int => [$b['abertas'], $b['total']] <=> [$a['abertas'], $a['total']]);
+
+        $maximo = max(array_merge([0], array_column($municipios, 'abertas')));
+
+        foreach ($municipios as &$municipio) {
+            $municipio['nivel'] = $municipio['abertas'] > 0 && $maximo > 0
+                ? (int) ceil($municipio['abertas'] / $maximo * 4)
+                : 0;
+        }
+        unset($municipio);
+
+        return [
+            'municipios' => $municipios,
+            'ranking'    => array_slice(array_values(array_filter(
+                $municipios,
+                static fn (array $municipio): bool => $municipio['abertas'] > 0
+            )), 0, 6),
+            'maximo'     => $maximo,
+        ];
+    }
+
+    /**
+     * Condições comuns aos mapas: as demandas que a pesquisa pública exibe ou,
+     * na visão administrativa, todas as não excluídas.
+     *
+     * @return array{0: list<string>, 1: array<string, mixed>}
+     */
+    private static function condicoesDoMapa(bool $somenteVisiveis, bool $autenticado): array
+    {
+        if (!$somenteVisiveis) {
+            return [['dem_status <> :excluido'], ['excluido' => STATUS_EXCLUIDO]];
+        }
+
+        $condicoes = [
+            'dem_status = :ativo',
+            "dem_moderacao = 'APROVADO'",
+            "dem_situacao = 'PUBLICADA'",
+        ];
+
+        if (!$autenticado) {
+            $condicoes[] = "dem_visibilidade = 'PUBLICO'";
+        }
+
+        return [$condicoes, ['ativo' => STATUS_ATIVO]];
     }
 
     /**
