@@ -23,6 +23,20 @@ final class ExcecaoApiCrea extends RuntimeException
         parent::__construct($mensagem);
     }
 
+    /**
+     * Texto para o usuário final. A mensagem técnica (token, variáveis de
+     * ambiente, código HTTP) fica para a administração e o registro de consultas.
+     */
+    public function mensagemParaUsuario(): string
+    {
+        if ($this->naoEncontrado || in_array($this->httpStatus, [400, 422], true)) {
+            return $this->getMessage();
+        }
+
+        return 'O sistema oficial do CREA-AM não pôde ser consultado no momento. '
+            . 'Tente novamente mais tarde.';
+    }
+
     public static function naoConfigurada(): self
     {
         return new self(

@@ -139,7 +139,7 @@ final class ControladorPortfolio extends Controlador
 
             Sessao::sucesso($resultado['mensagem']);
         } catch (ExcecaoApiCrea $e) {
-            Sessao::erro($e->getMessage());
+            Sessao::erro($e->mensagemParaUsuario());
         }
 
         $this->redirecionar('/meu-perfil/registro-crea');
@@ -173,7 +173,7 @@ final class ControladorPortfolio extends Controlador
                 ? Sessao::sucesso($resultado['mensagem'])
                 : Sessao::erro($resultado['mensagem']);
         } catch (ExcecaoApiCrea $e) {
-            Sessao::erro($e->getMessage());
+            Sessao::erro($e->mensagemParaUsuario());
         }
 
         $this->redirecionar('/meu-perfil/registro-crea');
@@ -237,7 +237,7 @@ final class ControladorPortfolio extends Controlador
                 ));
             }
         } catch (ExcecaoApiCrea $e) {
-            Sessao::erro($e->getMessage());
+            Sessao::erro($e->mensagemParaUsuario());
         }
 
         $this->redirecionar('/meu-perfil/registro-crea');
@@ -255,7 +255,7 @@ final class ControladorPortfolio extends Controlador
                 ? Sessao::sucesso($resultado['mensagem'])
                 : Sessao::erro($resultado['mensagem']);
         } catch (ExcecaoApiCrea $e) {
-            Sessao::erro($e->getMessage());
+            Sessao::erro($e->mensagemParaUsuario());
         }
 
         $this->redirecionar('/meu-perfil/registro-crea');

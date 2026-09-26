@@ -185,7 +185,7 @@ final class ControladorAutenticacao extends Controlador
         } catch (ExcecaoApiCrea $e) {
             $this->json([
                 'sucesso'  => false,
-                'mensagem' => $e->getMessage(),
+                'mensagem' => $e->mensagemParaUsuario(),
             ], $e->naoEncontrado ? 404 : 502);
         }
     }
@@ -352,9 +352,9 @@ final class ControladorAutenticacao extends Controlador
 
                 $mensagemIntegracao = $resultado['mensagem'];
             } catch (ExcecaoApiCrea $e) {
-                $mensagemIntegracao = 'Cadastro criado, mas a validação na API oficial não pôde ser concluída agora: '
-                    . $e->getMessage()
-                    . ' Você pode repetir a validação no seu perfil.';
+                $mensagemIntegracao = 'Seu cadastro foi criado, mas ainda não conseguimos conferir seu registro no CREA-AM: '
+                    . $e->mensagemParaUsuario()
+                    . ' Você pode repetir a validação pelo seu perfil.';
             }
         }
 
