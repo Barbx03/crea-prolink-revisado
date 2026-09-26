@@ -7,6 +7,14 @@ O sistema reúne perfis profissionais, demandas, consulta a ARTs e CATs pela
 API do CREA, manifestações de interesse e mensagens entre os participantes.
 A aplicação usa PHP, MariaDB, Twig, Bootstrap e jQuery.
 
+## Hospedagem
+
+- [Aplicação no Railway](https://app-production-77cb.up.railway.app)
+- [Painel do projeto](https://railway.com/project/760470b5-c0f7-4ee2-8d67-c84d78d5bc82)
+
+O deploy é feito pelo CLI com `railway up --service app`; a publicação inicial
+usa os arquivos locais. O deploy automático pelo GitHub ainda não está configurado.
+
 ## Instalação e documentação
 
 Para executar o projeto, siga o [guia de instalação](_arq/README.md).
@@ -19,3 +27,4 @@ de demonstração.
 - [Dependências](_arq/DEPENDENCIAS.md)
 - [Segurança](_arq/SEGURANCA.md)
 - [Modelo do banco de dados](_arq/mer/mer.md)
+- [Publicação no Railway](_arq/RAILWAY.md)

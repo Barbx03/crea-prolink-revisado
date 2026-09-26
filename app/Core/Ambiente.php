@@ -31,7 +31,10 @@ final class Ambiente
 
     public static function texto(string $chave, string $padrao = ''): string
     {
-        $valor = $_ENV[$chave] ?? $_SERVER[$chave] ?? getenv($chave);
+        // Variáveis do contêiner prevalecem sobre os valores do .env,
+        // inclusive no CLI, onde $_ENV pode não ser populado pelo PHP.
+        $externo = getenv($chave);
+        $valor = $externo !== false ? $externo : ($_ENV[$chave] ?? $_SERVER[$chave] ?? false);
 
         if ($valor === false || $valor === null || $valor === '') {
             return $padrao;

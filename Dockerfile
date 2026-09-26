@@ -39,7 +39,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # -----------------------------------------------------------------------------
 # Apache: reescrita de URL e cabeçalhos
 # -----------------------------------------------------------------------------
-RUN a2enmod rewrite headers expires deflate
+RUN a2dismod mpm_event mpm_worker 2>/dev/null || true \
+    && a2enmod mpm_prefork rewrite headers expires deflate
 
 COPY docker/php/vhost.conf /etc/apache2/sites-available/000-default.conf
 COPY docker/php/php.ini /usr/local/etc/php/conf.d/99-prolink.ini
