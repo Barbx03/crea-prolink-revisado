@@ -9,11 +9,11 @@ A aplicação usa PHP, MariaDB, Twig, Bootstrap e jQuery.
 
 ## Hospedagem
 
-- [Aplicação no Railway](https://app-production-77cb.up.railway.app)
-- [Painel do projeto](https://railway.com/project/760470b5-c0f7-4ee2-8d67-c84d78d5bc82)
+- [Aplicação](https://crea-prolink-app.cveblt.easypanel.host)
+- [Easypanel](https://easypanel.daboua.com), projeto `crea-prolink`
 
-O serviço `app` está vinculado à branch `main` deste repositório. Cada push
-dispara uma nova publicação automática no Railway.
+A aplicação roda em uma VPS no Brasil, exigência da API oficial do CREA-AM.
+O deploy é disparado pelo Easypanel a partir da branch `main`.
 
 ## Instalação e documentação
 
@@ -27,4 +27,4 @@ de demonstração.
 - [Dependências](_arq/DEPENDENCIAS.md)
 - [Segurança](_arq/SEGURANCA.md)
 - [Modelo do banco de dados](_arq/mer/mer.md)
-- [Publicação no Railway](_arq/RAILWAY.md)
+- [Publicação no Easypanel](_arq/PUBLICACAO.md)
