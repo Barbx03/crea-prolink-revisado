@@ -1,11 +1,9 @@
 # Publicação no Railway
 
 A aplicação usa o Dockerfile existente, PHP 8.3 e MariaDB 10.11. São dois
-serviços no mesmo projeto e ambiente, comunicando-se pela rede privada.
-O `railway.json` configura a compilação e a verificação HTTP da aplicação.
-Ele permanece compatível com o Railway até 1º de dezembro de 2026 e deve ser
-migrado para o Infrastructure as Code antes dessa data. O arquivo não cria o
-banco, os volumes nem as variáveis automaticamente.
+serviços no mesmo projeto e ambiente, comunicando-se pela rede privada. O
+Railway detecta automaticamente o `Dockerfile` na raiz. Banco, volumes e
+variáveis são recursos do projeto no Railway e não são criados pelo Dockerfile.
 
 ## 1. Banco
 
@@ -76,6 +74,5 @@ Os logs locais da aplicação não sobrevivem a um redeploy. Os logs de
 inicialização e do Apache ficam disponíveis nos logs do serviço Railway.
 
 Referências: [Dockerfiles](https://docs.railway.com/builds/dockerfiles),
-[volumes](https://docs.railway.com/volumes),
-[configuração](https://docs.railway.com/config-as-code/reference) e
+[volumes](https://docs.railway.com/volumes) e
 [preços](https://docs.railway.com/pricing).
