@@ -12,8 +12,8 @@ A aplicação usa PHP, MariaDB, Twig, Bootstrap e jQuery.
 - [Aplicação no Railway](https://app-production-77cb.up.railway.app)
 - [Painel do projeto](https://railway.com/project/760470b5-c0f7-4ee2-8d67-c84d78d5bc82)
 
-O deploy é feito pelo CLI com `railway up --service app`; a publicação inicial
-usa os arquivos locais. O deploy automático pelo GitHub ainda não está configurado.
+O serviço `app` está vinculado à branch `main` deste repositório. Cada push
+dispara uma nova publicação automática no Railway.
 
 ## Instalação e documentação
 
