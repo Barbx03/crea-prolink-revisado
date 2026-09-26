@@ -134,6 +134,58 @@
                 </div>
             </div>
 
+            {# --- Demandas por estado --------------------------------- #}
+            <div class="card mb-4">
+                <div class="card-header card-cabecalho-simples d-flex justify-content-between align-items-center">
+                    <span>Demandas por estado</span>
+                    <a class="small" href="{{ url('/demandas') }}">Ver demandas</a>
+                </div>
+                <div class="card-body">
+                    <div class="row g-4 align-items-center">
+                        <div class="col-md-7">
+                            {% include 'partials/mapa-brasil.twig' with { estados: demandas_uf.estados } only %}
+                        </div>
+                        <div class="col-md-5">
+                            <p class="small text-muted">
+                                A cor indica quantas demandas estão abertas em cada estado.
+                                Passe o cursor sobre um estado para ver os números ou clique para listar as demandas dele.
+                            </p>
+
+                            <div class="mapa-legenda small mb-3" aria-hidden="true">
+                                <span>Nenhuma</span>
+                                {% for nivel in 0..4 %}
+                                    <span class="mapa-legenda-cor mapa-nivel-{{ nivel }}"></span>
+                                {% endfor %}
+                                <span>{{ demandas_uf.maximo > 0 ? demandas_uf.maximo|numero : 'Mais' }}</span>
+                            </div>
+
+                            {% if demandas_uf.ranking is not empty %}
+                                <h2 class="h6">Estados com mais demandas abertas</h2>
+                                <ol class="list-unstyled mb-0">
+                                    {% for estado in demandas_uf.ranking %}
+                                        <li class="d-flex align-items-center gap-2 mb-1">
+                                            <a class="mapa-ranking-uf" href="{{ url('/demandas?uf=' ~ estado.uf) }}">{{ estado.uf }}</a>
+                                            <progress class="mapa-ranking-barra" max="{{ demandas_uf.maximo }}" value="{{ estado.abertas }}"
+                                                      aria-label="{{ estado.abertas }} de {{ demandas_uf.maximo }}"></progress>
+                                            <span class="small text-nowrap">
+                                                <strong>{{ estado.abertas|numero }}</strong>
+                                                <span class="text-muted">/ {{ estado.total|numero }}</span>
+                                            </span>
+                                        </li>
+                                    {% endfor %}
+                                </ol>
+                                <p class="small text-muted mt-2 mb-0">Abertas / total cadastradas no estado.</p>
+                            {% else %}
+                                <p class="small mb-0">Ainda não há demandas abertas com estado informado.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <p class="mapa-credito text-muted mt-3 mb-0">
+                        Contornos do mapa: svg-maps (Victor Cazanave), licença CC BY 4.0.
+                    </p>
+                </div>
+            </div>
+
             {# --- Últimos eventos ------------------------------------- #}
             <div class="card">
                 <div class="card-header card-cabecalho-simples d-flex justify-content-between align-items-center">

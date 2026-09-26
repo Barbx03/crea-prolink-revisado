@@ -344,3 +344,68 @@ textarea:focus-visible,
     body { background: #fff; }
     .card { border: 1px solid #ccc; break-inside: avoid; }
 }
+
+/* --- Mapa de demandas por estado ----------------------------------------- */
+.mapa-brasil {
+    display: block;
+    width: 100%;
+    max-width: 520px;
+    height: auto;
+    margin: 0 auto;
+}
+
+.mapa-estado path {
+    stroke: #fff;
+    stroke-width: 1;
+    transition: opacity 0.15s ease;
+}
+
+.mapa-estado:hover path,
+.mapa-estado:focus path {
+    opacity: 0.75;
+}
+
+.mapa-estado:focus {
+    outline: none;
+}
+
+.mapa-estado:focus-visible path {
+    stroke: var(--pl-ambar);
+    stroke-width: 2.5;
+}
+
+.mapa-nivel-0 path, .mapa-legenda-cor.mapa-nivel-0 { fill: #dde3ea; background: #dde3ea; }
+.mapa-nivel-1 path, .mapa-legenda-cor.mapa-nivel-1 { fill: #b5cde3; background: #b5cde3; }
+.mapa-nivel-2 path, .mapa-legenda-cor.mapa-nivel-2 { fill: #7ea8cc; background: #7ea8cc; }
+.mapa-nivel-3 path, .mapa-legenda-cor.mapa-nivel-3 { fill: #3d73a3; background: #3d73a3; }
+.mapa-nivel-4 path, .mapa-legenda-cor.mapa-nivel-4 { fill: var(--pl-azul); background: var(--pl-azul); }
+
+.mapa-legenda {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    color: var(--pl-cinza);
+}
+
+.mapa-legenda-cor {
+    display: inline-block;
+    width: 1.6rem;
+    height: 0.7rem;
+    border-radius: 2px;
+}
+
+.mapa-ranking-uf {
+    width: 2rem;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.mapa-ranking-barra {
+    flex: 1;
+    height: 0.6rem;
+    accent-color: var(--pl-azul);
+}
+
+.mapa-credito {
+    font-size: 0.7rem;
+}

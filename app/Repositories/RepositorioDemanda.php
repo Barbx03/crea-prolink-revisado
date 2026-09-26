@@ -509,6 +509,34 @@ final class RepositorioDemanda extends Repositorio
     }
 
     /**
+     * Demandas por unidade da federação, desconsiderando as excluídas.
+     *
+     * @return list<array{uf: string, total: int, abertas: int, interesses: int}>
+     */
+    public static function porUf(): array
+    {
+        $linhas = BancoDados::buscarTodos(
+            "SELECT dem_uf AS uf,
+                    COUNT(*) AS total,
+                    SUM(dem_situacao = 'PUBLICADA') AS abertas,
+                    SUM(dem_total_interesses) AS interesses
+               FROM pro_demandas
+              WHERE dem_status <> :excluido
+                AND dem_uf IS NOT NULL AND dem_uf <> ''
+              GROUP BY dem_uf
+              ORDER BY abertas DESC, total DESC",
+            ['excluido' => STATUS_EXCLUIDO]
+        );
+
+        return array_map(static fn (array $linha): array => [
+            'uf'         => strtoupper((string) $linha['uf']),
+            'total'      => (int) $linha['total'],
+            'abertas'    => (int) $linha['abertas'],
+            'interesses' => (int) $linha['interesses'],
+        ], $linhas);
+    }
+
+    /**
      * Identificadores das demandas abertas, exceto as do próprio usuário.
      * Usado pela compatibilização para avaliar oportunidades de um perfil.
      *
