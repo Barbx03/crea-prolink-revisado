@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
+use App\Core\Autenticacao;
 use App\Core\Controlador;
 use App\Repositories\RepositorioBusca;
 use App\Repositories\RepositorioCompetencia;
@@ -22,6 +23,7 @@ final class ControladorInicio extends Controlador
             'demandas'           => RepositorioDemanda::recentes(6),
             'areas'              => RepositorioCompetencia::areas(),
             'mais_demandadas'    => RepositorioCompetencia::maisDemandadas(8),
+            'demandas_uf'        => RepositorioDemanda::mapaPorUf(true, Autenticacao::autenticado()),
         ]);
     }
 }

@@ -130,6 +130,11 @@
         </div>
     </section>
 
+    {# --- Demandas por estado --------------------------------------------- #}
+    <section class="mb-5">
+        {% include 'partials/card-mapa-demandas.twig' with { mapa: demandas_uf, administrativo: false } only %}
+    </section>
+
     {# --- Demandas recentes ------------------------------------------------ #}
     {% if demandas is not empty %}
         <section class="mb-5">

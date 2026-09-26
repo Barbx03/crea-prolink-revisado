@@ -512,13 +512,13 @@ final class RepositorioDemanda extends Repositorio
      * Demandas por unidade da federação, para o mapa dos painéis.
      *
      * Com `$somenteVisiveis`, conta apenas as demandas que a pesquisa pública
-     * exibe a um usuário autenticado; sem ele, considera todas as não excluídas
-     * (visão administrativa). O nível de cor (0 a 4) é relativo ao estado com
+     * exibe (restritas às de visibilidade pública quando `$autenticado` é
+     * falso); sem ele, considera todas as não excluídas (visão administrativa). O nível de cor (0 a 4) é relativo ao estado com
      * mais demandas abertas.
      *
      * @return array{estados: array<string, array<string, int|string>>, ranking: list<array<string, int|string>>, maximo: int}
      */
-    public static function mapaPorUf(bool $somenteVisiveis): array
+    public static function mapaPorUf(bool $somenteVisiveis, bool $autenticado = true): array
     {
         $condicoes  = ["dem_uf IS NOT NULL", "dem_uf <> ''"];
         $parametros = [];
@@ -528,6 +528,10 @@ final class RepositorioDemanda extends Repositorio
             $condicoes[] = "dem_moderacao = 'APROVADO'";
             $condicoes[] = "dem_situacao = 'PUBLICADA'";
             $parametros['ativo'] = STATUS_ATIVO;
+
+            if (!$autenticado) {
+                $condicoes[] = "dem_visibilidade = 'PUBLICO'";
+            }
         } else {
             $condicoes[] = 'dem_status <> :excluido';
             $parametros['excluido'] = STATUS_EXCLUIDO;
